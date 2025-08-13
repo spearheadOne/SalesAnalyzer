@@ -1,0 +1,24 @@
+services:
+  localstack:
+    image: localstack/localstack:3
+    container_name: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,kinesis
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+#  postgres:
+#    image: timescale/timescaledb:latest-pg14
+#    container_name: timescaledb
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: admin
+#      POSTGRES_DB: metrics
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
