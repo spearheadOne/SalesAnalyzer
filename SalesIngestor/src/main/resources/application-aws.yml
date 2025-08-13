@@ -6,3 +6,4 @@ micronaut:
       n-threads: 4
 
 
+      # todo: check if kinesis needs secrets manager

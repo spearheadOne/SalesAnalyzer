@@ -1,7 +1,9 @@
 package org.abondar.exerimental.sales.analyzer.data
 
+import io.micronaut.serde.annotation.Serdeable
 import java.time.Instant
 
+@Serdeable
 data class SalesRecord(
     val timestamp: Instant,
     val orderId: String,

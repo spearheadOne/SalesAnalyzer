@@ -19,8 +19,8 @@ dependencies {
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut:micronaut-http-server-netty")
-
     implementation("io.micronaut.serde:micronaut-serde-jackson")
+
     kapt("io.micronaut.serde:micronaut-serde-processor")
 
     implementation("ch.qos.logback:logback-classic:1.5.13")
