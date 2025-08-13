@@ -1,0 +1,8 @@
+micronaut:
+  server:
+    enabled: false
+  executors:
+    io:
+      n-threads: 4
+
+

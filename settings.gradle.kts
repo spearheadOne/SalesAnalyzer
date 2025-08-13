@@ -3,6 +3,6 @@ rootProject.name = "SalesAnalyzer"
 
 
 
-include("DataUpload")
+include("SalesIngestor")
 
 include("Data")

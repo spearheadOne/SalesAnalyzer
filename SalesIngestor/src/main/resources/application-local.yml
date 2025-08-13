@@ -1,0 +1,14 @@
+micronaut:
+  server:
+    port: 8080
+  http:
+    client:
+      read-timeout: 30s
+
+aws:
+  client:
+    endpoint-override: http://localhost:4566
+
+logging:
+  level:
+    root: DEBUG

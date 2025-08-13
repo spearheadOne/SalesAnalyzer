@@ -1,0 +1,18 @@
+micronaut:
+  application:
+    name: data-upload
+  serde:
+    enabled: true
+
+aws:
+  region: us-east-2
+
+ingest:
+  kinesis:
+    stream: sales-stream
+
+
+logging:
+  level:
+    root: INFO
+    software.amazon.awssdk: WARN
