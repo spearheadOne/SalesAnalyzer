@@ -1,6 +1,6 @@
-# Sales Ingestor
+# Sales Analyzer Function
 
-Lambda function to read data from S3
+
 
 ## Build and run
 ```

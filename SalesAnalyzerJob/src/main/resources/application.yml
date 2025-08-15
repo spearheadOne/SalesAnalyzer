@@ -1,0 +1,31 @@
+micronaut:
+  application:
+    name: sales-analyzer-job
+
+liquibase:
+  enabled: true
+  datasources:
+    default:
+      change-log: classpath:db/changelog/db.changelog-master.yaml
+
+mybatis:
+  mapper-locations:
+    - classpath:mybatis/mapper/*.xml
+  type-aliases-package: org.abondar.experimental.sales.analyzer.job.model
+
+jdbc:
+  url: jdbc:postgresql://localhost:5432/analytics
+  user: postgres
+  pass: postgres
+
+aws:
+  kinesis:
+    stream: sales-stream
+    region: us-east-2
+  windows:
+    size-minutes: 1
+
+logging:
+  level:
+    root: INFO
+    software.amazon.awssdk: WARN

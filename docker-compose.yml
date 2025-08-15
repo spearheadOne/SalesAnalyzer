@@ -11,14 +11,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-#  postgres:
-#    image: timescale/timescaledb:latest-pg14
-#    container_name: timescaledb
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      POSTGRES_USER: admin
-#      POSTGRES_PASSWORD: admin
-#      POSTGRES_DB: metrics
-#    volumes:
-#      - pgdata:/var/lib/postgresql/data
+  postgres:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescaledb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: metrics
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

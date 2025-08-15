@@ -1,0 +1,8 @@
+aws:
+  rds:
+    secret-id: rds-postgres-credentials-arn
+  checkpoint:
+    s3-uri: s3://sales-flink-state/checkpoints
+    interval-ms: 60000
+    timeout-ms: 600000
+    exactly-once: true

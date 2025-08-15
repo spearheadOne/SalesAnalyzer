@@ -1,0 +1,12 @@
+aws:
+  region: us-east-1
+  access-key-id: test
+  secret-access-key: test
+  services:
+    kinesis:
+      endpoint-override: http://localhost:4566
+
+
+logging:
+  level:
+    root: DEBUG
