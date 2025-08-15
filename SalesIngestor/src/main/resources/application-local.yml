@@ -1,18 +1,22 @@
 micronaut:
   server:
+    enabled: true
     port: 8080
   http:
     client:
       read-timeout: 30s
 
 aws:
-  region: us-east-2
+  region: us-east-1
   access-key-id: test
   secret-access-key: test
-  kinesis:
-    endpoint-override: http://localhost:4566
-  client:
-    endpoint-override: http://localhost:4566
+  services:
+    kinesis:
+      endpoint-override: http://localhost:4566
+    s3:
+      endpoint-override: http://localhost:4566
+  s3:
+    path-style-access-enabled: true
 
 logging:
   level:

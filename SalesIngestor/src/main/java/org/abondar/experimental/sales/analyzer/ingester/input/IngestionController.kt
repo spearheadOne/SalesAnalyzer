@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.ingestor.input
+package org.abondar.experimental.sales.analyzer.ingester.input
 
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpResponse
@@ -8,11 +8,11 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Part
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.multipart.CompletedFileUpload
-import org.abondar.experimental.sales.analyzer.ingestor.IngestionService
+import org.abondar.experimental.sales.analyzer.ingester.IngestionService
 
 @Requires(env = ["local"])
 @Controller("/data")
-class DataUploadController(
+class IngestionController(
     private val ingestor: IngestionService
 ) {
 

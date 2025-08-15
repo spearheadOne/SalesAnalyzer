@@ -3,6 +3,11 @@ micronaut:
     name: data-upload
   serde:
     enabled: true
+  server:
+    enabled: false
+
+ingestion:
+  bucket-name: sales-data
 
 aws:
   region: us-east-2

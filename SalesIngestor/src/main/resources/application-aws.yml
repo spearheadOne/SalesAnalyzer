@@ -1,9 +1,0 @@
-micronaut:
-  server:
-    enabled: false
-  executors:
-    io:
-      n-threads: 4
-
-
-      # todo: check if kinesis needs secrets manager

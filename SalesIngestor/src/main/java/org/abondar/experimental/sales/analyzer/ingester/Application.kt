@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.ingestor
+package org.abondar.experimental.sales.analyzer.ingester
 
 import io.micronaut.runtime.Micronaut
 
