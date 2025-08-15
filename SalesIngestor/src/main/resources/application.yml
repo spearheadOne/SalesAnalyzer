@@ -6,8 +6,6 @@ micronaut:
 
 aws:
   region: us-east-2
-
-ingest:
   kinesis:
     stream: sales-stream
 

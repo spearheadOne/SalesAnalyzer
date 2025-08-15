@@ -6,6 +6,11 @@ micronaut:
       read-timeout: 30s
 
 aws:
+  region: us-east-2
+  access-key-id: test
+  secret-access-key: test
+  kinesis:
+    endpoint-override: http://localhost:4566
   client:
     endpoint-override: http://localhost:4566
 
