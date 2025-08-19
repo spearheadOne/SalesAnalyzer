@@ -3,6 +3,6 @@ rootProject.name = "SalesAnalyzer"
 
 
 
-include("SalesIngestor")
+include("SalesIngester")
 include("Data")
 include("SalesAnalyzerJob")

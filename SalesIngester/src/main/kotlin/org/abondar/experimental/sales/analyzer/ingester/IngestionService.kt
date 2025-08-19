@@ -35,7 +35,7 @@ class IngestionService(
                         productId = cols[ColumnHeaders.PRODUCT_ID.index],
                         productName = cols[ColumnHeaders.PRODUCT_NAME.index],
                         category = cols[ColumnHeaders.CATEGORY.index],
-                        price = cols[ColumnHeaders.PRICE.index].toDouble(),
+                        price = cols[ColumnHeaders.PRICE.index].toBigDecimal(),
                         amount = cols[ColumnHeaders.AMOUNT.index].toInt(),
                         currency = cols[ColumnHeaders.CURRENCY.index],
                         region = cols[ColumnHeaders.REGION.index]

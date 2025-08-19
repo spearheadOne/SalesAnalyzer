@@ -1,9 +1,12 @@
 package org.abondar.exerimental.sales.analyzer.data
 
+import io.micronaut.core.annotation.Introspected
 import io.micronaut.serde.annotation.Serdeable
+import java.math.BigDecimal
 import java.time.Instant
 
 @Serdeable
+@Introspected
 data class SalesRecord(
     val timestamp: Instant,
     val orderId: String,
@@ -11,7 +14,7 @@ data class SalesRecord(
     val productId: String,
     val productName: String?,
     val category: String?,
-    val price: Double,
+    val price: BigDecimal,
     val amount: Int,
     val currency: String?,
     val region: String?
