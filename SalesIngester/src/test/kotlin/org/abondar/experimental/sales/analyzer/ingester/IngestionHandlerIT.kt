@@ -12,8 +12,13 @@ import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
+import software.amazon.awssdk.services.kinesis.KinesisClient
+import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
@@ -31,6 +36,12 @@ class IngestionHandlerIT : TestPropertyProvider {
 
     @Value("\${aws.region}")
     lateinit var region: String
+
+    @Value("\${aws.kinesis.stream}")
+    lateinit var streamName: String
+
+    @Inject
+    lateinit var kinesisClient: KinesisAsyncClient
 
     @Inject
     lateinit var s3Client: S3Client
@@ -57,6 +68,14 @@ class IngestionHandlerIT : TestPropertyProvider {
 
     @Test
     fun `test lambda handler processing s3 event`() {
+        kinesisClient.createStream(
+            CreateStreamRequest.builder()
+                .streamName(streamName)
+                .shardCount(1)
+                .build()
+        )
+
+
         s3Client.use { s3 ->
             s3.createBucket(
                 CreateBucketRequest.builder()

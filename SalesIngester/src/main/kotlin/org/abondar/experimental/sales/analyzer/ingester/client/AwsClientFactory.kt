@@ -1,6 +1,7 @@
 package org.abondar.experimental.sales.analyzer.ingester.client
 
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Requires
 import io.micronaut.context.annotation.Value
 import jakarta.annotation.PreDestroy
 import jakarta.inject.Singleton
@@ -10,7 +11,6 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
-import software.amazon.awssdk.services.s3.S3Client
 import java.net.URI
 
 @Factory
@@ -20,12 +20,14 @@ class AwsClientFactory(
     @param:Value("\${aws.secret-access-key:}") private val secretAccessKey: String?,
     @param:Value("\${aws.services.kinesis.endpoint-override:}") private val kinesisEndpoint: String,
     @param:Value("\${aws.services.s3.endpoint-override:}") private val s3Endpoint: String,
+    @param:Value("\${aws.s3.path-style-access-enabled:false}") private val s3PathStyle: Boolean,
 ) {
 
     private var kinesisClient: KinesisAsyncClient? = null
 
     @Singleton
-    fun kinesisClient(): KinesisAsyncClient {
+    @Requires(missingBeans = [KinesisAsyncClient::class])
+    fun kinesisAsyncClient(): KinesisAsyncClient {
         return KinesisAsyncClient.builder()
             .region(Region.of(region))
             .credentialsProvider(resolveCredentialsProvider(kinesisEndpoint, accessKeyId, secretAccessKey))
@@ -45,7 +47,7 @@ class AwsClientFactory(
     ): AwsCredentialsProvider {
         return if (!endpointOverride.isNullOrBlank()) {
             StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(accessKeyId, secretAccessKey)
+                AwsBasicCredentials.create(accessKeyId ?: "test", secretAccessKey ?: "test")
             )
         } else {
             DefaultCredentialsProvider.builder().build()
