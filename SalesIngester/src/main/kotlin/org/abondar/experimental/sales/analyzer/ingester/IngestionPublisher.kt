@@ -4,7 +4,7 @@ import io.micronaut.context.annotation.Value
 import io.micronaut.serde.ObjectMapper
 import jakarta.inject.Singleton
 import kotlinx.coroutines.future.await
-import org.abondar.exerimental.sales.analyzer.data.SalesRecord
+import org.abondar.experimental.sales.analyzer.data.SalesRecord
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
 import software.amazon.awssdk.services.kinesis.model.PutRecordsRequest

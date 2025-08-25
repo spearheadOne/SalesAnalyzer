@@ -1,4 +1,4 @@
-package org.abondar.exerimental.sales.analyzer.data
+package org.abondar.experimental.sales.analyzer.data
 
 import io.micronaut.core.annotation.Introspected
 import io.micronaut.serde.annotation.Serdeable

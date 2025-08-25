@@ -1,7 +1,7 @@
 package org.abondar.experimental.sales.analyzer.ingester
 
 import kotlinx.coroutines.test.runTest
-import org.abondar.exerimental.sales.analyzer.data.SalesRecord
+import org.abondar.experimental.sales.analyzer.data.SalesRecord
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

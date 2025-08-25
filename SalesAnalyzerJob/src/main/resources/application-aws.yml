@@ -1,3 +1,10 @@
+mybatis:
+  environment: aws
+
+datasources:
+  default:
+    url: jdbc:postgresql://rds-endpoint:5432/metrics
+
 aws:
   rds:
     secret-id: rds-postgres-credentials-arn

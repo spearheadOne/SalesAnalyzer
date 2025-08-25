@@ -1,4 +1,4 @@
-package org.abondar.exerimental.sales.analyzer.data
+package org.abondar.experimental.sales.analyzer.data
 
 enum class ColumnHeaders(val index: Int, val header: String? = null) {
     TIMESTAMP(0,"timestamp"),

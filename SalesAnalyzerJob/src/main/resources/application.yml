@@ -6,17 +6,17 @@ liquibase:
   enabled: true
   datasources:
     default:
-      change-log: classpath:db/changelog/db.changelog-master.yaml
+      change-log: classpath:db/changelog/db.changelog-master.yml
 
-mybatis:
-  mapper-locations:
-    - classpath:mybatis/mapper/*.xml
-  type-aliases-package: org.abondar.experimental.sales.analyzer.job.model
-
-jdbc:
-  url: jdbc:postgresql://localhost:5432/analytics
-  user: postgres
-  pass: postgres
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/metrics
+    username: admin
+    password: admin
+    driverClassName: org.postgresql.Driver
+    maximumPoolSize: 5
+    minimumIdle: 1
+    autoCommit: false
 
 aws:
   kinesis:

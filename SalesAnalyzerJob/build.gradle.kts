@@ -11,34 +11,34 @@ plugins {
 group = "org.abondar.experimental.sales.analyzer"
 version = "0.1.0"
 
-val flink = "1.19.1"
 
 dependencies {
     implementation(project(":Data"))
 
     implementation("io.micronaut:micronaut-context")
+    implementation("io.micronaut:micronaut-inject")
+    implementation("io.micronaut:micronaut-runtime")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.liquibase:micronaut-liquibase")
 
-    implementation("io.micronaut.liquibase:micronaut-liquibase:6.0.0")
-    implementation("com.zaxxer:HikariCP:5.1.0")
     runtimeOnly("org.postgresql:postgresql:42.7.3")
 
     implementation("software.amazon.awssdk:secretsmanager")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
 
-    implementation("org.mybatis:mybatis:3.5.15")
+    implementation("org.mybatis:mybatis:3.5.19")
+    implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
 
-//    compileOnly("org.apache.flink:flink-streaming-java:$flink")
-//    compileOnly("org.apache.flink:flink-clients:$flink")
-//    compileOnly("org.apache.flink:flink-connector-kinesis:$flink")
-//    compileOnly("org.apache.flink:flink-connector-jdbc:$flink")
-//
-//    runtimeOnly("org.apache.flink:flink-streaming-java:$flink")
-//    runtimeOnly("org.apache.flink:flink-clients:$flink")
-//    runtimeOnly("org.apache.flink:flink-connector-kinesis:$flink")
-//    runtimeOnly("org.apache.flink:flink-connector-jdbc:$flink")
+    compileOnly("org.apache.flink:flink-core:2.1.0")
+    compileOnly("org.apache.flink:flink-streaming-java:2.1.0")
+    compileOnly("org.apache.flink:flink-clients:2.1.0")
+    implementation("org.apache.flink:flink-connector-kinesis:5.0.0-1.20")
 
+    kapt("io.micronaut:micronaut-inject-java")
+    kaptTest("io.micronaut:micronaut-inject-java")
 
+    testImplementation("org.testcontainers:postgresql:1.20.1")
 }
 
 kotlin {
@@ -54,7 +54,6 @@ micronaut {
         annotations("org.abondar.experimental.sales.analyzer.job.*")
     }
 }
-
 
 tasks.shadowJar {
     archiveBaseName.set("sales-analyzer-job")
