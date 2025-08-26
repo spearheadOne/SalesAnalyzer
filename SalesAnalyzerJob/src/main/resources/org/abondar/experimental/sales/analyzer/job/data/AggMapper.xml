@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.abondar.experimental.sales.analyzer.job.data.AggMapper">
+    <insert id="insertUpdateAgg" parameterType="list">
+        INSERT INTO sales_agg (
+            bucket_start_time,
+            product_id,
+            category,
+            orders,
+            units,
+            revenue
+        ) VALUES
+              <foreach collection="list" item="row" separator=",">
+                  (
+                  #{row.bucketStartTime, jdbcType=TIMESTAMP},
+                  #{row.productId},
+                  #{row.category},
+                  #{row.orders},
+                  #{row.units},
+                  #{row.revenue}
+                  )
+              </foreach>
+
+        ON CONFLICT (bucket_start_time, product_id) DO UPDATE
+        SET orders  = sales_agg.orders  + EXCLUDED.orders,
+            units   = sales_agg.units   + EXCLUDED.units,
+            revenue = sales_agg.revenue + EXCLUDED.revenue
+    </insert>
+</mapper>

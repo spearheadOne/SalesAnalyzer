@@ -6,10 +6,10 @@ import org.apache.ibatis.session.SqlSessionFactory
 
 @Singleton
 class AggMapperImpl(private val factory: SqlSessionFactory): AggMapper {
-    override fun insertUpdateAgg(row: AggRow) {
+    override fun insertUpdateAgg(batch: List<AggRow>) {
         factory.openSession().use { session->
             val mapper = session.getMapper(AggMapper::class.java)
-            mapper.insertUpdateAgg(row)
+            mapper.insertUpdateAgg(batch)
             session.commit()
 
         }

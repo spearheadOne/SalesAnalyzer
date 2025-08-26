@@ -50,7 +50,7 @@ class AggMapperIT : TestPropertyProvider {
             1, 1, BigDecimal(10)
         )
 
-        aggMapper.insertUpdateAgg(agg)
+        aggMapper.insertUpdateAgg(listOf(agg))
 
         val res = aggMapper.getAggByProduct()
         assertEquals(1,res.size)

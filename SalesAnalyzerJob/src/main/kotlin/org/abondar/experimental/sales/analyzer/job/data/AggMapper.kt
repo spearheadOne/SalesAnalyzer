@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Select
 
 interface AggMapper {
 
-    fun insertUpdateAgg(row: AggRow)
+    fun insertUpdateAgg(batch: List<AggRow>)
 
     @Select("select * from sales_agg")
     fun getAggByProduct(): List<AggRow>
