@@ -3,13 +3,8 @@ mybatis:
 
 datasources:
   default:
-    url: jdbc:postgresql://rds-endpoint:5432/metrics
+    url: jdbc:postgresql://${RDS_ENDPOINT}:5432/metrics
 
 aws:
   rds:
     secret-id: rds-postgres-credentials-arn
-  checkpoint:
-    s3-uri: s3://sales-flink-state/checkpoints
-    interval-ms: 60000
-    timeout-ms: 600000
-    exactly-once: true

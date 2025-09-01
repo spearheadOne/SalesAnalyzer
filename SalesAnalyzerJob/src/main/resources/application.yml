@@ -19,11 +19,12 @@ datasources:
     autoCommit: false
 
 aws:
-  kinesis:
-    stream: sales-stream
-    region: us-east-2
-  windows:
-    size-minutes: 1
+   region: us-east-2
+   services:
+     kinesis:
+       stream: sales-stream
+       windows:
+        size-minutes: 1
 
 logging:
   level:

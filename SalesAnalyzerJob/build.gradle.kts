@@ -62,3 +62,7 @@ tasks.shadowJar {
         exclude(dependency("org.apache.flink:.*"))
     }
 }
+
+tasks.named<JavaExec>("run") {
+    systemProperty("micronaut.environments", "local")
+}
