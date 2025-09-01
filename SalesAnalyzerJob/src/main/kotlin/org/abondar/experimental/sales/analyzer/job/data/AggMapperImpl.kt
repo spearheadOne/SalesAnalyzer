@@ -15,10 +15,10 @@ class AggMapperImpl(private val factory: SqlSessionFactory): AggMapper {
         }
     }
 
-    override fun getAggByProduct(): List<AggRow> {
+    override fun getAggregates(): List<AggRow> {
         factory.openSession().use { session->
             val mapper = session.getMapper(AggMapper::class.java)
-            val res = mapper.getAggByProduct()
+            val res = mapper.getAggregates()
             session.commit()
 
             return res

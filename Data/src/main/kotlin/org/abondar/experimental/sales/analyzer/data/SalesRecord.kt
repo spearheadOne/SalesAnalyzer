@@ -12,10 +12,10 @@ data class SalesRecord(
     val orderId: String,
     val customerId: String,
     val productId: String,
-    val productName: String?,
-    val category: String?,
+    val productName: String,
+    val category: String,
     val price: BigDecimal,
     val amount: Int,
-    val currency: String?,
-    val region: String?
+    val currency: String,
+    val region: String
 )

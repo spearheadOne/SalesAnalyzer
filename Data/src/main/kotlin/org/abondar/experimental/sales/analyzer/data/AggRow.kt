@@ -8,6 +8,7 @@ import java.time.Instant
 data class AggRow(
     val bucketStartTime: Instant,
     val productId: String,
+    val productName: String,
     val category: String,
     val orders: Long,
     val units: Long,

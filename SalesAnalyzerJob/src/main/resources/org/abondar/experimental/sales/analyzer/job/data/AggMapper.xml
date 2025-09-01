@@ -8,6 +8,7 @@
         INSERT INTO sales_agg (
             bucket_start_time,
             product_id,
+            product_name,
             category,
             orders,
             units,
@@ -17,6 +18,7 @@
                   (
                   #{row.bucketStartTime, jdbcType=TIMESTAMP},
                   #{row.productId},
+                  #{row.productName},
                   #{row.category},
                   #{row.orders},
                   #{row.units},
@@ -29,4 +31,16 @@
             units   = sales_agg.units   + EXCLUDED.units,
             revenue = sales_agg.revenue + EXCLUDED.revenue
     </insert>
+
+    <select id="getAggregates" resultType="org.abondar.experimental.sales.analyzer.data.AggRow">
+        select
+            bucket_start_time as bucketStartTime,
+            product_id as productId,
+            product_name as productName,
+            category,
+            orders,
+            units,
+            revenue
+        from sales_agg
+    </select>
 </mapper>

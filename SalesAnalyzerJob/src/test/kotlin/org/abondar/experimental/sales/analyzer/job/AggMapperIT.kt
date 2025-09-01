@@ -46,13 +46,13 @@ class AggMapperIT : TestPropertyProvider {
         aggMapper.deleteAll()
 
         val agg = AggRow(
-            Instant.now(), "test", "test",
+            Instant.now(), "test", "test","test",
             1, 1, BigDecimal(10)
         )
 
         aggMapper.insertUpdateAgg(listOf(agg))
 
-        val res = aggMapper.getAggByProduct()
+        val res = aggMapper.getAggregates()
         assertEquals(1,res.size)
         assertEquals(agg,res.first())
     }

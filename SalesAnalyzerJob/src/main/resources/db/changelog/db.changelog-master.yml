@@ -5,3 +5,5 @@ databaseChangeLog:
       file: classpath:db/changelog/002-create-timescale-hypertable.sql
   - include:
       file: classpath:db/changelog/003-add-indexes.sql
+  - include:
+      file: classpath:db/changelog/004-add-product-name.sql
