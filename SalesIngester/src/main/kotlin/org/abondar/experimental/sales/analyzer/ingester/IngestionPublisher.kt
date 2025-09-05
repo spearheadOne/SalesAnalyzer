@@ -16,7 +16,7 @@ class IngestionPublisher(
     private val kinesisClient: KinesisAsyncClient
 ) {
 
-    @Value("\${aws.kinesis.stream}")
+    @Value("\${aws.services.kinesis.stream}")
     lateinit var streamName: String
 
     suspend fun publishMessage(batch: List<SalesRecord>) {

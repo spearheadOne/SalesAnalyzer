@@ -11,8 +11,9 @@ ingestion:
 
 aws:
   region: us-east-2
-  kinesis:
-    stream: sales-stream
+  services:
+   kinesis:
+     stream: sales-stream
 
 
 logging:

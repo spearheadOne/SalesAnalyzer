@@ -18,17 +18,14 @@ class AwsClientFactory(
     @param:Value("\${aws.region:us-east-1}") private val region: String,
     @param:Value("\${aws.access-key-id:}") private val accessKeyId: String?,
     @param:Value("\${aws.secret-access-key:}") private val secretAccessKey: String?,
-    @param:Value("\${aws.services.kinesis.endpoint-override:}") private val kinesisEndpoint: String,
-    @param:Value("\${aws.services.s3.endpoint-override:}") private val s3Endpoint: String,
-    @param:Value("\${aws.s3.path-style-access-enabled:false}") private val s3PathStyle: Boolean,
+    @param:Value("\${aws.services.kinesis.endpoint-override:}") private val kinesisEndpoint: String
 ) {
 
     private var kinesisClient: KinesisAsyncClient? = null
 
     @Singleton
     @Requires(missingBeans = [KinesisAsyncClient::class])
-    fun kinesisAsyncClient(): KinesisAsyncClient {
-        return KinesisAsyncClient.builder()
+    fun kinesisAsyncClient(): KinesisAsyncClient = KinesisAsyncClient.builder()
             .region(Region.of(region))
             .credentialsProvider(resolveCredentialsProvider(kinesisEndpoint, accessKeyId, secretAccessKey))
             .apply {
@@ -38,7 +35,7 @@ class AwsClientFactory(
             }
             .build()
             .also { kinesisClient = it }
-    }
+
 
     fun resolveCredentialsProvider(
         endpointOverride: String?,

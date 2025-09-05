@@ -34,7 +34,7 @@ class IngestionHandlerIT : TestPropertyProvider {
     @Value("\${aws.region}")
     lateinit var region: String
 
-    @Value("\${aws.kinesis.stream}")
+    @Value("\${aws.services.kinesis.stream}")
     lateinit var streamName: String
 
     @Inject
