@@ -5,7 +5,6 @@ plugins {
     kotlin("plugin.allopen") version "2.0.21" apply false
 
     id("io.micronaut.application") version "4.5.4" apply false
-    id("io.micronaut.test-resources") version "4.5.4" apply false
     id("io.micronaut.aot") version "4.5.4" apply false
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
     id("com.gradleup.shadow") version "8.3.0" apply false
@@ -41,8 +40,6 @@ subprojects {
         add("testImplementation", "org.mockito:mockito-junit-jupiter:5.12.0")
         add("testImplementation", "org.mockito.kotlin:mockito-kotlin:5.3.1")
         add("testImplementation", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
-        add("testImplementation", "org.testcontainers:junit-jupiter:1.19.7")
-
         add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine")
 
     }

@@ -29,6 +29,7 @@ dependencies {
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
     testImplementation("org.testcontainers:localstack:1.19.7")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
 }
 
 application {
@@ -44,7 +45,7 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("org.abondar.experimental.sales.analyzer.ingester.*")
+        annotations("org.abondar.experimental.sales.analyzer.ingester")
     }
 }
 
