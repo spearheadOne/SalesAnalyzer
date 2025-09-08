@@ -1,6 +1,7 @@
 package org.abondar.experimental.sales.analyzer.ingester
 
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Property
 import io.micronaut.context.annotation.Value
 import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
 import io.micronaut.test.support.TestPropertyProvider
@@ -13,16 +14,18 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.core.sync.RequestBody
-import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
+import software.amazon.awssdk.services.s3.model.DeleteBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 
 
-@Testcontainers
-@MicronautLambdaTest(environments = ["local"])
+//normally we should use micronaut test resources but they do not support kinesis in localstack
+@Testcontainers(disabledWithoutDocker = true)
+@MicronautLambdaTest
+@Property(name = "aws.region", value = "us-east-1")
 class IngestionHandlerIT : TestPropertyProvider {
 
     @Inject
@@ -47,20 +50,18 @@ class IngestionHandlerIT : TestPropertyProvider {
         @Container
         @JvmStatic
         val localstack: LocalStackContainer =
-            LocalStackContainer(DockerImageName.parse("localstack/localstack:2.3"))
+            LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
                 .withServices(LocalStackContainer.Service.S3, LocalStackContainer.Service.KINESIS)
 
     }
 
     override fun getProperties() = mutableMapOf(
-        "aws.region" to Region.of(region).id(),
         "aws.services.s3.endpoint-override" to localstack
             .getEndpointOverride(LocalStackContainer.Service.S3).toString(),
         "aws.services.kinesis.endpoint-override" to localstack
             .getEndpointOverride(LocalStackContainer.Service.KINESIS).toString(),
-        "aws.access-key-id" to "test",
-        "aws.secret-access-key" to "test",
-        "ingestion.bucket-name" to "sales-bucket"
+        "aws.access-key-id" to localstack.accessKey,
+        "aws.secret-access-key" to localstack.secretKey
     )
 
     @Test
@@ -72,6 +73,7 @@ class IngestionHandlerIT : TestPropertyProvider {
                 .build()
         )
 
+       salesBucket += "${System.currentTimeMillis()}-${(1000..9999).random()}"
 
         s3Client.use { s3 ->
             s3.createBucket(

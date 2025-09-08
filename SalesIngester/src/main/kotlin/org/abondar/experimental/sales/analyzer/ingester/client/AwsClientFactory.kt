@@ -26,15 +26,15 @@ class AwsClientFactory(
     @Singleton
     @Requires(missingBeans = [KinesisAsyncClient::class])
     fun kinesisAsyncClient(): KinesisAsyncClient = KinesisAsyncClient.builder()
-            .region(Region.of(region))
-            .credentialsProvider(resolveCredentialsProvider(kinesisEndpoint, accessKeyId, secretAccessKey))
-            .apply {
-                if (kinesisEndpoint.isNotBlank()) {
-                    endpointOverride(URI.create(kinesisEndpoint))
-                }
+        .region(Region.of(region))
+        .credentialsProvider(resolveCredentialsProvider(kinesisEndpoint, accessKeyId, secretAccessKey))
+        .apply {
+            if (kinesisEndpoint.isNotBlank()) {
+                endpointOverride(URI.create(kinesisEndpoint))
             }
-            .build()
-            .also { kinesisClient = it }
+        }
+        .build()
+        .also { kinesisClient = it }
 
 
     fun resolveCredentialsProvider(
