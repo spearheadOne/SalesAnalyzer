@@ -37,6 +37,7 @@ subprojects {
         add("implementation","software.amazon.awssdk:auth")
         add("implementation" ,"io.micronaut.serde:micronaut-serde-jackson")
         add ("kapt", "io.micronaut.serde:micronaut-serde-processor")
+        add ("runtimeOnly", "org.yaml:snakeyaml")
 
         add("testImplementation", "io.micronaut.test:micronaut-test-junit5")
         add("testImplementation", "org.mockito:mockito-core:5.12.0")
@@ -44,7 +45,6 @@ subprojects {
         add("testImplementation", "org.mockito.kotlin:mockito-kotlin:5.3.1")
         add("testImplementation", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
         add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine")
-
     }
 }
 

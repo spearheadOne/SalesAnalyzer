@@ -1,0 +1,21 @@
+micronaut:
+  application:
+    name: sales-analyzer-dashboard
+
+server:
+  port: 9024
+
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/metrics
+    driverClassName: org.postgresql.Driver
+    username: admin
+    password: admin
+    maximumPoolSize: 5
+    minimumIdle: 1
+    autoCommit: false
+
+
+logging:
+  level:
+    root: INFO

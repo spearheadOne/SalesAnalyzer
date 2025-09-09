@@ -1,0 +1,6 @@
+mybatis:
+  environment: local
+
+logging:
+  level:
+    root: DEBUG

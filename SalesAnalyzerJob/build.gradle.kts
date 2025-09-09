@@ -34,8 +34,6 @@ dependencies {
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:cloudwatch")
 
-    implementation("io.micronaut.serde:micronaut-serde-jackson")
-    kapt("io.micronaut.serde:micronaut-serde-processor")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 

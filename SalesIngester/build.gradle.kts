@@ -29,11 +29,9 @@ dependencies {
     implementation("software.amazon.awssdk:s3-event-notifications")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-    implementation("io.micronaut.serde:micronaut-serde-jackson")
 
-    runtimeOnly("org.yaml:snakeyaml")
 
-    kapt("io.micronaut.serde:micronaut-serde-processor")
+
     kapt("io.micronaut:micronaut-inject-java")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
