@@ -1,8 +1,13 @@
+import io.micronaut.gradle.docker.MicronautDockerfile
+import io.micronaut.gradle.docker.NativeImageDockerfile
+import org.gradle.kotlin.dsl.named
+
 plugins {
     kotlin("jvm")
     kotlin("kapt")
     kotlin("plugin.allopen")
     id("io.micronaut.application")
+    id("io.micronaut.aot")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -24,8 +29,12 @@ dependencies {
     implementation("software.amazon.awssdk:s3-event-notifications")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
 
     runtimeOnly("org.yaml:snakeyaml")
+
+    kapt("io.micronaut.serde:micronaut-serde-processor")
+    kapt("io.micronaut:micronaut-inject-java")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
     testImplementation("org.testcontainers:localstack:1.19.7")
@@ -47,8 +56,27 @@ micronaut {
         incremental(true)
         annotations("org.abondar.experimental.sales.analyzer.ingester")
     }
+
+    aot {
+        optimizeServiceLoading.set(true)
+        convertYamlToJava.set(false)
+        precomputeOperations.set(true)
+        cacheEnvironment.set(true)
+        optimizeClassLoading.set(true)
+        deduceEnvironment.set(true)
+        optimizeNetty.set(true)
+        replaceLogbackXml.set(false)
+    }
 }
 
 tasks.named<JavaExec>("run") {
     systemProperty("micronaut.environments", "local")
+}
+
+tasks.named<NativeImageDockerfile>("dockerfileNative") {
+    args("-Dmicronaut.environments=aws")
+}
+
+tasks.named<MicronautDockerfile>("dockerfile") {
+    args("-Dmicronaut.environments=aws")
 }

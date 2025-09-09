@@ -1,5 +1,8 @@
 package org.abondar.experimental.sales.analyzer.data
 
+import io.micronaut.core.annotation.Introspected
+
+@Introspected
 enum class ColumnHeaders(val index: Int, val header: String? = null) {
     TIMESTAMP(0,"timestamp"),
     ORDER_ID(1, "order_id"),

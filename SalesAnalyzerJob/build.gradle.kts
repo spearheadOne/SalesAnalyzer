@@ -1,3 +1,7 @@
+import io.micronaut.gradle.docker.MicronautDockerfile
+import io.micronaut.gradle.docker.NativeImageDockerfile
+import org.gradle.kotlin.dsl.named
+
 plugins {
     kotlin("jvm")
     kotlin("kapt")
@@ -6,6 +10,7 @@ plugins {
     application
     id("com.gradleup.shadow")
     id("io.micronaut.application")
+    id("io.micronaut.aot")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -29,6 +34,8 @@ dependencies {
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:cloudwatch")
 
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    kapt("io.micronaut.serde:micronaut-serde-processor")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
@@ -54,7 +61,18 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("org.abondar.experimental.sales.analyzer.job")
+        annotations("org.abondar.experimental.sales.analyzer.job.*")
+    }
+
+    aot {
+        optimizeServiceLoading.set(true)
+        convertYamlToJava.set(false)
+        precomputeOperations.set(true)
+        cacheEnvironment.set(true)
+        optimizeClassLoading.set(true)
+        deduceEnvironment.set(true)
+        optimizeNetty.set(true)
+        replaceLogbackXml.set(false)
     }
 }
 
@@ -65,4 +83,12 @@ tasks.shadowJar {
 
 tasks.named<JavaExec>("run") {
     systemProperty("micronaut.environments", "local")
+}
+
+tasks.named<NativeImageDockerfile>("dockerfileNative") {
+    args("-Dmicronaut.environments=docker")
+}
+
+tasks.named<MicronautDockerfile>("dockerfile") {
+    args("-Dmicronaut.environments=docker")
 }
