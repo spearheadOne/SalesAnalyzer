@@ -2,23 +2,16 @@ package org.abondar.experimental.sales.analyzer.job
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.Environment
-import org.abondar.experimental.sales.analyzer.job.data.AggMapper
-import org.abondar.experimental.sales.analyzer.job.sink.SalesAggSinkMapperHolder
 
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
-
-
         val ctx = ApplicationContext.builder()
             .environments(*resolveEnvs())
             .start()
 
         // close on JVM shutdown
         Runtime.getRuntime().addShutdownHook(Thread { ctx.close() })
-
-        val aggMapper = ctx.getBean(AggMapper::class.java)
-        SalesAggSinkMapperHolder.mapper = aggMapper
 
         ctx.getBean(SalesAnalyzerJob::class.java).run()
 

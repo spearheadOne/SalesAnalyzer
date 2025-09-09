@@ -18,7 +18,6 @@ import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
-import software.amazon.awssdk.services.s3.model.DeleteBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 
 
@@ -73,7 +72,7 @@ class IngestionHandlerIT : TestPropertyProvider {
                 .build()
         )
 
-       salesBucket += "${System.currentTimeMillis()}-${(1000..9999).random()}"
+        salesBucket += "${System.currentTimeMillis()}-${(1000..9999).random()}"
 
         s3Client.use { s3 ->
             s3.createBucket(

@@ -6,29 +6,28 @@
 <mapper namespace="org.abondar.experimental.sales.analyzer.job.data.AggMapper">
     <insert id="insertUpdateAgg" parameterType="list">
         INSERT INTO sales_agg (
-            bucket_start_time,
-            product_id,
-            product_name,
-            category,
-            orders,
-            units,
-            revenue
+        bucket_start_time,
+        product_id,
+        product_name,
+        category,
+        orders,
+        units,
+        revenue
         ) VALUES
-              <foreach collection="list" item="row" separator=",">
-                  (
-                  #{row.bucketStartTime, jdbcType=TIMESTAMP},
-                  #{row.productId},
-                  #{row.productName},
-                  #{row.category},
-                  #{row.orders},
-                  #{row.units},
-                  #{row.revenue}
-                  )
-              </foreach>
-
+        <foreach collection="list" item="row" separator=",">
+            (
+            #{row.bucketStartTime, jdbcType=TIMESTAMP},
+            #{row.productId},
+            #{row.productName},
+            #{row.category},
+            #{row.orders},
+            #{row.units},
+            #{row.revenue,jdbcType=NUMERIC}
+            )
+        </foreach>
         ON CONFLICT (bucket_start_time, product_id) DO UPDATE
-        SET orders  = sales_agg.orders  + EXCLUDED.orders,
-            units   = sales_agg.units   + EXCLUDED.units,
+        SET orders = sales_agg.orders + EXCLUDED.orders,
+            units = sales_agg.units + EXCLUDED.units,
             revenue = sales_agg.revenue + EXCLUDED.revenue
     </insert>
 
