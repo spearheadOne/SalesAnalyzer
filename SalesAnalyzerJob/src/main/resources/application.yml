@@ -11,14 +11,15 @@ liquibase:
 datasources:
   default:
     url: jdbc:postgresql://localhost:5432/metrics
+    driverClassName: org.postgresql.Driver
     username: admin
     password: admin
-    driverClassName: org.postgresql.Driver
     maximumPoolSize: 5
     minimumIdle: 1
     autoCommit: false
 
 aws:
+   account-id: ${AWS_ACCOUNT_ID:000000000000}
    region: us-east-2
    services:
      kinesis:

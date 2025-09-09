@@ -2,11 +2,16 @@ mybatis:
   environment: local
 
 aws:
+  account-id: 000000000000
   region: us-east-1
   access-key-id: test
   secret-access-key: test
   services:
     kinesis:
+      endpoint-override: http://localhost:4566
+    dynamodb:
+      endpoint-override: http://localhost:4566
+    cloudwatch:
       endpoint-override: http://localhost:4566
 
 

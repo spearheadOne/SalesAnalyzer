@@ -24,21 +24,23 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql:42.7.3")
 
     implementation("software.amazon.awssdk:secretsmanager")
+    implementation("software.amazon.awssdk:kinesis")
+    implementation("software.amazon.kinesis:amazon-kinesis-client:2.6.0")
+    implementation("software.amazon.awssdk:dynamodb")
+    implementation("software.amazon.awssdk:cloudwatch")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
 
     implementation("org.mybatis:mybatis:3.5.19")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
 
-    compileOnly("org.apache.flink:flink-core:2.1.0")
-    compileOnly("org.apache.flink:flink-streaming-java:2.1.0")
-    compileOnly("org.apache.flink:flink-clients:2.1.0")
-    implementation("org.apache.flink:flink-connector-kinesis:5.0.0-1.20")
 
     kapt("io.micronaut:micronaut-inject-java")
     kaptTest("io.micronaut:micronaut-inject-java")
 
     testImplementation("org.testcontainers:postgresql:1.20.1")
+    testImplementation("org.testcontainers:localstack:1.19.7")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
 }
 
 kotlin {
@@ -51,16 +53,13 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("org.abondar.experimental.sales.analyzer.job.*")
+        annotations("org.abondar.experimental.sales.analyzer.job")
     }
 }
 
 tasks.shadowJar {
     archiveBaseName.set("sales-analyzer-job")
     archiveClassifier.set("all")
-    minimize {
-        exclude(dependency("org.apache.flink:.*"))
-    }
 }
 
 tasks.named<JavaExec>("run") {
