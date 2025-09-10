@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardMapper">
+
+    <resultMap id="TimeSeriesPointMap" type="org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint">
+        <result column="bucket_start_time" property="bucketStartTime" jdbcType="TIMESTAMP" />
+
+        <result column="revenue" property="revenue" jdbcType="NUMERIC" />
+    </resultMap>
+
+    <resultMap id="CategoryRevenueMap" type="org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue">
+        <result column="category" property="category"/>
+        <result column="revenue" property="revenue"/>
+    </resultMap>
+
+    <resultMap id="ProductRevenueMap" type="org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue">
+        <result column="product_name" property="productName"/>
+        <result column="product_id" property="productId"/>
+        <result column="revenue"      property="revenue" jdbcType="NUMERIC"/>
+        <result column="orders"       property="orders"  jdbcType="BIGINT"/>
+        <result column="units"        property="units"   jdbcType="BIGINT"/>
+    </resultMap>
+
+
+    <select id="timeSeriesPeriod" resultMap="TimeSeriesPointMap">
+        SELECT bucket_start_time as bucketStartTime,
+               product_name as productName,
+               product_id as productId,
+               revenue as revenue
+        FROM sales_agg
+        WHERE bucket_start_time >= now() - (#{period}::interval)
+        ORDER BY bucket_start_time, product_id
+    </select>
+
+    <select id="topCategoriesPerPeriod" resultMap="CategoryRevenueMap">
+        SELECT category as category,
+               SUM(revenue) as revenue
+        FROM sales_agg
+        WHERE bucket_start_time >= now() - (#{period}::interval)
+        GROUP BY category
+        ORDER BY revenue DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="topProductsByRevenue" resultMap="ProductRevenueMap">
+        SELECT product_id   AS productId,
+               product_name AS productName,
+               SUM(revenue) AS revenue,
+               SUM(orders)  AS orders,
+               SUM(units)   AS units
+        FROM sales_agg
+        WHERE bucket_start_time >= now() - (#{period}::interval)
+        GROUP BY product_id, product_name
+        ORDER BY revenue DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

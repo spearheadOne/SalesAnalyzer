@@ -17,9 +17,10 @@ group = "org.abondar.experimental.sales.analyzer"
 version = "0.1.0"
 
 dependencies {
-    implementation("io.micronaut.data:micronaut-data-jdbc")
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("org.mybatis:mybatis:3.5.19")
+    implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
 
     runtimeOnly("org.postgresql:postgresql:42.7.3")
 
