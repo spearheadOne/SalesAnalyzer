@@ -31,15 +31,4 @@
             revenue = sales_agg.revenue + EXCLUDED.revenue
     </insert>
 
-    <select id="getAggregates" resultType="org.abondar.experimental.sales.analyzer.data.AggRow">
-        select
-            bucket_start_time as bucketStartTime,
-            product_id as productId,
-            product_name as productName,
-            category,
-            orders,
-            units,
-            revenue
-        from sales_agg
-    </select>
 </mapper>

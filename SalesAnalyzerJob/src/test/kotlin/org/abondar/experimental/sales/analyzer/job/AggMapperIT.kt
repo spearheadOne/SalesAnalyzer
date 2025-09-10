@@ -2,6 +2,7 @@ package org.abondar.experimental.sales.analyzer.job
 
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.abondar.experimental.sales.analyzer.job.data.AggMapper
+import org.abondar.experimental.sales.analyzer.job.data.AggTestMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -12,8 +13,9 @@ class AggMapperIT : BaseIT() {
     @Test
     fun `test agg mapper save row`() {
         val aggMapper = applicationContext.getBean(AggMapper::class.java)
+        val testMapper = applicationContext.getBean(AggTestMapper::class.java)
 
-        aggMapper.deleteAll()
+        testMapper.deleteAll()
 
         val agg = AggRow(
             Instant.now(), "test", "test", "test",
@@ -22,7 +24,7 @@ class AggMapperIT : BaseIT() {
 
         aggMapper.insertUpdateAgg(listOf(agg))
 
-        val res = aggMapper.getAggregates()
+        val res = testMapper.getAggregates()
         assertEquals(1, res.size)
         assertEquals(agg, res.first())
     }

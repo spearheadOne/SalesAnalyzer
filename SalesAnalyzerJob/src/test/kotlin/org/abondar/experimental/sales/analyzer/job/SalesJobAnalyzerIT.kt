@@ -1,6 +1,7 @@
 package org.abondar.experimental.sales.analyzer.job
 
 import org.abondar.experimental.sales.analyzer.job.data.AggMapper
+import org.abondar.experimental.sales.analyzer.job.data.AggTestMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -29,10 +30,10 @@ class SalesJobAnalyzerIT: BaseIT(){
 
     @Test
     fun `test analyzer job`() {
-        val aggMapper = applicationContext.getBean(AggMapper::class.java)
+        val testMapper = applicationContext.getBean(AggTestMapper::class.java)
         val job = applicationContext.getBean(SalesAnalyzerJob::class.java)
 
-        aggMapper.deleteAll()
+        testMapper.deleteAll()
 
         kinesisClient.createStream(
             CreateStreamRequest.builder()
@@ -73,7 +74,7 @@ class SalesJobAnalyzerIT: BaseIT(){
 
 
         do {
-            val rows = aggMapper.getAggregates()
+            val rows = testMapper.getAggregates()
             processedCount = rows.size
             if (processedCount >= 3) break
             Thread.sleep(500)
@@ -81,7 +82,7 @@ class SalesJobAnalyzerIT: BaseIT(){
 
         job.stop()
 
-        val res = aggMapper.getAggregates()
+        val res = testMapper.getAggregates()
         assertEquals(processedCount, res.size)
 
     }

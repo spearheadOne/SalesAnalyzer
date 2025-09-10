@@ -17,7 +17,6 @@ class MybatisFactory(
     @param:Value("\${mybatis.environment:default}") private val mybatisEnv: String
 ) {
 
-
     @Singleton
     fun SqlSessionFactory(): SqlSessionFactory {
 

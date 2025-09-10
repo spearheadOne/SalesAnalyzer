@@ -5,35 +5,14 @@ import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.apache.ibatis.session.SqlSessionFactory
 
 @Singleton
-class AggMapperImpl(private val factory: SqlSessionFactory): AggMapper {
+class AggMapperImpl(private val factory: SqlSessionFactory) : AggMapper {
+
     override fun insertUpdateAgg(batch: List<AggRow>) {
-        factory.openSession().use { session->
+        factory.openSession().use { session ->
             val mapper = session.getMapper(AggMapper::class.java)
             mapper.insertUpdateAgg(batch)
             session.commit()
-
         }
     }
-
-    override fun getAggregates(): List<AggRow> {
-        factory.openSession().use { session->
-            val mapper = session.getMapper(AggMapper::class.java)
-            val res = mapper.getAggregates()
-            session.commit()
-
-            return res
-        }
-    }
-
-    override fun deleteAll() {
-        factory.openSession().use { session->
-            val mapper = session.getMapper(AggMapper::class.java)
-            val res = mapper.deleteAll()
-            session.commit()
-
-            return res
-        }
-    }
-
 
 }

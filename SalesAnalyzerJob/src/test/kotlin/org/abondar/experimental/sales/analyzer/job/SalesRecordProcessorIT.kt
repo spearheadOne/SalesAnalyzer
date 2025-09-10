@@ -3,6 +3,7 @@ package org.abondar.experimental.sales.analyzer.job
 import com.fasterxml.jackson.databind.ObjectMapper
 import junit.framework.TestCase.assertEquals
 import org.abondar.experimental.sales.analyzer.job.data.AggMapper
+import org.abondar.experimental.sales.analyzer.job.data.AggTestMapper
 import org.junit.jupiter.api.Test
 import software.amazon.awssdk.services.kinesis.model.Record
 import software.amazon.kinesis.lifecycle.events.ProcessRecordsInput
@@ -21,8 +22,9 @@ class SalesRecordProcessorIT : BaseIT() {
     fun `test processor logic directly`() {
         val aggMapper = applicationContext.getBean(AggMapper::class.java)
         val objectMapper = applicationContext.getBean(ObjectMapper::class.java)
+        val testMapper = applicationContext.getBean(AggTestMapper::class.java)
 
-        aggMapper.deleteAll()
+        testMapper.deleteAll()
 
         val processor = SalesRecordProcessor(objectMapper, aggMapper)
 
@@ -55,7 +57,7 @@ class SalesRecordProcessorIT : BaseIT() {
 
         processor.processRecords(processInput)
 
-        val res = aggMapper.getAggregates()
+        val res = testMapper.getAggregates()
         assertEquals(3, res.size)
     }
 
