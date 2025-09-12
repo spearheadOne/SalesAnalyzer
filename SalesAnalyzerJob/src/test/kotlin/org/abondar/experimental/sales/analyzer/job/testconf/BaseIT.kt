@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.job
+package org.abondar.experimental.sales.analyzer.job.testconf
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.PropertySource

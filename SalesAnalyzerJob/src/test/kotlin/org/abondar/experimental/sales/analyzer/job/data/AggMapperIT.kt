@@ -1,9 +1,8 @@
-package org.abondar.experimental.sales.analyzer.job
+package org.abondar.experimental.sales.analyzer.job.data
 
 import org.abondar.experimental.sales.analyzer.data.AggRow
-import org.abondar.experimental.sales.analyzer.job.data.AggMapper
-import org.abondar.experimental.sales.analyzer.job.data.AggTestMapper
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.Instant
@@ -24,8 +23,8 @@ class AggMapperIT : BaseIT() {
         aggMapper.insertUpdateAgg(listOf(agg))
 
         val res = testMapper.getAggregates()
-        assertEquals(1, res.size)
-        assertEquals(agg, res.first())
+        Assertions.assertEquals(1, res.size)
+        Assertions.assertEquals(agg, res.first())
     }
 
 

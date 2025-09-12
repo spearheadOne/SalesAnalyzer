@@ -3,7 +3,7 @@ package org.abondar.experimental.sales.analyzer.job
 import com.fasterxml.jackson.databind.ObjectMapper
 import junit.framework.TestCase.assertEquals
 import org.abondar.experimental.sales.analyzer.job.data.AggMapper
-import org.abondar.experimental.sales.analyzer.job.data.AggTestMapper
+import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
 import org.junit.jupiter.api.Test
 import software.amazon.awssdk.services.kinesis.model.Record
 import software.amazon.kinesis.lifecycle.events.ProcessRecordsInput

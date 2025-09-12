@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.job
+package org.abondar.experimental.sales.analyzer.job.testconf
 
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.localstack.LocalStackContainer

@@ -1,7 +1,8 @@
 package org.abondar.experimental.sales.analyzer.job
 
-import org.abondar.experimental.sales.analyzer.job.data.AggMapper
-import org.abondar.experimental.sales.analyzer.job.data.AggTestMapper
+import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
+import org.abondar.experimental.sales.analyzer.job.testconf.Containers
+import org.abondar.experimental.sales.analyzer.job.testconf.Properties
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
