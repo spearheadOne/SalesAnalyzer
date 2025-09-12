@@ -44,6 +44,7 @@ subprojects {
         add("testImplementation", "org.mockito:mockito-junit-jupiter:5.12.0")
         add("testImplementation", "org.mockito.kotlin:mockito-kotlin:5.3.1")
         add("testImplementation", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+        add("testImplementation","org.testcontainers:junit-jupiter:1.20.1")
         add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine")
     }
 }

@@ -13,7 +13,6 @@ class AggMapperIT : BaseIT() {
     @Test
     fun `test agg mapper save row`() {
         val aggMapper = applicationContext.getBean(AggMapper::class.java)
-        val testMapper = applicationContext.getBean(AggTestMapper::class.java)
 
         testMapper.deleteAll()
 

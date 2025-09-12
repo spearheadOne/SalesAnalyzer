@@ -2,6 +2,7 @@ package org.abondar.experimental.sales.analyzer.job
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.PropertySource
+import org.abondar.experimental.sales.analyzer.job.data.AggTestMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -9,6 +10,8 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @Testcontainers(disabledWithoutDocker = true)
 open class BaseIT {
     protected lateinit var applicationContext: ApplicationContext
+
+    protected lateinit var testMapper: AggTestMapper
 
     protected open fun extraProperties(): Map<String, Any?> = emptyMap()
 
@@ -20,6 +23,7 @@ open class BaseIT {
 
         applicationContext = ApplicationContext.run(PropertySource.of("test", props))
 
+        testMapper = applicationContext.getBean(AggTestMapper::class.java)
     }
 
     @AfterEach

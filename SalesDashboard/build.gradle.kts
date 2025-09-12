@@ -31,6 +31,7 @@ dependencies {
 
     testImplementation("org.testcontainers:postgresql:1.20.1")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+    testImplementation(project(":Data"))
 }
 
 kotlin {

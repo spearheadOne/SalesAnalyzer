@@ -46,7 +46,6 @@ dependencies {
 
     testImplementation("org.testcontainers:postgresql:1.20.1")
     testImplementation("org.testcontainers:localstack:1.19.7")
-    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
 }
 
 kotlin {

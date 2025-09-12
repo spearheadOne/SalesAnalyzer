@@ -22,7 +22,7 @@ class SalesRecordProcessorIT : BaseIT() {
     fun `test processor logic directly`() {
         val aggMapper = applicationContext.getBean(AggMapper::class.java)
         val objectMapper = applicationContext.getBean(ObjectMapper::class.java)
-        val testMapper = applicationContext.getBean(AggTestMapper::class.java)
+
 
         testMapper.deleteAll()
 

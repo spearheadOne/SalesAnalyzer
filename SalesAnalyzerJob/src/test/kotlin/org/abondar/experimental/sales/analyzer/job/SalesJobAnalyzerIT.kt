@@ -30,7 +30,6 @@ class SalesJobAnalyzerIT: BaseIT(){
 
     @Test
     fun `test analyzer job`() {
-        val testMapper = applicationContext.getBean(AggTestMapper::class.java)
         val job = applicationContext.getBean(SalesAnalyzerJob::class.java)
 
         testMapper.deleteAll()
