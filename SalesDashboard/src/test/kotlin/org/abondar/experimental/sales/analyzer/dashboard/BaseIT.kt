@@ -28,13 +28,8 @@ open class BaseIT {
             .withDatabaseName("test")
             .withUsername("test")
             .withPassword("test")
+            .withInitScript("sql/init-db.sql")
 
-        val properties = mapOf(
-            "datasources.default.url" to postgres.jdbcUrl,
-            "datasources.default.username" to postgres.username,
-            "datasources.default.password" to postgres.password,
-            "datasources.default.driver-class-name" to "org.postgresql.Driver",
-            )
     }
 
     @BeforeEach
@@ -42,7 +37,12 @@ open class BaseIT {
         postgres.start()
 
         applicationContext = ApplicationContext.run(
-            PropertySource.of("test", properties)
+            PropertySource.of("test", mapOf(
+                "datasources.default.url" to postgres.jdbcUrl,
+                "datasources.default.username" to postgres.username,
+                "datasources.default.password" to postgres.password,
+                "datasources.default.driver-class-name" to "org.postgresql.Driver",
+            ))
         )
 
         testMapper = applicationContext.getBean(SalesDashboardTestMapper::class.java)

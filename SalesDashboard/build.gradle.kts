@@ -44,7 +44,7 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("org.abondar.experimental.sales.analyzer.dashboard")
+        annotations("org.abondar.experimental.sales.analyzer.dashboard.*")
     }
 }
 

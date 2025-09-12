@@ -4,12 +4,13 @@ import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
 import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 
 @Mapper
 interface SalesDashboardMapper {
-    fun timeSeriesPeriod(period: String): List<TimeSeriesPoint>
+    fun timeSeriesPeriod(@Param("period") period: String): List<TimeSeriesPoint>
 
-    fun topCategoriesPerPeriod(period: String, limit: Int): List<CategoryRevenue>
+    fun topCategoriesPerPeriod(@Param("period") period: String, @Param("limit") limit: Int): List<CategoryRevenue>
 
-    fun topProductsByRevenue(period: String, limit: Int): List<ProductsRevenue>
+    fun topProductsByRevenue(@Param("period") period: String, @Param("limit") limit: Int): List<ProductsRevenue>
 }

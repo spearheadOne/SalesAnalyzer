@@ -7,7 +7,8 @@
 
     <resultMap id="TimeSeriesPointMap" type="org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint">
         <result column="bucket_start_time" property="bucketStartTime" jdbcType="TIMESTAMP" />
-
+        <result column="product_id" property="productId" />
+        <result column="product_name" property="productName" />
         <result column="revenue" property="revenue" jdbcType="NUMERIC" />
     </resultMap>
 
