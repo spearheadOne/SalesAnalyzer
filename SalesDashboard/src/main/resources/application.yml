@@ -15,6 +15,9 @@ datasources:
     minimumIdle: 1
     autoCommit: false
 
+sse:
+  poll-seconds: 2
+
 
 logging:
   level:

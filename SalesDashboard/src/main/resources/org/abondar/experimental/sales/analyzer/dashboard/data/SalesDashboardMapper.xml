@@ -36,6 +36,19 @@
         ORDER BY bucket_start_time, product_id
     </select>
 
+    <select id="timeSeriesSince"
+            parameterType="java.time.Instant"
+            resultMap="TimeSeriesPointMap">
+        SELECT
+            bucket_start_time AS bucketStartTime,
+            product_id        AS productId,
+            product_name      AS productName,
+            revenue
+        FROM sales_agg
+        WHERE bucket_start_time > #{since, jdbcType=TIMESTAMP}
+        ORDER BY bucket_start_time ASC
+    </select>
+
     <select id="topCategoriesPerPeriod" resultMap="CategoryRevenueMap">
         SELECT category as category,
                SUM(revenue) as revenue

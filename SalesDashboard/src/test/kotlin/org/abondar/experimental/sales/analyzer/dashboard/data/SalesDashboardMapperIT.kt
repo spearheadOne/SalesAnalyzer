@@ -1,8 +1,9 @@
 package org.abondar.experimental.sales.analyzer.dashboard.data
 
-import junit.framework.TestCase.assertEquals
+
 import org.abondar.experimental.sales.analyzer.dashboard.BaseIT
 import org.abondar.experimental.sales.analyzer.data.AggRow
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -31,6 +32,12 @@ class SalesDashboardMapperIT : BaseIT() {
         val timeSeriesPoints = dashboardMapper.timeSeriesPeriod("1 minutes")
         assertEquals(timeSeriesPoints.size, 1)
         assertEquals(timeSeriesPoints.first().productName, "test")
+    }
+
+    @Test
+    fun `test time series since`() {
+        val timeSeriesPoints = dashboardMapper.timeSeriesSince(Instant.now().minusSeconds(60))
+        assertEquals(timeSeriesPoints.size, 1)
     }
 
     @Test

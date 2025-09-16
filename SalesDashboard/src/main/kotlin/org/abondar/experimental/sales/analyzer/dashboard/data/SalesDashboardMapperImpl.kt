@@ -5,6 +5,7 @@ import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
 import org.apache.ibatis.session.SqlSessionFactory
+import java.time.Instant
 
 @Singleton
 class SalesDashboardMapperImpl(private val factory: SqlSessionFactory) : SalesDashboardMapper {
@@ -24,6 +25,10 @@ class SalesDashboardMapperImpl(private val factory: SqlSessionFactory) : SalesDa
         limit: Int
     ): List<ProductsRevenue> = execute {
         it.topProductsByRevenue(period, limit)
+    }
+
+    override fun timeSeriesSince(since: Instant): List<TimeSeriesPoint> = execute {
+        it.timeSeriesSince(since)
     }
 
 
