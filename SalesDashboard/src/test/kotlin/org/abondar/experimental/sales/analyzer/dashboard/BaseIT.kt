@@ -3,19 +3,20 @@ package org.abondar.experimental.sales.analyzer.dashboard
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.PropertySource
 import org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardTestMapper
+import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
+import java.math.BigDecimal
+import java.time.Instant
 
 @Testcontainers(disabledWithoutDocker = true)
 open class BaseIT {
 
     protected lateinit var applicationContext: ApplicationContext
-
-    protected lateinit var testMapper: SalesDashboardTestMapper
 
     companion object {
 
@@ -30,6 +31,11 @@ open class BaseIT {
             .withPassword("test")
             .withInitScript("sql/init-db.sql")
 
+
+        val agg = AggRow(
+            Instant.now(), "test", "test", "test",
+            1, 1, BigDecimal(10)
+        )
     }
 
     @BeforeEach
@@ -45,7 +51,13 @@ open class BaseIT {
             ))
         )
 
-        testMapper = applicationContext.getBean(SalesDashboardTestMapper::class.java)
+        val testMapper = applicationContext.getBean(SalesDashboardTestMapper::class.java)
+
+        testMapper.deleteAll()
+
+
+        testMapper.insertAgg(agg)
+
     }
 
     @AfterEach

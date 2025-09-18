@@ -19,9 +19,13 @@ version = "0.1.0"
 dependencies {
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.validation:micronaut-validation")
+    implementation("io.micronaut.reactor:micronaut-reactor")
+    implementation("io.micronaut:micronaut-http-server-netty")
     implementation("org.mybatis:mybatis:3.5.19")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
 
+    compileOnly("io.micronaut.openapi:micronaut-openapi-annotations")
     runtimeOnly("org.postgresql:postgresql:42.7.3")
 
     kapt("io.micronaut:micronaut-http-validation")
@@ -31,6 +35,7 @@ dependencies {
 
     testImplementation("org.testcontainers:postgresql:1.20.1")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+    testImplementation("io.micronaut:micronaut-http-client")
     testImplementation(project(":Data"))
 }
 

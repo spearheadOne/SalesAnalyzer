@@ -15,7 +15,7 @@ datasources:
     minimumIdle: 1
     autoCommit: false
 
-sse:
+seen:
   poll-seconds: 2
 
 

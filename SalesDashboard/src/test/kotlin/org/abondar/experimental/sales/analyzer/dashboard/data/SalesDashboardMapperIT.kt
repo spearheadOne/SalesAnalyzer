@@ -2,11 +2,9 @@ package org.abondar.experimental.sales.analyzer.dashboard.data
 
 
 import org.abondar.experimental.sales.analyzer.dashboard.BaseIT
-import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
 import java.time.Instant
 
 class SalesDashboardMapperIT : BaseIT() {
@@ -16,15 +14,6 @@ class SalesDashboardMapperIT : BaseIT() {
     @BeforeEach
     fun initMapper() {
         dashboardMapper = applicationContext.getBean(SalesDashboardMapper::class.java)
-
-        testMapper.deleteAll()
-
-        val agg = AggRow(
-            Instant.now(), "test", "test", "test",
-            1, 1, BigDecimal(10)
-        )
-        testMapper.insertAgg(agg)
-
     }
 
     @Test
