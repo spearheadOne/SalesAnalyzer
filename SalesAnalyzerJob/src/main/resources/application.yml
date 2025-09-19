@@ -10,7 +10,7 @@ liquibase:
 
 datasources:
   default:
-    url: jdbc:postgresql://localhost:5432/metrics
+    url: jdbc:postgresql://localhost:5432/sales_metrics
     driverClassName: org.postgresql.Driver
     username: admin
     password: admin

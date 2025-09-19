@@ -22,16 +22,21 @@ dependencies {
     implementation("io.micronaut.validation:micronaut-validation")
     implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("io.micronaut:micronaut-http-server-netty")
+    implementation("io.micronaut:micronaut-management")
+    implementation("io.micronaut.openapi:micronaut-openapi-annotations")
+
     implementation("org.mybatis:mybatis:3.5.19")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
 
-    compileOnly("io.micronaut.openapi:micronaut-openapi-annotations")
     runtimeOnly("org.postgresql:postgresql:42.7.3")
+
+    annotationProcessor("io.micronaut.openapi:micronaut-openapi")
 
     kapt("io.micronaut:micronaut-http-validation")
     kapt("io.micronaut.openapi:micronaut-openapi")
     kapt("io.micronaut.data:micronaut-data-processor")
     kapt("io.micronaut:micronaut-management")
+    kapt("io.micronaut:micronaut-inject-java")
 
     testImplementation("org.testcontainers:postgresql:1.20.1")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
@@ -46,6 +51,7 @@ kotlin {
 application { mainClass.set("org.abondar.experimental.sales.analyzer.dashboard.ApplicationKt") }
 
 micronaut {
+    runtime("netty")
     testRuntime("junit5")
     processing {
         incremental(true)

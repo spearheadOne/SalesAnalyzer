@@ -48,6 +48,8 @@ open class BaseIT {
                 "datasources.default.username" to postgres.username,
                 "datasources.default.password" to postgres.password,
                 "datasources.default.driver-class-name" to "org.postgresql.Driver",
+                "micronaut.server.port" to -1,
+                "endpoints.all.port" to -1,
             ))
         )
 

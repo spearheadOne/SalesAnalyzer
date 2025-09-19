@@ -1,13 +1,31 @@
 micronaut:
   application:
     name: sales-analyzer-dashboard
+  server:
+    port: 9024
+  router:
+    static-resources:
+      swagger:
+        mapping: /swagger/**
+        paths: classpath:META-INF/swagger
+      swagger-ui:
+        mapping: /swagger-ui/**
+        paths: classpath:META-INF/swagger/views/swagger-ui
 
-server:
-  port: 9024
+
+
+endpoints:
+  health:
+    enabled: true
+    details-visible: anonymous
+  env:
+    enabled: true
+
+
 
 datasources:
   default:
-    url: jdbc:postgresql://localhost:5432/metrics
+    url: jdbc:postgresql://localhost:5432/sales_metrics
     driverClassName: org.postgresql.Driver
     username: admin
     password: admin

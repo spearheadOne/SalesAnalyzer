@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
-      POSTGRES_DB: metrics
+      POSTGRES_DB: sales_metrics
     volumes:
       - pgdata:/var/lib/postgresql/data
 
