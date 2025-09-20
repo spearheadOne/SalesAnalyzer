@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.dashboard
+package org.abondar.experimental.sales.analyzer.dashboard.api
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info

@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.dashboard
+package org.abondar.experimental.sales.analyzer.dashboard.api
 
 import org.abondar.experimental.sales.analyzer.dashboard.exception.InvalidPeriodException
 

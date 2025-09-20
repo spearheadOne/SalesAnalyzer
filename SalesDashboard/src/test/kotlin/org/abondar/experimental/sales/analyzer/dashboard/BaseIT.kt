@@ -18,6 +18,8 @@ open class BaseIT {
 
     protected lateinit var applicationContext: ApplicationContext
 
+    protected  lateinit var testMapper: SalesDashboardTestMapper
+
     companion object {
 
         @Container
@@ -52,8 +54,7 @@ open class BaseIT {
                 "endpoints.all.port" to -1,
             ))
         )
-
-        val testMapper = applicationContext.getBean(SalesDashboardTestMapper::class.java)
+        testMapper = applicationContext.getBean(SalesDashboardTestMapper::class.java)
 
         testMapper.deleteAll()
 

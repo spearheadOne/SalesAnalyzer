@@ -10,11 +10,14 @@ import io.micronaut.runtime.server.EmbeddedServer
 import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
+import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
+import java.math.BigDecimal
+import java.time.Instant
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
 
@@ -111,22 +114,20 @@ class SalesDashboardControllerIT : BaseIT() {
         val streamingClient = StreamingHttpClient.create(server.url)
         val req = HttpRequest.GET<Any>("$apiUrl/stream")
             .accept(MediaType.APPLICATION_JSON_STREAM)
-
         val publisher = streamingClient.jsonStream(req, TimeSeriesPoint::class.java)
-        val queue = ArrayBlockingQueue<TimeSeriesPoint>(2)
 
-        val disposable = Flux.from(publisher)
-            .doOnNext { item -> queue.offer(item) }
-            .doOnError { throw it }
-            .subscribe()
+        val item = Flux.from(publisher).doOnSubscribe {
+            val ts = Instant.now().plusSeconds(3)
+            val newAgg = AggRow(
+                ts, "test-stream", "test-stream", "test",
+                1, 1, BigDecimal(10)
+            )
+            testMapper.insertAgg(
+                newAgg
+            )
+        }.blockFirst()
 
-        try {
-            val point = queue.poll(5, TimeUnit.SECONDS)
-            assertNotNull(point)
-            assertEquals(agg.productName, point.productName)
-        } finally {
-            disposable.dispose()
-            streamingClient.close()
-        }
+        assertNotNull(item)
+        assertEquals("test-stream", item!!.productName)
     }
 }
