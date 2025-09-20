@@ -1,16 +1,23 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-docker-compose up -d
+COMMAND=$1
 
-curl -s http://localhost:4566/_localstack/health | jq
-
-export AWS_ACCESS_KEY_ID=test
-export AWS_SECRET_ACCESS_KEY=test
-export AWS_REGION=us-east-1
-
-ENDPOINT=http://localhost:4566
-
-aws --endpoint-url="$ENDPOINT" s3 mb s3://sales-bucket
-aws --endpoint-url="$ENDPOINT" kinesis create-stream --stream-name sales-stream --shard-count 1
-aws --endpoint-url="$ENDPOINT" s3 ls
-aws --endpoint-url="$ENDPOINT" kinesis list-streams
+case "$COMMAND" in
+  create)
+    ./local-infra-create
+    ;;
+  remove)
+    ./local-infra-remove
+    ;;
+  stop)
+    ./local-infra-stop
+    ;;
+  start)
+    ./local-infra-start
+    ;;
+  *)
+    echo "Usage: $0 {create|remove|stop|start}"
+    exit 1
+    ;;
+esac
