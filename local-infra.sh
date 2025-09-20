@@ -5,16 +5,16 @@ COMMAND=$1
 
 case "$COMMAND" in
   create)
-    ./local-infra-create
+    ./local-infra-create.sh
     ;;
   remove)
-    ./local-infra-remove
+    ./local-infra-remove.sh
     ;;
   stop)
-    ./local-infra-stop
+    ./local-infra-stop.sh
     ;;
   start)
-    ./local-infra-start
+    ./local-infra-start.sh
     ;;
   *)
     echo "Usage: $0 {create|remove|stop|start}"
