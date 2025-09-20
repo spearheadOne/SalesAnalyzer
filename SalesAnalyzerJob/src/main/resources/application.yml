@@ -26,6 +26,8 @@ aws:
        stream: sales-stream
        windows:
         size-minutes: 1
+     sqs:
+       queueUrl: ${SQS_QUEUE_URL}
 
 logging:
   level:

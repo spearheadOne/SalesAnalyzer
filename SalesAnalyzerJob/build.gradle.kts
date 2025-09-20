@@ -33,6 +33,7 @@ dependencies {
     implementation("software.amazon.kinesis:amazon-kinesis-client:2.6.0")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:cloudwatch")
+    implementation("software.amazon.awssdk:sqs")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")

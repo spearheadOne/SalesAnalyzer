@@ -25,14 +25,8 @@ class SalesJobAnalyzerIT: BaseIT(){
     )
 
     @BeforeEach
-    fun initBeans() {
+    fun setup() {
         kinesisClient = applicationContext.getBean(KinesisAsyncClient::class.java)
-    }
-
-    @Test
-    fun `test analyzer job`() {
-        val job = applicationContext.getBean(SalesAnalyzerJob::class.java)
-
         testMapper.deleteAll()
 
         kinesisClient.createStream(
@@ -41,8 +35,11 @@ class SalesJobAnalyzerIT: BaseIT(){
                 .shardCount(1)
                 .build()
         )
-        Thread.sleep(5000)
+    }
 
+    @Test
+    fun `test analyzer job`() {
+        val job = applicationContext.getBean(SalesAnalyzerJob::class.java)
 
         job.run()
         Thread.sleep(5000)
@@ -70,8 +67,7 @@ class SalesJobAnalyzerIT: BaseIT(){
         )
 
         val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20)
-        var processedCount = 0
-
+        var processedCount: Int
 
         do {
             val rows = testMapper.getAggregates()

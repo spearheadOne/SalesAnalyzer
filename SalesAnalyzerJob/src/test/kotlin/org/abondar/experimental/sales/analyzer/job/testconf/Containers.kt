@@ -20,7 +20,7 @@ object Containers {
     val LOCALSTACK: LocalStackContainer =
         LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
             .withServices( LocalStackContainer.Service.KINESIS, LocalStackContainer.Service.DYNAMODB,
-                LocalStackContainer.Service.CLOUDWATCH)
+                LocalStackContainer.Service.CLOUDWATCH, LocalStackContainer.Service.SQS)
             .withReuse(true)
 
     init {

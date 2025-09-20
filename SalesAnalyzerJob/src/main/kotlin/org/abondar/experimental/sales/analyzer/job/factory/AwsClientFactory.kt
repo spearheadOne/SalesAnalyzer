@@ -13,6 +13,7 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
+import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import java.net.URI
 
 @Factory
@@ -23,7 +24,7 @@ class AwsClientFactory(
     @param:Value("\${aws.services.kinesis.endpoint-override:}") private val kinesisEndpoint: String,
     @param:Value("\${aws.services.dynamodb.endpoint-override:}") private val dynamoDbEndpoint: String,
     @param:Value("\${aws.services.cloudwatch.endpoint-override:}") private val cloudwatchEndpoint: String,
-
+    @param:Value("\${aws.services.sqs.endpoint-override:}") private val sqsEndpoint: String,
     ) {
 
     private var kinesisClient: KinesisAsyncClient? = null
@@ -31,6 +32,8 @@ class AwsClientFactory(
     private var dynamoDbClient: DynamoDbAsyncClient? = null
 
     private var cloudWatchClient: CloudWatchAsyncClient? = null
+
+    private var sqsAsyncClient: SqsAsyncClient? = null
 
     @Singleton
     @Requires(missingBeans = [KinesisAsyncClient::class])
@@ -73,6 +76,20 @@ class AwsClientFactory(
         .also { cloudWatchClient = it }
 
 
+    @Singleton
+    @Requires(missingBeans = [SqsAsyncClient::class])
+    fun sqsAsyncClient(): SqsAsyncClient= SqsAsyncClient.builder()
+        .region(Region.of(region))
+        .credentialsProvider(resolveCredentialsProvider(sqsEndpoint, accessKeyId, secretAccessKey))
+        .apply {
+            if (sqsEndpoint.isNotBlank()) {
+                endpointOverride(URI.create(sqsEndpoint))
+            }
+        }
+        .build()
+        .also { sqsAsyncClient = it }
+
+
     fun resolveCredentialsProvider(
         endpointOverride: String?,
         accessKeyId: String?,
@@ -92,5 +109,6 @@ class AwsClientFactory(
         kinesisClient?.close()
         dynamoDbClient?.close()
         cloudWatchClient?.close()
+        sqsAsyncClient?.close()
     }
 }

@@ -14,3 +14,4 @@ aws --endpoint-url="$ENDPOINT" s3 mb s3://sales-bucket
 aws --endpoint-url="$ENDPOINT" kinesis create-stream --stream-name sales-stream --shard-count 1
 aws --endpoint-url="$ENDPOINT" s3 ls
 aws --endpoint-url="$ENDPOINT" kinesis list-streams
+aws --endpoint-url="$ENDPOINT" sqs create-queue --queue-name sales-queue

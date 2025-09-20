@@ -24,6 +24,8 @@ object Properties {
             .getEndpointOverride(LocalStackContainer.Service.DYNAMODB).toString(),
         "aws.services.cloudwatch.endpoint-override" to container
             .getEndpointOverride(LocalStackContainer.Service.CLOUDWATCH).toString(),
+        "aws.services.sqs.endpoint-override" to container
+            .getEndpointOverride(LocalStackContainer.Service.SQS).toString(),
     )
 
 }

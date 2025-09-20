@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.abondar.experimental.sales.analyzer.data.SalesRecord
 import org.abondar.experimental.sales.analyzer.job.data.AggMapper
+import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer
 import org.slf4j.LoggerFactory
 import software.amazon.kinesis.lifecycle.events.*
 import software.amazon.kinesis.processor.ShardRecordProcessor
@@ -12,7 +13,8 @@ import java.time.Instant
 
 class SalesRecordProcessor(
     private val objectMapper: ObjectMapper,
-    private val aggMapper: AggMapper
+    private val aggMapper: AggMapper,
+    private val sqsProducer: SqsProducer
 ) : ShardRecordProcessor {
 
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -62,6 +64,7 @@ class SalesRecordProcessor(
 
         if (!aggRows.isEmpty()) {
             aggMapper.insertUpdateAgg(aggRows)
+            sqsProducer.sendMessage(aggRows)
         }
     }
 
