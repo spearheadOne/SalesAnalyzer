@@ -36,21 +36,6 @@
         ORDER BY bucket_start_time, product_id
     </select>
 
-    <select id="timeSeriesSince"
-            resultMap="TimeSeriesPointMap">
-        SELECT
-            bucket_start_time AS bucketStartTime,
-            product_id        AS productId,
-            product_name      AS productName,
-            revenue
-        FROM sales_agg
-        WHERE bucket_start_time > #{since}
-           OR (bucket_start_time = #{since}
-            AND product_id > #{lastProductId})
-        ORDER BY bucket_start_time ASC, product_id ASC
-        LIMIT #{limit}
-    </select>
-
     <select id="topCategoriesPerPeriod" resultMap="CategoryRevenueMap">
         SELECT category as category,
                SUM(revenue) as revenue
