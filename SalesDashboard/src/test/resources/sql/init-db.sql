@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS sales_agg (
                                          bucket_start_time TIMESTAMPTZ NOT NULL,
-                                         product_id   TEXT NOT NULL,
-                                         product_name VARCHAR(255),
-                                         category     TEXT NOT NULL,
+                                         product_id   VARCHAR(255) NOT NULL,
+                                         product_name VARCHAR(255) NOT NULL ,
+                                         category     VARCHAR(255) NOT NULL,
                                          orders       BIGINT NOT NULL,
                                          units        BIGINT NOT NULL,
                                          revenue      DOUBLE PRECISION NOT NULL,

@@ -25,7 +25,8 @@ class SalesDashboardMapperIT : BaseIT() {
 
     @Test
     fun `test time series since`() {
-        val timeSeriesPoints = dashboardMapper.timeSeriesSince(Instant.now().minusSeconds(60))
+        val timeSeriesPoints = dashboardMapper.timeSeriesSince(Instant.now().minusSeconds(60),
+            "test",1)
         assertEquals(timeSeriesPoints.size, 1)
     }
 

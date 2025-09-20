@@ -15,5 +15,9 @@ interface SalesDashboardMapper {
 
     fun topProductsByRevenue(@Param("period") period: String, @Param("limit") limit: Int): List<ProductsRevenue>
 
-    fun timeSeriesSince (@Param("since") since: Instant): List<TimeSeriesPoint>
+    fun timeSeriesSince(
+        @Param("since") since: Instant,
+        @Param("lastProductId") lastProductId: String,
+        @Param("limit") limit: Int
+    ): List<TimeSeriesPoint>
 }

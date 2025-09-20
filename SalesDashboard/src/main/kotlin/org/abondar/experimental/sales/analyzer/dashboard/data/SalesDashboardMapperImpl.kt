@@ -27,8 +27,11 @@ class SalesDashboardMapperImpl(private val factory: SqlSessionFactory) : SalesDa
         it.topProductsByRevenue(period, limit)
     }
 
-    override fun timeSeriesSince(since: Instant): List<TimeSeriesPoint> = execute {
-        it.timeSeriesSince(since)
+    override fun timeSeriesSince(
+        since: Instant, lastProductId: String,
+        limit: Int
+    ): List<TimeSeriesPoint> = execute {
+        it.timeSeriesSince(since, lastProductId, limit)
     }
 
 
