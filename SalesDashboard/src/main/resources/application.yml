@@ -29,10 +29,9 @@ datasources:
     minimumIdle: 1
     autoCommit: false
 
-sse:
-  poll-seconds: 2
-  max-batch: 1000
-
+aws:
+    sqs:
+      queueUrl: ${SQS_QUEUE_URL}
 
 logging:
   level:
