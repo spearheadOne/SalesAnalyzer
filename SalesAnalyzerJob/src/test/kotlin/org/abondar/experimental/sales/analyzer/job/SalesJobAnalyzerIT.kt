@@ -6,10 +6,15 @@ import org.abondar.experimental.sales.analyzer.job.testconf.Properties
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest
+import software.amazon.awssdk.services.sqs.SqsAsyncClient
+import software.amazon.awssdk.services.sqs.SqsClient
+import software.amazon.awssdk.services.sqs.model.CreateQueueRequest
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
@@ -19,6 +24,10 @@ class SalesJobAnalyzerIT: BaseIT(){
     private val streamName = "sales-stream"
 
     lateinit var kinesisClient: KinesisAsyncClient
+
+    lateinit var sqsClient: SqsAsyncClient
+
+    lateinit var queueUrl: String
 
     override fun extraProperties(): Map<String, Any?> = Properties.localstackAws(Containers.LOCALSTACK) + mapOf(
         "aws.services.kinesis.stream" to streamName,
@@ -35,6 +44,12 @@ class SalesJobAnalyzerIT: BaseIT(){
                 .shardCount(1)
                 .build()
         )
+
+        sqsClient = applicationContext.getBean(SqsAsyncClient::class.java)
+        queueUrl = sqsClient.createQueue(
+            CreateQueueRequest.builder()
+                .queueName("sales-queue").build()
+        ).get(5, TimeUnit.SECONDS).queueUrl()
     }
 
     @Test
@@ -80,6 +95,16 @@ class SalesJobAnalyzerIT: BaseIT(){
 
         val res = testMapper.getAggregates()
         assertEquals(processedCount, res.size)
+
+        val msg = sqsClient.receiveMessage(
+            ReceiveMessageRequest.builder()
+                .queueUrl(queueUrl)
+                .maxNumberOfMessages(1)
+                .waitTimeSeconds(2)
+                .build()
+        ).get().messages()
+
+        assertNotNull(msg)
 
     }
 

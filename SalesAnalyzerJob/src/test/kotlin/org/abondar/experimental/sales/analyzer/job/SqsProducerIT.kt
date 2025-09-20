@@ -44,7 +44,11 @@ class SqsProducerIT : BaseIT() {
         }
 
         val msg = sqsClient.receiveMessage(
-            ReceiveMessageRequest.builder().queueUrl(queueUrl).maxNumberOfMessages(1).waitTimeSeconds(2).build()
+            ReceiveMessageRequest.builder()
+                .queueUrl(queueUrl)
+                .maxNumberOfMessages(1)
+                .waitTimeSeconds(2)
+                .build()
         ).get().messages()
 
         assertNotNull(msg)
