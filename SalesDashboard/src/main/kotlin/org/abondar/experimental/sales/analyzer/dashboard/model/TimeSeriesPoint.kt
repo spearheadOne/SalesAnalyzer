@@ -8,7 +8,7 @@ import java.time.Instant
 @Introspected
 @Serdeable
 data class TimeSeriesPoint(
-    val bucketStartTime: Instant,
+    val eventTime: Instant,
     val productId: String,
     val productName: String,
     val revenue: BigDecimal

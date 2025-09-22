@@ -6,7 +6,7 @@
 <mapper namespace="org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardMapper">
 
     <resultMap id="TimeSeriesPointMap" type="org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint">
-        <result column="bucket_start_time" property="bucketStartTime" jdbcType="TIMESTAMP" />
+        <result column="event_time" property="eventTime" jdbcType="TIMESTAMP" />
         <result column="product_id" property="productId" />
         <result column="product_name" property="productName" />
         <result column="revenue" property="revenue" jdbcType="NUMERIC" />
@@ -27,20 +27,20 @@
 
 
     <select id="timeSeriesPeriod" resultMap="TimeSeriesPointMap">
-        SELECT bucket_start_time as bucketStartTime,
+        SELECT event_time as eventTime,
                product_name as productName,
                product_id as productId,
                revenue as revenue
         FROM sales_agg
-        WHERE bucket_start_time >= now() - (#{period}::interval)
-        ORDER BY bucket_start_time, product_id
+        WHERE event_time >= now() - (#{period}::interval)
+        ORDER BY event_time, product_id
     </select>
 
     <select id="topCategoriesPerPeriod" resultMap="CategoryRevenueMap">
         SELECT category as category,
                SUM(revenue) as revenue
         FROM sales_agg
-        WHERE bucket_start_time >= now() - (#{period}::interval)
+        WHERE event_time >= now() - (#{period}::interval)
         GROUP BY category
         ORDER BY revenue DESC
         LIMIT #{limit}
@@ -53,7 +53,7 @@
                SUM(orders)  AS orders,
                SUM(units)   AS units
         FROM sales_agg
-        WHERE bucket_start_time >= now() - (#{period}::interval)
+        WHERE event_time >= now() - (#{period}::interval)
         GROUP BY product_id, product_name
         ORDER BY revenue DESC
         LIMIT #{limit}

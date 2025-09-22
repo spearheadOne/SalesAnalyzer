@@ -46,10 +46,10 @@ class SalesRecordProcessor(
                 productName = salesRecord.productName
                 productId = salesRecord.productId
                 category = salesRecord.category
-                val bucketStartTime = Instant.ofEpochMilli(salesRecord.timestamp.toEpochMilli())
+                val eventTime = Instant.ofEpochMilli(salesRecord.timestamp.toEpochMilli())
 
                 aggRows += AggRow(
-                    bucketStartTime,
+                    eventTime,
                     productId,
                     productName,
                     category,

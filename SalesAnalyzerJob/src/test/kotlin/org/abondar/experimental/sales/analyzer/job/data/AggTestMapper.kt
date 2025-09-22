@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Select
 interface AggTestMapper {
 
     @Select(" select\n" +
-            "            bucket_start_time as bucketStartTime,\n" +
+            "            event_time as eventTime,\n" +
             "            product_id as productId,\n" +
             "            product_name as productName,\n" +
             "            category,\n" +

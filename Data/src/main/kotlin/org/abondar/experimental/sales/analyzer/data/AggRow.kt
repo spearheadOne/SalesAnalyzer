@@ -8,7 +8,7 @@ import java.time.Instant
 @Serdeable
 @Introspected
 data class AggRow(
-    val bucketStartTime: Instant,
+    val eventTime: Instant,
     val productId: String,
     val productName: String,
     val category: String,

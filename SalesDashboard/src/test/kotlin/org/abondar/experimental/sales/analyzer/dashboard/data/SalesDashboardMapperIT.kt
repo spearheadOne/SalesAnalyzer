@@ -1,7 +1,7 @@
 package org.abondar.experimental.sales.analyzer.dashboard.data
 
 
-import org.abondar.experimental.sales.analyzer.dashboard.BaseIT
+import org.abondar.experimental.sales.analyzer.dashboard.setup.BaseIT
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

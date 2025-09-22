@@ -10,7 +10,7 @@ interface SalesDashboardTestMapper {
 
     @Insert("""
     INSERT INTO sales_agg (
-        bucket_start_time,
+        event_time,
         product_id,
         product_name,
         category,
@@ -18,7 +18,7 @@ interface SalesDashboardTestMapper {
         units,
         revenue
     ) VALUES (
-        #{bucketStartTime},
+        #{eventTime},
         #{productId},
         #{productName},
         #{category},
