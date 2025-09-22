@@ -35,9 +35,6 @@ dependencies {
     implementation("software.amazon.awssdk:cloudwatch")
     implementation("software.amazon.awssdk:sqs")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-
     implementation("org.mybatis:mybatis:3.5.19")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
 

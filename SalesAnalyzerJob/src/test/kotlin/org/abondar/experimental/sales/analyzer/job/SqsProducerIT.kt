@@ -1,6 +1,6 @@
 package org.abondar.experimental.sales.analyzer.job
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import io.micronaut.serde.ObjectMapper
 import kotlinx.coroutines.runBlocking
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer

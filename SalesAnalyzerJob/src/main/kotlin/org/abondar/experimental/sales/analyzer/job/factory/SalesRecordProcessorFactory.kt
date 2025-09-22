@@ -1,11 +1,10 @@
 package org.abondar.experimental.sales.analyzer.job.factory
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import io.micronaut.serde.ObjectMapper
 import jakarta.inject.Singleton
 import org.abondar.experimental.sales.analyzer.job.SalesRecordProcessor
 import org.abondar.experimental.sales.analyzer.job.data.AggMapper
 import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer
-import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.kinesis.processor.ShardRecordProcessor
 import software.amazon.kinesis.processor.ShardRecordProcessorFactory
 

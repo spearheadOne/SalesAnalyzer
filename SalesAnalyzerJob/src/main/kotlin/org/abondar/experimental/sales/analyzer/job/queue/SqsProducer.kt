@@ -1,7 +1,7 @@
 package org.abondar.experimental.sales.analyzer.job.queue
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.context.annotation.Value
+import io.micronaut.serde.ObjectMapper
 import jakarta.inject.Singleton
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
