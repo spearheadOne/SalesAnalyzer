@@ -25,11 +25,10 @@ dependencies {
     implementation("io.micronaut:micronaut-http-server-netty")
     implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut.openapi:micronaut-openapi-annotations")
+    implementation("io.micronaut.jms:micronaut-jms-sqs")
 
     implementation("org.mybatis:mybatis:3.5.19")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
-
-    implementation("software.amazon.awssdk:sqs")
 
     runtimeOnly("org.postgresql:postgresql:42.7.3")
 
@@ -42,6 +41,7 @@ dependencies {
     kapt("io.micronaut:micronaut-inject-java")
 
     testImplementation("org.testcontainers:postgresql:1.20.1")
+    testImplementation("org.testcontainers:localstack:1.19.7")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
     testImplementation("io.micronaut:micronaut-http-client")
 }

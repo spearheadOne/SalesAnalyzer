@@ -11,6 +11,10 @@ micronaut:
       swagger-ui:
         mapping: /swagger-ui/**
         paths: classpath:META-INF/swagger/views/swagger-ui
+  jms:
+    sqs:
+      enabled: true
+
 
 endpoints:
   health:
@@ -30,8 +34,11 @@ datasources:
     autoCommit: false
 
 aws:
+    access-key-id: ${AWS_KEY_ID}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+    region: us-east-2
     sqs:
-      queueUrl: ${SQS_QUEUE_URL}
+      queueName: sales-queue
 
 logging:
   level:

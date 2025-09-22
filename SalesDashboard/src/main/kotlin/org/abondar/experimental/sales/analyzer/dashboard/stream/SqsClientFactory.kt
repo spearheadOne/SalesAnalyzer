@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.dashboard.data
+package org.abondar.experimental.sales.analyzer.dashboard.stream
 
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
@@ -17,25 +17,23 @@ class SqsClientFactory(
     @param:Value("\${aws.region:us-east-1}") private val region: String,
     @param:Value("\${aws.access-key-id:}") private val accessKeyId: String?,
     @param:Value("\${aws.secret-access-key:}") private val secretAccessKey: String?,
-    @param:Value("\${aws.services.sqs.endpoint-override:}") private val sqsEndpoint: String
+    @param:Value("\${aws.services.sqs.endpoint-override:}") private val sqsEndpoint: String,
 
-) {
+    ) {
 
     private var sqsAsyncClient: SqsAsyncClient? = null
 
     @Singleton
     @Requires(missingBeans = [SqsAsyncClient::class])
-    fun sqsAsyncClient(): SqsAsyncClient = SqsAsyncClient.builder()
+    fun sqsAsyncClient(): SqsAsyncClient= SqsAsyncClient.builder()
         .region(Region.of(region))
-        .credentialsProvider(
-            if (sqsEndpoint.isNotBlank()) {
-                StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(accessKeyId ?: "test", secretAccessKey ?: "test")
-                )
-            } else {
-                DefaultCredentialsProvider.builder().build()
-            }
-        )
+        .credentialsProvider(if (sqsEndpoint.isNotBlank()) {
+            StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(accessKeyId ?: "test", secretAccessKey ?: "test")
+            )
+        } else {
+            DefaultCredentialsProvider.builder().build()
+        })
         .apply {
             if (sqsEndpoint.isNotBlank()) {
                 endpointOverride(URI.create(sqsEndpoint))
@@ -43,7 +41,6 @@ class SqsClientFactory(
         }
         .build()
         .also { sqsAsyncClient = it }
-
 
     @PreDestroy
     fun close() {

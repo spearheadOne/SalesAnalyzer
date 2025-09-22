@@ -2,13 +2,11 @@ mybatis:
   environment: local
 
 aws:
-  account-id: 000000000000
   region: us-east-1
   access-key-id: test
   secret-access-key: test
   sqs:
       endpoint-override: http://localhost:4566
-      queueUrl: http://localhost:4566/000000000000/sales-queue
 
 logging:
   level:

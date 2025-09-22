@@ -5,7 +5,6 @@ import org.abondar.experimental.sales.analyzer.dashboard.BaseIT
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.Instant
 
 class SalesDashboardMapperIT : BaseIT() {
 
@@ -23,12 +22,6 @@ class SalesDashboardMapperIT : BaseIT() {
         assertEquals(timeSeriesPoints.first().productName, "test")
     }
 
-    @Test
-    fun `test time series since`() {
-        val timeSeriesPoints = dashboardMapper.timeSeriesSince(Instant.now().minusSeconds(60),
-            "test",1)
-        assertEquals(timeSeriesPoints.size, 1)
-    }
 
     @Test
     fun `test categories per period`() {

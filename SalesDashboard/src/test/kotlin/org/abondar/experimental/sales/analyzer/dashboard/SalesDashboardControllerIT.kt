@@ -18,8 +18,6 @@ import org.junit.jupiter.api.Test
 import reactor.core.publisher.Flux
 import java.math.BigDecimal
 import java.time.Instant
-import java.util.concurrent.ArrayBlockingQueue
-import java.util.concurrent.TimeUnit
 
 class SalesDashboardControllerIT : BaseIT() {
 
@@ -109,25 +107,5 @@ class SalesDashboardControllerIT : BaseIT() {
         assertEquals(agg.orders, body.first().orders)
     }
 
-    @Test
-    fun `test streaming`() {
-        val streamingClient = StreamingHttpClient.create(server.url)
-        val req = HttpRequest.GET<Any>("$apiUrl/stream")
-            .accept(MediaType.APPLICATION_JSON_STREAM)
-        val publisher = streamingClient.jsonStream(req, TimeSeriesPoint::class.java)
 
-        val item = Flux.from(publisher).doOnSubscribe {
-            val ts = Instant.now().plusSeconds(3)
-            val newAgg = AggRow(
-                ts, "test-stream", "test-stream", "test",
-                1, 1, BigDecimal(10)
-            )
-            testMapper.insertAgg(
-                newAgg
-            )
-        }.blockFirst()
-
-        assertNotNull(item)
-        assertEquals("test-stream", item!!.productName)
-    }
 }

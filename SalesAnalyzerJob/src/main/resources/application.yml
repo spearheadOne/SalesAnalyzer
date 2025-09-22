@@ -21,6 +21,8 @@ datasources:
 aws:
    account-id: ${AWS_ACCOUNT_ID:000000000000}
    region: us-east-2
+   access-key-id: ${AWS_KEY_ID}
+   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
    services:
      kinesis:
        stream: sales-stream

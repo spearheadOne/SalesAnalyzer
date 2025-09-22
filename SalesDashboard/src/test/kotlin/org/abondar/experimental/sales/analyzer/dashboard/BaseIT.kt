@@ -58,7 +58,6 @@ open class BaseIT {
 
         testMapper.deleteAll()
 
-
         testMapper.insertAgg(agg)
 
     }
