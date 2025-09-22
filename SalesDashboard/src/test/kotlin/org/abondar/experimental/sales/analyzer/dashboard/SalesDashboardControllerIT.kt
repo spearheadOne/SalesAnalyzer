@@ -4,20 +4,16 @@ import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.MediaType
 import io.micronaut.http.client.HttpClient
-import io.micronaut.http.client.StreamingHttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
 import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
-import org.abondar.experimental.sales.analyzer.data.AggRow
+import org.abondar.experimental.sales.analyzer.dashboard.testconf.BaseIT
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import reactor.core.publisher.Flux
-import java.math.BigDecimal
-import java.time.Instant
 
 class SalesDashboardControllerIT : BaseIT() {
 

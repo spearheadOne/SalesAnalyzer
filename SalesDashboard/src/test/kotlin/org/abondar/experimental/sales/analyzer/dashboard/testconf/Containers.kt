@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.dashboard.setup
+package org.abondar.experimental.sales.analyzer.dashboard.testconf
 
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.localstack.LocalStackContainer
@@ -14,13 +14,13 @@ object Containers {
         .withUsername("test")
         .withPassword("test")
         .withReuse(true)
+        .withInitScript("sql/init-db.sql")
 
 
     @JvmField
     val LOCALSTACK: LocalStackContainer =
         LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
-            .withServices( LocalStackContainer.Service.KINESIS, LocalStackContainer.Service.DYNAMODB,
-                LocalStackContainer.Service.CLOUDWATCH, LocalStackContainer.Service.SQS)
+            .withServices( LocalStackContainer.Service.SQS)
             .withReuse(true)
 
     init {

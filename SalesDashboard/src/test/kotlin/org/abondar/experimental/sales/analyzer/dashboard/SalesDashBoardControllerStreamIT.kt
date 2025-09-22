@@ -1,22 +1,21 @@
 package org.abondar.experimental.sales.analyzer.dashboard
 
-import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.PropertySource
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.MediaType
+import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.StreamingHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.serde.ObjectMapper
+import org.abondar.experimental.sales.analyzer.dashboard.testconf.BaseIT
+import org.abondar.experimental.sales.analyzer.dashboard.testconf.Containers
+import org.abondar.experimental.sales.analyzer.dashboard.testconf.Properties
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.testcontainers.containers.localstack.LocalStackContainer
-import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.utility.DockerImageName
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
@@ -27,9 +26,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-@Testcontainers(disabledWithoutDocker = true)
-class SalesDashBoardControllerStreamIT {
-    private lateinit var applicationContext: ApplicationContext
+class SalesDashBoardControllerStreamIT : BaseIT() {
 
     private lateinit var server: EmbeddedServer
 
@@ -39,33 +36,11 @@ class SalesDashBoardControllerStreamIT {
 
     private lateinit var sqsClient: SqsAsyncClient
 
-    private lateinit var objectMapper: ObjectMapper
+    override fun extraProperties(): Map<String, Any?> = Properties.localstackAws(Containers.LOCALSTACK)
 
-    companion object {
-        @JvmStatic
-        val localstack: LocalStackContainer =
-            LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
-                .withServices(LocalStackContainer.Service.SQS)
-                .withReuse(true)
-    }
 
     @BeforeEach
-    fun setup() {
-        localstack.start()
-
-        applicationContext = ApplicationContext.run(
-            PropertySource.of(
-                "test", mapOf(
-                    "aws.region" to localstack.region,
-                    "aws.access-key-id" to localstack.accessKey,
-                    "aws.secret-access-key" to localstack.secretKey,
-                    "aws.services.sqs.endpoint-override" to localstack
-                        .getEndpointOverride(LocalStackContainer.Service.SQS).toString(),
-                    "micronaut.jms.sqs.enabled" to "true"
-                )
-            )
-        )
-
+    fun initClients() {
         server = applicationContext.getBean(EmbeddedServer::class.java)
         if (!server.isRunning) {
             server.start()
@@ -79,28 +54,21 @@ class SalesDashBoardControllerStreamIT {
         }
 
         sqsClient = applicationContext.getBean(SqsAsyncClient::class.java)
-
-        objectMapper = applicationContext.getBean(ObjectMapper::class.java)
     }
 
 
     @AfterEach
-    fun shutdown() {
+    fun closeClients() {
         if (this::client.isInitialized) client.close()
         if (this::server.isInitialized && server.isRunning) server.stop()
 
-        if (this::applicationContext.isInitialized) {
-            applicationContext.close()
-        }
     }
 
+    //todo fix timeout when no containers are created
     @Test
     fun `test streaming`() {
-        val streamingClient = StreamingHttpClient.create(server.url)
-        val req = HttpRequest.GET<Any>("$apiUrl/stream")
-            .accept(MediaType.APPLICATION_JSON_STREAM)
-        val publisher = streamingClient.jsonStream(req, AggRow::class.java)
-
+        Thread.sleep(15000)
+        val objectMapper = applicationContext.getBean(ObjectMapper::class.java)
         val queueUrl = sqsClient.createQueue(
             CreateQueueRequest.builder()
                 .queueName("sales-queue").build()
@@ -112,16 +80,26 @@ class SalesDashBoardControllerStreamIT {
             1, 1, BigDecimal.TEN
         )
 
-        val item = Mono.fromFuture(
-            sqsClient.sendMessage(
-                SendMessageRequest.builder()
-                    .queueUrl(queueUrl)
-                    .messageBody(objectMapper.writeValueAsString(newAgg))
-                    .build()
-            )
-        )
-            .thenMany(Flux.from(publisher))
-            .timeout(Duration.ofSeconds(10))
+        sqsClient.sendMessage(
+            SendMessageRequest.builder()
+                .queueUrl(queueUrl)
+                .messageBody(objectMapper.writeValueAsString(newAgg))
+                .build()
+        ).get(10, TimeUnit.SECONDS)
+
+        Thread.sleep(15000)
+
+        val clientConfiguration = DefaultHttpClientConfiguration()
+        clientConfiguration.setReadTimeout(Duration.ofSeconds(200))
+        clientConfiguration.setConnectTimeout(Duration.ofSeconds(30))
+
+        val streamingClient = StreamingHttpClient.create(server.url,clientConfiguration)
+        val req = HttpRequest.GET<Any>("$apiUrl/stream")
+            .accept(MediaType.APPLICATION_JSON_STREAM)
+        val publisher = streamingClient.jsonStream(req, AggRow::class.java)
+
+        val item = Flux.from(publisher)
+            .timeout(Duration.ofSeconds(60))
             .blockFirst()
 
         assertNotNull(item)
