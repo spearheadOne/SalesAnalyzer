@@ -6,7 +6,9 @@ import org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardTest
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -25,16 +27,34 @@ open class BaseIT {
             Instant.now(), "test", "test", "test",
             1, 1, BigDecimal(10)
         )
+
+        @JvmField
+        val POSTGRES: PostgreSQLContainer<*> = PostgreSQLContainer(
+            DockerImageName.parse("timescale/timescaledb:latest-pg14")
+                .asCompatibleSubstituteFor("postgres")
+        )
+            .withDatabaseName("test")
+            .withUsername("test")
+            .withPassword("test")
+            .withReuse(true)
+            .withInitScript("sql/init-db.sql")
+
     }
 
     @BeforeEach
     fun setup() {
-        val props = mutableMapOf<String, Any?>()
-        props += Properties.micronaut()
-        props += Properties.postgres(Containers.POSTGRES)
-        props += extraProperties()
+        if (!POSTGRES.isRunning) POSTGRES.start()
 
-        applicationContext = ApplicationContext.run(PropertySource.of("test", props))
+        applicationContext = ApplicationContext.run(PropertySource.of("test",
+            mapOf(
+                "datasources.default.url" to POSTGRES.jdbcUrl,
+                "datasources.default.username" to POSTGRES.username,
+                "datasources.default.password" to POSTGRES.password,
+                "datasources.default.driver-class-name" to "org.postgresql.Driver",
+                "micronaut.server.port" to -1,
+                "endpoints.all.port" to -1,
+                "micronaut.jms.sqs.enabled" to "true"
+            )))
 
         testMapper = applicationContext.getBean(SalesDashboardTestMapper::class.java)
         testMapper.deleteAll()

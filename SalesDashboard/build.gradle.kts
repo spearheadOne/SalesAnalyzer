@@ -41,7 +41,6 @@ dependencies {
     kapt("io.micronaut:micronaut-inject-java")
 
     testImplementation("org.testcontainers:postgresql:1.20.1")
-    testImplementation("org.testcontainers:localstack:1.19.7")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
     testImplementation("io.micronaut:micronaut-http-client")
 }
