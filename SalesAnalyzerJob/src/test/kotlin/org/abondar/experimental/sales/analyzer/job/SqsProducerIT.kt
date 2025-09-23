@@ -5,7 +5,6 @@ import kotlinx.coroutines.runBlocking
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer
 import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
-import org.abondar.experimental.sales.analyzer.job.testconf.Containers
 import org.abondar.experimental.sales.analyzer.job.testconf.Properties
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
