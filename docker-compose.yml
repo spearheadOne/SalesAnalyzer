@@ -5,7 +5,7 @@ services:
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=s3,kinesis, dynamodb, cloudwatch
+      - SERVICES=s3,kinesis,dynamodb,cloudwatch,sqs
       - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
