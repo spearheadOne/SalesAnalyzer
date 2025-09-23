@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 
 class SqsProducerIT : BaseIT() {
 
-    override fun extraProperties(): Map<String, Any?> = Properties.localstackAws(Containers.LOCALSTACK)
+    override fun extraProperties(): Map<String, Any?> = Properties.localstackAws(LOCALSTACK)
 
     @Test
     fun `test sending agg row to sqs`() {

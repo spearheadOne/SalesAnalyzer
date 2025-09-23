@@ -29,7 +29,7 @@ class SalesJobAnalyzerIT: BaseIT(){
 
     lateinit var queueUrl: String
 
-    override fun extraProperties(): Map<String, Any?> = Properties.localstackAws(Containers.LOCALSTACK) + mapOf(
+    override fun extraProperties(): Map<String, Any?> = Properties.localstackAws(LOCALSTACK) + mapOf(
         "aws.services.kinesis.stream" to streamName,
     )
 
