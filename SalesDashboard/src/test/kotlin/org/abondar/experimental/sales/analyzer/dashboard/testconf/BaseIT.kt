@@ -4,6 +4,7 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.PropertySource
 import org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardTestMapper
 import org.abondar.experimental.sales.analyzer.data.AggRow
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.testcontainers.containers.PostgreSQLContainer
@@ -36,7 +37,6 @@ open class BaseIT {
             .withDatabaseName("test")
             .withUsername("test")
             .withPassword("test")
-            .withReuse(true)
             .withInitScript("sql/init-db.sql")
 
     }
@@ -66,5 +66,7 @@ open class BaseIT {
         if (this::applicationContext.isInitialized) {
             applicationContext.close()
         }
+
+        POSTGRES.stop()
     }
 }

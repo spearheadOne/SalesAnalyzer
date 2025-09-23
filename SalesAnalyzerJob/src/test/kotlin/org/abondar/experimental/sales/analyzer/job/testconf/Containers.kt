@@ -13,7 +13,6 @@ object Containers {
         .withDatabaseName("test")
         .withUsername("test")
         .withPassword("test")
-        .withReuse(true)
 
 
     @JvmField
@@ -21,10 +20,4 @@ object Containers {
         LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
             .withServices( LocalStackContainer.Service.KINESIS, LocalStackContainer.Service.DYNAMODB,
                 LocalStackContainer.Service.CLOUDWATCH, LocalStackContainer.Service.SQS)
-            .withReuse(true)
-
-    init {
-        if (!POSTGRES.isRunning) POSTGRES.start()
-        if (!LOCALSTACK.isRunning) LOCALSTACK.start()
-    }
 }
