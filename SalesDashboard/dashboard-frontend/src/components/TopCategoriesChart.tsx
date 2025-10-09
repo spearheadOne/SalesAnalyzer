@@ -1,4 +1,5 @@
 import Period from "./Period.tsx";
+import Limit from "./Limit.tsx";
 
 export default function TopCategoriesChart() {
 
@@ -8,6 +9,7 @@ export default function TopCategoriesChart() {
     return (
         <>
             <Period/>
+            <Limit/>
         </>
     )
 
