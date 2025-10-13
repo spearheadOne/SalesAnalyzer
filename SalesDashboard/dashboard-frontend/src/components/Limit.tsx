@@ -2,7 +2,7 @@ import {useLimitStore} from "../store/limitStore.ts";
 
 export default function Limit() {
 
-    const { limits, limit, setLimit } = useLimitStore();
+    const {limits, limit, setLimit} = useLimitStore();
 
     return (
         <div className="d-flex align-items-center gap-2">
@@ -11,16 +11,18 @@ export default function Limit() {
                         type="button"
                         id="dropdownMenuButton1"
                         data-bs-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-controls="limitMenu"
                         aria-expanded="false">
                     {limit}
                 </button>
-                <ul className="dropdown-menu">
+                <ul className="dropdown-menu" aria-labelledby="limitDropdown" role="menu">
                     {limits.map((l) => (
                         <li key={l}>
-                            <a className="dropdown-item" href="#"
-                               onClick={() => setLimit(l)}>
+                            <button type="button" className="dropdown-item" role="menuitem"
+                                    onClick={() => setLimit(l)}>
                                 {l}
-                            </a>
+                            </button>
                         </li>
                     ))}
                 </ul>

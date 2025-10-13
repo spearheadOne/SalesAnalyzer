@@ -1,5 +1,3 @@
-
-
 interface FetchButtonProps {
     fetchData: () => void | Promise<void>;
 }

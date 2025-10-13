@@ -7,6 +7,7 @@ function App() {
 
     const [active, setActive] = useState<'history' | 'live'>('live')
 
+    //TODO: add tests for components and stores
     return (
         <>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
