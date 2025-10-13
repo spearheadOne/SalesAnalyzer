@@ -1,7 +1,5 @@
-import Period from "./Period.tsx";
-import Limit from "./Limit.tsx";
-import FetchButton from "./FetchButton.tsx";
 import {useHistoricDataStore} from "../store/historicDataStore.ts";
+import DashboardControls from "./DashboardControls.tsx";
 
 export default function TopCategoriesChart() {
 
@@ -9,11 +7,12 @@ export default function TopCategoriesChart() {
      const fetchCategoryRevenue = useHistoricDataStore((state) => state.fetchCategoryRevenue);
 
     return (
-        <>
-            <Period/>
-            <Limit/>
-            <FetchButton fetchData={()=>fetchCategoryRevenue("1h",10)}/>
-        </>
+         <>
+             <DashboardControls
+                 fetchData={(p, l) => fetchCategoryRevenue(p, l ?? 10)}
+                 limitEnabled
+             />
+         </>
     )
 
 }

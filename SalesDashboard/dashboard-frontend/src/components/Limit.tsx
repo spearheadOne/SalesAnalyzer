@@ -6,6 +6,7 @@ export default function Limit() {
 
     return (
         <div className="d-flex align-items-center gap-2">
+            <span>Records: </span>
             <div className="dropdown">
                 <button className="btn btn-secondary btn-sm dropdown-toggle"
                         type="button"
@@ -27,7 +28,6 @@ export default function Limit() {
                     ))}
                 </ul>
             </div>
-            <span>Records</span>
         </div>
     )
 }
