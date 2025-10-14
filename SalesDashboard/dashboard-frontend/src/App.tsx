@@ -7,7 +7,8 @@ function App() {
 
     const [active, setActive] = useState<'history' | 'live'>('live')
 
-    //TODO: add tests for components and stores
+    //TODO: rework store for period and limit to make it independent for each dashboard
+    //TODO: check if barchart can be unified
     return (
         <>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">

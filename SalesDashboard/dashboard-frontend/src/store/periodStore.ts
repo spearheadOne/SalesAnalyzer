@@ -27,7 +27,7 @@ export const usePeriodStore = create<PeriodStore>((set, get) => ({
         const value = parseInt(period.slice(0, -1));
 
         const unitMap: Record<PeriodUnit, string> = {
-            'm': 'month',
+            'm': 'minute',
             'h': 'hour',
             'd': 'day',
             's': 'second'
