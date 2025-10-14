@@ -1,6 +1,13 @@
-import type {CategoryRevenue, ProductsRevenue, TimeSeriesPoint} from "./data.ts";
+
 import {create} from "zustand/react";
 import api from './axios.ts';
+import {
+    type CategoryRevenue, DataKeys, type DataType,
+    type ProductsRevenue,
+    type ResponseMap,
+    schemaMap,
+    type TimeSeriesPoint
+} from "./schemas.ts";
 
 interface HistoricDataStore {
 
@@ -16,21 +23,17 @@ interface HistoricDataStore {
 
 }
 
-type DataType = keyof Pick<
-    HistoricDataStore,
-    'categoryResponse' | 'productsResponse' | 'timeSeriesResponse'
->
-
 export const useHistoricDataStore = create<HistoricDataStore>((set) => {
 
-    const fetchData = async <T>(dataType: DataType, uri: string) => {
+    const fetchData=  async <T extends DataType>(dataType: T, uri: string) => {
         set({[dataType]: null, error: undefined} as Partial<HistoricDataStore>);
-
         try {
-            const res = await api.get<T>(uri);
-            set({[dataType]: res.data} as Partial<HistoricDataStore>)
+            const res = await api.get(uri);
+            const parsed = schemaMap[dataType].parse(res.data) as ResponseMap[T];
+            set({[dataType]: parsed} as Partial<HistoricDataStore>)
         } catch (err: any) {
-            set({error: err?.message || 'Request failed'});
+            const message = err?.name === 'ZodError' ? 'Invalid server data' : (err?.message || 'Request failed')
+            set({ error: message })
         }
     }
 
@@ -49,13 +52,13 @@ export const useHistoricDataStore = create<HistoricDataStore>((set) => {
         error: undefined,
 
         fetchCategoryRevenue: async (period: string, limit: number) =>
-            fetchData('categoryResponse', buildUrl('categories', period, limit)),
+            fetchData(DataKeys.Category, buildUrl('categories', period, limit)),
 
         fetchProductsRevenue: async (period: string, limit: number) =>
-            fetchData('productsResponse', buildUrl('products', period, limit)),
+            fetchData(DataKeys.Products, buildUrl('products', period, limit)),
 
         fetchTimeSeries: async (period: string) =>
-            fetchData('timeSeriesResponse', buildUrl('timeseries', period))
+            fetchData(DataKeys.TimeSeries, buildUrl('time-series', period))
     }
 
 })
