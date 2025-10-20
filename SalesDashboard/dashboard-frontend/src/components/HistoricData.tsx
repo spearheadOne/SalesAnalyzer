@@ -1,12 +1,12 @@
 import TopCategoriesChart from "./TopCategoriesChart.tsx";
+import TopProductsChart from "./TopProductsChart.tsx";
 
-function History() {
+export default function HistoricData() {
     return (
         <>
             <h1>Historic data</h1>
             <TopCategoriesChart/>
+            <TopProductsChart/>
         </>
     )
 }
-
-export default History

@@ -1,6 +1,6 @@
 import './App.css'
-import History from './components/History'
-import Live from './components/Live.tsx'
+import HistoricData from './components/HistoricData.tsx'
+import LiveData from './components/LiveData.tsx'
 import {useState} from "react";
 
 function App() {
@@ -9,6 +9,8 @@ function App() {
 
     //TODO: rework store for period and limit to make it independent for each dashboard
     //TODO: check if barchart can be unified
+    //TODO: remove limitEnabled from dashboard controls
+    //TODO: fix tests
     return (
         <>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -28,8 +30,8 @@ function App() {
             </nav>
 
             <div className="container">
-                {active === 'live' && <Live/>}
-                {active === 'history' && <History/>}
+                {active === 'live' && <LiveData/>}
+                {active === 'history' && <HistoricData/>}
             </div>
         </>
     )

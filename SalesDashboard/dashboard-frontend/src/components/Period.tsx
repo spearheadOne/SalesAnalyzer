@@ -1,10 +1,15 @@
-import {type PeriodUnit, usePeriodStore} from "../store/periodStore.ts";
+import {type PeriodState, type PeriodUnit} from "../store/periodState.ts";
 
-export default function Period() {
+import type {StoreApi, UseBoundStore} from "zustand";
 
-    const units = usePeriodStore((state) => state.units);
-    const period = usePeriodStore((state) => state.period);
-    const setPeriod = usePeriodStore((state) => state.setPeriod);
+export default function Period({periodStore}: {periodStore: UseBoundStore<StoreApi<PeriodState>>}) {
+
+    const state = periodStore(s => ({
+        units: s.units,
+        period: s.period,
+        setPeriod: s.setPeriod,
+    }))
+    const { units, period, setPeriod } = state
 
     const value = parseInt(period, 10) || 1;
     const unit = (period.replace(/\d+/g, '') as PeriodUnit) || 'h';
@@ -41,7 +46,7 @@ export default function Period() {
                     {units.map((u) => (
                         <li key={u}>
                             <button type="button" className="dropdown-item" role="menuitem"
-                               onClick={() => setPeriod(value, u)}>
+                                    onClick={() => setPeriod(value, u)}>
                                 {u}
                             </button>
                         </li>
