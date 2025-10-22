@@ -1,8 +1,6 @@
 import DashboardControls from "./DashboardControls.tsx";
-import {type PeriodState} from "../store/periodState.ts";
+import {usePeriodStore} from "../store/periodStore.ts";
 import {useHistoricDataStore} from "../store/historicDataStore.ts";
-import type {StoreApi, UseBoundStore} from "zustand";
-import type {LimitState} from "../store/limitState.ts";
 
 type DataCardProps = {
     title: string;
@@ -10,24 +8,19 @@ type DataCardProps = {
     dataCount: number
     limitEnabled: boolean
     fetchData: (period: string, limit?: number) => void | Promise<void>;
-    periodStore: UseBoundStore<StoreApi<PeriodState>>;
-    limitStore: UseBoundStore<StoreApi<LimitState>>;
-
 }
 
 export function DataCard({
-                             periodStore,
-                             limitStore,
                              title,
                              children,
                              dataCount,
                              limitEnabled,
                              fetchData
                          }: DataCardProps) {
-    const displayPeriod = periodStore.getState().getDisplayPeriod();
+
+    const displayPeriod = usePeriodStore((state) => state.getDisplayPeriod());
     const error = useHistoricDataStore((state) => state.error);
     const isEmpty = dataCount === 0;
-
 
     return (
         <>
@@ -48,8 +41,6 @@ export function DataCard({
             </div>
 
             <DashboardControls
-                periodStore={periodStore}
-                limitStore={limitStore}
                 fetchData={fetchData}
                 limitEnabled={limitEnabled}
             />

@@ -1,12 +1,12 @@
 import {describe, expect, it, vi} from "vitest";
 import {render, screen} from "@testing-library/react";
 import {DataCard} from "../DataCard.tsx";
-import {makePeriodStore} from "../../store/periodState.ts";
+import {usePeriodStore} from "../../store/periodStore.ts";
 
 describe('DataCard', () => {
     it('should render data card with zero children', () => {
         const fetchData = vi.fn()
-        makePeriodStore.setState({period: '1m'})
+        usePeriodStore.setState({period: '1m'})
 
         render(<DataCard
             title={"test"}
@@ -22,9 +22,9 @@ describe('DataCard', () => {
         expect(screen.getByText(/No data available/i)).not.toBeNull
     })
 
-    it('should render data card with one child', () => {
+    it('should render a data card with one child', () => {
         const fetchData = vi.fn()
-        makePeriodStore.setState({period: '1m'})
+        usePeriodStore.setState({period: '1m'})
 
         render(<DataCard
             title={"test"}

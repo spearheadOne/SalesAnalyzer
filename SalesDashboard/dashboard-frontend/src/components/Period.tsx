@@ -1,15 +1,8 @@
-import {type PeriodState, type PeriodUnit} from "../store/periodState.ts";
+import {type PeriodUnit, usePeriodStore} from "../store/periodStore.ts";
 
-import type {StoreApi, UseBoundStore} from "zustand";
+export default function Period() {
 
-export default function Period({periodStore}: {periodStore: UseBoundStore<StoreApi<PeriodState>>}) {
-
-    const state = periodStore(s => ({
-        units: s.units,
-        period: s.period,
-        setPeriod: s.setPeriod,
-    }))
-    const { units, period, setPeriod } = state
+    const {units, period, setPeriod} = usePeriodStore();
 
     const value = parseInt(period, 10) || 1;
     const unit = (period.replace(/\d+/g, '') as PeriodUnit) || 'h';

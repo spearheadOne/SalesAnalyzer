@@ -1,15 +1,8 @@
-import {type LimitState} from "../store/limitState.ts";
-import type {StoreApi, UseBoundStore} from "zustand";
+import {useLimitStore} from "../store/limitStore.ts";
 
-export default function Limit({limitStore}: { limitStore: UseBoundStore<StoreApi<LimitState>> }) {
+export default function Limit() {
 
-    const state = limitStore(s => ({
-        limits: s.limits,
-        limit: s.limit,
-        setLimit: s.setLimit,
-    }))
-
-    const {limits, limit, setLimit} = state
+    const {limits, limit, setLimit} = useLimitStore();
 
     return (
         <div className="d-flex align-items-center gap-2">

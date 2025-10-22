@@ -1,11 +1,11 @@
 import {useHistoricDataStore} from "../../store/historicDataStore.ts";
-import {makePeriodStore} from "../../store/periodState.ts";
+import {usePeriodStore} from "../../store/periodStore.ts";
 import {describe, expect, it, beforeEach, beforeAll} from "vitest";
 import {render, screen} from "@testing-library/react";
 import TopCategoriesChart from "../TopCategoriesChart.tsx";
 
 const initHistoric = useHistoricDataStore.getState()
-const initPeriod = makePeriodStore.getState()
+const initPeriod = usePeriodStore.getState()
 
 
 beforeAll(() => {
@@ -18,7 +18,7 @@ beforeAll(() => {
 
 beforeEach(() => {
     useHistoricDataStore.setState(initHistoric, true)
-    makePeriodStore.setState({ ...initPeriod, period: '1m'}, true)
+    usePeriodStore.setState({ ...initPeriod, period: '1m'}, true)
 })
 
 describe('TopCategoriesChart', () => {
