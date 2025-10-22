@@ -1,5 +1,6 @@
 import {create, useStore} from "zustand/react";
 import {createContext, useContext} from "react";
+import type {StoreApi} from "zustand/vanilla";
 
 
 export type PeriodUnit = 'm' | 'h' | 'd' | 's'
@@ -16,7 +17,7 @@ export interface PeriodState {
 }
 
 
-export function createPeriodStore() {
+export function createPeriodStore(): StoreApi<PeriodState> {
     return create<PeriodState>((set, get) => ({
         units: ['m', 'h', 'd', 's'] as const,
         period: '1h',

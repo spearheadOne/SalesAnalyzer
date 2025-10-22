@@ -1,6 +1,7 @@
 import {create, useStore} from "zustand/react";
 
 import {createContext, useContext} from "react";
+import type {StoreApi} from "zustand/vanilla";
 
 export type Limit = 1 | 5 | 10 | 20 | 50 | 100;
 
@@ -12,7 +13,7 @@ export interface LimitState {
     setLimit: (value: Limit) => void,
 }
 
-export function createLimitStore() {
+export function createLimitStore(): StoreApi<LimitState> {
     return create<LimitState>((set) => ({
         limits: [1, 5, 10, 20, 50, 100] as const,
         limit: 10,
