@@ -17,7 +17,7 @@ export default function DashboardControls({
                                           }: DataControlProps) {
 
     const period = usePeriodStore((state) => state.period);
-    const limit = useLimitStore((state) => state.limit);
+    const limit = useLimitStore((s) => s.limit);
 
     const fetch = () => fetchData(period, limitEnabled ? limit : undefined);
     return (

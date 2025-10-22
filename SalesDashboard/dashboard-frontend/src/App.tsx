@@ -7,10 +7,9 @@ function App() {
 
     const [active, setActive] = useState<'history' | 'live'>('live')
 
-    //TODO: rework store for period and limit to make it independent for each dashboard
     //TODO: check if barchart can be unified
     //TODO: remove limitEnabled from dashboard controls
-    //TODO: fix tests
+    //TODO: make fetch button smaller
     return (
         <>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">

@@ -1,8 +1,10 @@
-import {useLimitStore} from "../store/limitStore.ts";
+import { useLimitStore} from "../store/limitStore.ts";
 
 export default function Limit() {
 
-    const {limits, limit, setLimit} = useLimitStore();
+    const limits = useLimitStore((s) => s.limits);
+    const limit  = useLimitStore((s) => s.limit);
+    const setLimit = useLimitStore((s) => s.setLimit);
 
     return (
         <div className="d-flex align-items-center gap-2">

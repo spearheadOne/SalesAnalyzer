@@ -1,10 +1,10 @@
-
-import {create} from "zustand/react";
+import {create, useStore} from "zustand/react";
+import {createContext, useContext} from "react";
 
 
 export type PeriodUnit = 'm' | 'h' | 'd' | 's'
 
-export interface PeriodStore {
+export interface PeriodState {
 
     units: readonly PeriodUnit[],
 
@@ -16,27 +16,40 @@ export interface PeriodStore {
 }
 
 
-export const usePeriodStore = create<PeriodStore>((set, get) => ({
-    units: ['m', 'h', 'd', 's'] as const,
-    period: '1h',
+export function createPeriodStore() {
+    return create<PeriodState>((set, get) => ({
+        units: ['m', 'h', 'd', 's'] as const,
+        period: '1h',
 
-    setPeriod: (value: number, unit: PeriodUnit) => {set({ period: `${value}${unit}`})},
+        setPeriod: (value: number, unit: PeriodUnit) => {
+            set({period: `${value}${unit}`})
+        },
 
-    getDisplayPeriod(): string {
-        const period = get().period;
-        const unit = period.slice(-1) as PeriodUnit;
-        const value = parseInt(period.slice(0, -1));
+        getDisplayPeriod(): string {
+            const period = get().period;
+            const unit = period.slice(-1) as PeriodUnit;
+            const value = parseInt(period.slice(0, -1));
 
-        const unitMap: Record<PeriodUnit, string> = {
-            'm': 'minute',
-            'h': 'hour',
-            'd': 'day',
-            's': 'second'
+            const unitMap: Record<PeriodUnit, string> = {
+                'm': 'minute',
+                'h': 'hour',
+                'd': 'day',
+                's': 'second'
+            }
+
+            const unitName = unitMap[unit];
+
+            return `${value} ${unitName}${value > 1 ? 's' : ''}`;
         }
 
-        const unitName = unitMap[unit];
+    }))
+}
 
-        return `${value} ${unitName}${value > 1 ? 's' : ''}`;
-    }
+export const PeriodStoreContext = createContext<ReturnType<typeof createPeriodStore> | null>(null);
 
-}))
+export const usePeriodStore = <T, >(selector: (state: PeriodState) => T): T => {
+    const store = useContext(PeriodStoreContext);
+    if (!store) throw new Error('Missing PeriodStoreContext.Provider in the tree');
+    return useStore(store, selector);
+}
+

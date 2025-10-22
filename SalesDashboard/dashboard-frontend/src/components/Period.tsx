@@ -2,7 +2,10 @@ import {type PeriodUnit, usePeriodStore} from "../store/periodStore.ts";
 
 export default function Period() {
 
-    const {units, period, setPeriod} = usePeriodStore();
+
+    const units = usePeriodStore((s) => s.units);
+    const period = usePeriodStore((s) => s.period);
+    const setPeriod = usePeriodStore((s) => s.setPeriod);
 
     const value = parseInt(period, 10) || 1;
     const unit = (period.replace(/\d+/g, '') as PeriodUnit) || 'h';
