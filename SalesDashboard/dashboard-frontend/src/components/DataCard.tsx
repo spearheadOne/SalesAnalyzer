@@ -53,10 +53,12 @@ export function DataCard({
                         </div>
                     </div>
 
-                    <DashboardControls
-                        fetchData={fetchData}
-                        limitEnabled={limitEnabled}
-                    />
+                    <div className="mt-3">
+                        <DashboardControls
+                            fetchData={fetchData}
+                            limitEnabled={limitEnabled}
+                        />
+                    </div>
                 </LimitStoreContext.Provider>
             </PeriodStoreContext.Provider>
         </>

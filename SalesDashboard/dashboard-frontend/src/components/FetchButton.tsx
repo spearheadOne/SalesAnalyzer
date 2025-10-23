@@ -11,7 +11,7 @@ export default function FetchButton({fetchData}: FetchButtonProps) {
     }
 
     return (
-        <button className="btn btn-secondary"
+        <button className="btn btn-secondary btn-sm"
                 type="submit"
                 onClick={handleClick}>
             Get data

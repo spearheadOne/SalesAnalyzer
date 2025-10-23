@@ -8,8 +8,6 @@ function App() {
     const [active, setActive] = useState<'history' | 'live'>('live')
 
     //TODO: check if barchart can be unified
-    //TODO: remove limitEnabled from dashboard controls
-    //TODO: make fetch button smaller
     return (
         <>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
