@@ -4,12 +4,19 @@ import {Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis
 import {DataCard} from "./DataCard.tsx";
 import {formatCurrency} from "../util/util.ts";
 
+//use for testing without a backend
+//ts-ignore
+//import {MOCK_CATEGORY_DATA} from "../util/mockData.ts";
+
 export default function TopCategoriesChart() {
     const categoryResponse = useHistoricDataStore((state) => state.categoryResponse);
     const fetchCategoryRevenue = useHistoricDataStore((state) => state.fetchCategoryRevenue);
 
     const data = useMemo(() => categoryResponse ?? [], [categoryResponse])
 
+    //use for testing without a backend
+    //ts-ignore
+    //const data = useMemo(() => MOCK_CATEGORY_DATA ?? [], [MOCK_CATEGORY_DATA])
 
     return (
         <DataCard title={"Top categories for "}

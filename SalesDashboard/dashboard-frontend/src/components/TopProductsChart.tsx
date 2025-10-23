@@ -1,24 +1,23 @@
 import {useHistoricDataStore} from "../store/historicDataStore.ts";
 import {useMemo} from "react";
 import {DataCard} from "./DataCard.tsx";
-import {
-    Area,
-    Bar,
-    CartesianGrid,
-    ComposedChart,
-    Line,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis
-} from "recharts";
+import {Area, Bar, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {formatCurrency} from "../util/util.ts";
+
+//use for testing without backend
+//ts-ignore
+//import {MOCK_PRODUCT_DATA} from "../util/mockData.ts";
 
 export default function TopProductsChart() {
     const productsResponse = useHistoricDataStore((state) => state.productsResponse);
     const fetchProductsRevenue = useHistoricDataStore((state) => state.fetchProductsRevenue);
 
     const data = useMemo(() => productsResponse ?? [], [productsResponse])
+
+
+    //use for testing without backend
+    //ts-ignore
+    //const data = useMemo(() => MOCK_PRODUCT_DATA ?? [], [MOCK_PRODUCT_DATA])
 
     return (
         <DataCard title={"Top products for "}
@@ -46,6 +45,9 @@ export default function TopProductsChart() {
                                   if (name === 'Revenue') return [`€${formatCurrency(value as number)}`, name];
                                   return [v.toLocaleString(), name as string];
                               }}
+                                       labelFormatter={(label, payload) =>
+                                           payload?.[0]?.payload?.productId ?? String(label)
+                                       }
                               />
                               <Area
                                   yAxisId="right"
