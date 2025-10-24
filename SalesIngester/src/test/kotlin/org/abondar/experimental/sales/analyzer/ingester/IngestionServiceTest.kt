@@ -10,6 +10,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
+import java.math.BigDecimal
 
 @ExtendWith(MockitoExtension::class)
 class IngestionServiceTest {
@@ -23,12 +24,12 @@ class IngestionServiceTest {
     @Test
     fun `parses csv and publishes data`() = runTest {
         val data = """
-            timestamp,order_id,customer_id,product_id,product_name,category,price,amount,currency,region
-            2025-08-13T09:15:00Z,ORD10001,CUST001,PROD001,Wireless Mouse,Electronics,24.99,2,EUR,DE
-            2025-08-13T09:16:30Z,ORD10002,CUST002,PROD002,USB-C Cable,Accessories,9.99,1,EUR,DE
-            2025-08-13T09:18:10Z,ORD10003,CUST003,PROD003,Mechanical Keyboard,Electronics,89.50,1,EUR,FR
-            2025-08-13T09:20:05Z,ORD10004,CUST004,PROD004,Laptop Stand,Office,34.90,1,EUR,FR
-            2025-08-13T09:21:45Z,ORD10005,CUST005,PROD002,USB-C Cable,Accessories,9.99,3,EUR,DE
+            timestamp,product_id,product_name,category,price,currency,amount
+            2025-08-13T09:15:00Z,PROD001,Wireless Mouse,Electronics,24.99,EUR,2
+            2025-08-13T09:16:30Z,PROD002,USB-C Cable,Accessories,9.99,EUR,1
+            2025-08-13T09:18:10Z,PROD003,Mechanical Keyboard,Electronics,89.50,EUR,2
+            2025-08-13T09:20:05Z,PROD004,Laptop Stand,Office,34.90,EUR,5
+            2025-08-13T09:21:45Z,PROD002,USB-C Cable,Accessories,9.99,EUR,3
         """.trimIndent()
 
         ingester.ingestData(data.byteInputStream())
@@ -38,9 +39,12 @@ class IngestionServiceTest {
 
         val records = captor.firstValue
         assertEquals(5, records.size)
-        assertEquals("ORD10001", records.first().orderId)
-        assertEquals("CUST001", records.first().customerId)
-
+        assertEquals("PROD001", records.first().productId)
+        assertEquals("Wireless Mouse", records.first().productName)
+        assertEquals("Electronics", records.first().category)
+        assertEquals("24.99".toBigDecimal(), records.first().price)
+        assertEquals("EUR", records.first().currency)
+        assertEquals(2, records.first().amount)
     }
 
 }

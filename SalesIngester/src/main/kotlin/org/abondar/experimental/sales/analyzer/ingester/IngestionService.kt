@@ -23,25 +23,19 @@ class IngestionService(
             lines.forEach { line ->
                 val cols = line.split(',')
 
-                if (cols[0].equals(ColumnHeaders.TIMESTAMP.header)) {
+                if (cols[0] == ColumnHeaders.TIMESTAMP.header) {
                     return@forEach
                 }
 
-
-                //TODO: get rid of customerId (we don't use it)
-                //TODO: get rid of region (we don't use it)
                 batch.add(
                     SalesRecord(
                         timestamp = Instant.parse(cols[ColumnHeaders.TIMESTAMP.index]),
-                        orderId = cols[ColumnHeaders.ORDER_ID.index],
-                        customerId = cols[ColumnHeaders.CUSTOMER_ID.index],
                         productId = cols[ColumnHeaders.PRODUCT_ID.index],
                         productName = cols[ColumnHeaders.PRODUCT_NAME.index],
                         category = cols[ColumnHeaders.CATEGORY.index],
                         price = cols[ColumnHeaders.PRICE.index].toBigDecimal(),
-                        amount = cols[ColumnHeaders.AMOUNT.index].toInt(),
                         currency = cols[ColumnHeaders.CURRENCY.index],
-                        region = cols[ColumnHeaders.REGION.index]
+                        amount = cols[ColumnHeaders.AMOUNT.index].toInt(),
                     )
                 )
             }

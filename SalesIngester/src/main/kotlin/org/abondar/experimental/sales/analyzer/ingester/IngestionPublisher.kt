@@ -24,7 +24,7 @@ class IngestionPublisher(
             val data = mapper.writeValueAsBytes(record)
             PutRecordsRequestEntry.builder()
                 .data(SdkBytes.fromByteArray(data))
-                .partitionKey(record.orderId)
+                .partitionKey(record.productId)
                 .build()
         }
 

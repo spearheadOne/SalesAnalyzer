@@ -1,7 +1,6 @@
 package org.abondar.experimental.sales.analyzer.ingester
 
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.annotation.Property
 import io.micronaut.context.annotation.Value
 import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
 import io.micronaut.test.support.TestPropertyProvider
@@ -24,7 +23,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest
 //normally we should use micronaut test resources but they do not support kinesis in localstack
 @Testcontainers(disabledWithoutDocker = true)
 @MicronautLambdaTest
-@Property(name = "aws.region", value = "us-east-1")
 class IngestionHandlerIT : TestPropertyProvider {
 
     @Inject
@@ -60,7 +58,9 @@ class IngestionHandlerIT : TestPropertyProvider {
         "aws.services.kinesis.endpoint-override" to localstack
             .getEndpointOverride(LocalStackContainer.Service.KINESIS).toString(),
         "aws.access-key-id" to localstack.accessKey,
-        "aws.secret-access-key" to localstack.secretKey
+        "aws.secret-access-key" to localstack.secretKey,
+        "aws.region" to localstack.region,
+        "ingestion.bucket-name" to "sales-bucket"
     )
 
     @Test
@@ -83,12 +83,12 @@ class IngestionHandlerIT : TestPropertyProvider {
 
 
             val data = """
-            timestamp,order_id,customer_id,product_id,product_name,category,price,amount,currency,region
-            2025-08-13T09:15:00Z,ORD10001,CUST001,PROD001,Wireless Mouse,Electronics,24.99,2,EUR,DE
-            2025-08-13T09:16:30Z,ORD10002,CUST002,PROD002,USB-C Cable,Accessories,9.99,1,EUR,DE
-            2025-08-13T09:18:10Z,ORD10003,CUST003,PROD003,Mechanical Keyboard,Electronics,89.50,1,EUR,FR
-            2025-08-13T09:20:05Z,ORD10004,CUST004,PROD004,Laptop Stand,Office,34.90,1,EUR,FR
-            2025-08-13T09:21:45Z,ORD10005,CUST005,PROD002,USB-C Cable,Accessories,9.99,3,EUR,DE
+            timestamp,product_id,product_name,category,price,currency,amount
+            2025-08-13T09:15:00Z,PROD001,Wireless Mouse,Electronics,24.99,EUR,2
+            2025-08-13T09:16:30Z,PROD002,USB-C Cable,Accessories,9.99,EUR,1
+            2025-08-13T09:18:10Z,PROD003,Mechanical Keyboard,Electronics,89.50,EUR,2
+            2025-08-13T09:20:05Z,PROD004,Laptop Stand,Office,34.90,EUR,5
+            2025-08-13T09:21:45Z,PROD002,USB-C Cable,Accessories,9.99,EUR,3
         """.trimIndent()
 
             s3.putObject(

@@ -9,13 +9,10 @@ import java.time.Instant
 @Introspected
 data class SalesRecord(
     val timestamp: Instant,
-    val orderId: String,
-    val customerId: String,
     val productId: String,
     val productName: String,
     val category: String,
     val price: BigDecimal,
     val amount: Int,
     val currency: String,
-    val region: String
 )
