@@ -42,6 +42,8 @@ class SalesRecordProcessor(
 
                 orders += 1
                 units += salesRecord.amount.toLong()
+
+                //TODO: keep in mind currency: we need to convert currency if it's different from default one
                 revenue = revenue.add(salesRecord.price.multiply(BigDecimal(salesRecord.amount)))
                 productName = salesRecord.productName
                 productId = salesRecord.productId

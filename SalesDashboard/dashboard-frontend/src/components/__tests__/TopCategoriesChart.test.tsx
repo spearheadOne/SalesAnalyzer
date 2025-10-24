@@ -5,7 +5,6 @@ import TopCategoriesChart from "../TopCategoriesChart.tsx";
 
 const testHistoricState = useHistoricDataStore.getState()
 
-
 beforeAll(() => {
     global.ResizeObserver = class {
         observe() {}

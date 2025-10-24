@@ -10,8 +10,6 @@ import {MOCK_TIME_SERIES} from "../util/mockData.ts";
 import ScatterTooltip from "./ScatterTooltip.tsx";
 
 
-//TODO add tests for this component
-//TODO add tests for the scatter tooltip component
 export default function TimeSeriesChart() {
 
     const timeSeriesResponse = useHistoricDataStore((state) => state.timeSeriesResponse);
@@ -51,7 +49,7 @@ export default function TimeSeriesChart() {
                                            );
                                        }}
                               />
-                              <Scatter name="A school" data={data} fill="#8884d8"/>
+                              <Scatter name="Revenue" data={data} fill="#8884d8"/>
                           </ScatterChart>
                       </ResponsiveContainer>
                   }

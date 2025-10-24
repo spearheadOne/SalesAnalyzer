@@ -27,6 +27,9 @@ class IngestionService(
                     return@forEach
                 }
 
+
+                //TODO: get rid of customerId (we don't use it)
+                //TODO: get rid of region (we don't use it)
                 batch.add(
                     SalesRecord(
                         timestamp = Instant.parse(cols[ColumnHeaders.TIMESTAMP.index]),
