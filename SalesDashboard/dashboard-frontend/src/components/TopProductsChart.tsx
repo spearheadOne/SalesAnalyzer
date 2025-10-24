@@ -5,8 +5,8 @@ import {Area, Bar, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tool
 import {formatCurrency} from "../util/util.ts";
 
 //use for testing without backend
-//ts-ignore
-//import {MOCK_PRODUCT_DATA} from "../util/mockData.ts";
+//@ts-ignore
+import {MOCK_PRODUCT_DATA} from "../util/mockData.ts";
 
 export default function TopProductsChart() {
     const productsResponse = useHistoricDataStore((state) => state.productsResponse);
@@ -16,7 +16,7 @@ export default function TopProductsChart() {
 
 
     //use for testing without backend
-    //ts-ignore
+    //@ts-ignore
     //const data = useMemo(() => MOCK_PRODUCT_DATA ?? [], [MOCK_PRODUCT_DATA])
 
     return (
@@ -37,13 +37,13 @@ export default function TopProductsChart() {
                                      height={30}
                               />
                               <YAxis yAxisId="left"
-                                     tickFormatter={(value) => formatCurrency(value as number)}
+                                     tickFormatter={(value) => formatCurrency(Number(value) as number)}
                                      width={70}
                               />
                               <Tooltip formatter={(value, name) => {
                                   const v = Number(value);
-                                  if (name === 'Revenue') return [`€${formatCurrency(value as number)}`, name];
-                                  return [v.toLocaleString(), name as string];
+                                  if (name === 'Revenue') return [`€${formatCurrency(Number(value))}`, name];
+                                  return [v.toLocaleString(), String(name)];
                               }}
                                        labelFormatter={(label, payload) =>
                                            payload?.[0]?.payload?.productId ?? String(label)

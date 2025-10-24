@@ -15,14 +15,14 @@ export const ProductsRevenueSchema = z.object({
 })
 
 export const TimeSeriesPointSchema = z.object({
-    eventTime: z.string(),
+    eventTime: z.coerce.date(),
     productId: z.string(),
     productName: z.string(),
     revenue: z.number()
 })
 
 export const AggRowSchema = z.object({
-        eventTime: z.string(),
+        eventTime: z.coerce.date(),
         productId: z.string(),
         productName: z.string(),
         category: z.string(),

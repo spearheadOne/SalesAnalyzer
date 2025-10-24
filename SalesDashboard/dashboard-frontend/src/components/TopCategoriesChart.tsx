@@ -5,8 +5,8 @@ import {DataCard} from "./DataCard.tsx";
 import {formatCurrency} from "../util/util.ts";
 
 //use for testing without a backend
-//ts-ignore
-//import {MOCK_CATEGORY_DATA} from "../util/mockData.ts";
+//@ts-ignore
+import {MOCK_CATEGORY_DATA} from "../util/mockData.ts";
 
 export default function TopCategoriesChart() {
     const categoryResponse = useHistoricDataStore((state) => state.categoryResponse);
@@ -15,7 +15,7 @@ export default function TopCategoriesChart() {
     const data = useMemo(() => categoryResponse ?? [], [categoryResponse])
 
     //use for testing without a backend
-    //ts-ignore
+    //@ts-ignore
     //const data = useMemo(() => MOCK_CATEGORY_DATA ?? [], [MOCK_CATEGORY_DATA])
 
     return (
@@ -30,9 +30,16 @@ export default function TopCategoriesChart() {
                                     margin={{top: 8, right: 16, left: 8, bottom: 100}}
                           >
                               <CartesianGrid strokeDasharray="3 3"/>
-                              <XAxis type="category" dataKey="category" textAnchor="end" angle={-30} height={30}/>
-                              <YAxis type="number" tickFormatter={(value) => formatCurrency(value as number)}/>
-                              <Tooltip formatter={(value) => [`€${formatCurrency(value as number)}`, 'Revenue']}/>
+                              <XAxis type="category"
+                                     dataKey="category"
+                                     textAnchor="end"
+                                     angle={-30}
+                                     height={30}
+                              />
+                              <YAxis type="number"
+                                     tickFormatter={(value) => formatCurrency(Number(value))}
+                              />
+                              <Tooltip formatter={(value) => [`€${formatCurrency(Number(value))}`, 'Revenue']}/>
                               <Bar dataKey="revenue" fill="#8884d8"/>
                           </BarChart>
                       </ResponsiveContainer>

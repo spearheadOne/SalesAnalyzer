@@ -7,7 +7,6 @@ function App() {
 
     const [active, setActive] = useState<'history' | 'live'>('live')
 
-    //TODO: check if barchart can be unified
     return (
         <>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
