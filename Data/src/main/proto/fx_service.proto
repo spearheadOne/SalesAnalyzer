@@ -1,0 +1,22 @@
+syntax = "proto3";
+package org.abondar.experimental.sales.analyzer.fx;
+option java_multiple_files = true;
+
+service FxService {
+  rpc ConvertBatch (ConvertRequest) returns (ConvertResponse);
+}
+
+message Money {
+  string currency_code = 1;  // e.g. "USD", "EUR"
+  string amount        = 2;  // decimal in string to avoid float issues
+}
+
+message ConvertRequest {
+  Money  money               = 1;
+  string target_currency_code = 2;
+
+}
+
+message ConvertResponse {
+  Money  converted = 1;
+}

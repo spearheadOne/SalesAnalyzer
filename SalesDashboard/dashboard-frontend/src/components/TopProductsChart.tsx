@@ -42,6 +42,7 @@ export default function TopProductsChart() {
                               />
                               <Tooltip formatter={(value, name) => {
                                   const v = Number(value);
+                                  //TODO: keep in mind currency
                                   if (name === 'Revenue') return [`€${formatCurrency(Number(value))}`, name];
                                   return [v.toLocaleString(), String(name)];
                               }}

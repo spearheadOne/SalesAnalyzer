@@ -1,6 +1,6 @@
 import {z} from 'zod'
 
-
+//todo: add currency fields
 export const CategoryRevenueSchema = z.object({
     category: z.string(),
     revenue: z.number()

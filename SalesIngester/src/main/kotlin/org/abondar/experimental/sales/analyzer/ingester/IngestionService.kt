@@ -38,13 +38,12 @@ class IngestionService(
                         amount = cols[ColumnHeaders.AMOUNT.index].toInt(),
                     )
                 )
-            }
 
-            if (batch.size == batchSize) {
-                publisher.publishMessage(batch)
-                batch.clear()
+                if (batch.size == batchSize) {
+                    publisher.publishMessage(batch)
+                    batch.clear()
+                }
             }
-
         }
 
         if (batch.isNotEmpty()) {

@@ -5,6 +5,7 @@ import io.micronaut.serde.annotation.Serdeable
 import java.math.BigDecimal
 import java.time.Instant
 
+//TODO: retrieve currency from db
 @Introspected
 @Serdeable
 data class TimeSeriesPoint(

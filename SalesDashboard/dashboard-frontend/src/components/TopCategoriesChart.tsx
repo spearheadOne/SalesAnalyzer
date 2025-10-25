@@ -39,6 +39,7 @@ export default function TopCategoriesChart() {
                               <YAxis type="number"
                                      tickFormatter={(value) => formatCurrency(Number(value))}
                               />
+                              //TODO: display based on currency from backend
                               <Tooltip formatter={(value) => [`€${formatCurrency(Number(value))}`, 'Revenue']}/>
                               <Bar dataKey="revenue" fill="#8884d8"/>
                           </BarChart>
