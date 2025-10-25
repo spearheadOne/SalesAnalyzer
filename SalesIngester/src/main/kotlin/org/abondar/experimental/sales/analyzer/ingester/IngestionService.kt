@@ -8,6 +8,7 @@ import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.time.Instant
+import java.util.Currency
 
 @Singleton
 class IngestionService(
@@ -34,7 +35,7 @@ class IngestionService(
                         productName = cols[ColumnHeaders.PRODUCT_NAME.index],
                         category = cols[ColumnHeaders.CATEGORY.index],
                         price = cols[ColumnHeaders.PRICE.index].toBigDecimal(),
-                        currency = cols[ColumnHeaders.CURRENCY.index],
+                        currency = Currency.getInstance(cols[ColumnHeaders.CURRENCY.index].uppercase()),
                         amount = cols[ColumnHeaders.AMOUNT.index].toInt(),
                     )
                 )

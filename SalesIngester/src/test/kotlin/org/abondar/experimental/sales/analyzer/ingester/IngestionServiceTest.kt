@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
 import java.math.BigDecimal
+import java.util.Currency
 
 @ExtendWith(MockitoExtension::class)
 class IngestionServiceTest {
@@ -43,7 +44,7 @@ class IngestionServiceTest {
         assertEquals("Wireless Mouse", records.first().productName)
         assertEquals("Electronics", records.first().category)
         assertEquals("24.99".toBigDecimal(), records.first().price)
-        assertEquals("EUR", records.first().currency)
+        assertEquals(Currency.getInstance("EUR"), records.first().currency)
         assertEquals(2, records.first().amount)
     }
 
