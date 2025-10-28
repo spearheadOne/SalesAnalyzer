@@ -1,0 +1,6 @@
+micronaut:
+  application:
+    name: sales-fx-service
+grpc:
+  server:
+    port: 9028

@@ -2,21 +2,33 @@ syntax = "proto3";
 package org.abondar.experimental.sales.analyzer.fx;
 option java_multiple_files = true;
 
+
+import "google/protobuf/timestamp.proto";
+
 service FxService {
-  rpc ConvertBatch (ConvertRequest) returns (ConvertResponse);
+  rpc ConvertBatch (ConvertBatchRequest) returns (ConvertBatchResponse);
 }
 
 message Money {
-  string currency_code = 1;  // e.g. "USD", "EUR"
-  string amount        = 2;  // decimal in string to avoid float issues
+  string currency_code = 1;
+  string amount        = 2;
 }
 
-message ConvertRequest {
-  Money  money               = 1;
+message ConvertRequestItem {
+  Money  source            = 1;
   string target_currency_code = 2;
+  google.protobuf.Timestamp as_of = 3;
 
 }
 
-message ConvertResponse {
+message ConvertBatchRequest {
+  repeated ConvertRequestItem items = 1;
+}
+
+message ConvertResponseItem {
   Money  converted = 1;
+}
+
+message ConvertBatchResponse {
+  repeated ConvertResponseItem items = 1;
 }
