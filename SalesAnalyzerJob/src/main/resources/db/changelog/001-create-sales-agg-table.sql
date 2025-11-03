@@ -3,8 +3,8 @@
 
 CREATE TABLE IF NOT EXISTS sales_agg (
                            event_time TIMESTAMPTZ NOT NULL,
-                           product_id   VARCHAR(255) NOT NULL,
-                           category     VARCHAR(255) NOT NULL,
+                           product_id   VARCHAR NOT NULL,
+                           category     VARCHAR NOT NULL,
                            orders       BIGINT NOT NULL,
                            units        BIGINT NOT NULL,
                            revenue      DOUBLE PRECISION NOT NULL,
