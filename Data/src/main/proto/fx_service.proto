@@ -18,7 +18,7 @@ message ConvertRequestItem {
   Money  source            = 1;
   string target_currency_code = 2;
   google.protobuf.Timestamp as_of = 3;
-  string product_id = 4;
+  string correlation_id = 4;
 
 }
 
@@ -28,7 +28,7 @@ message ConvertBatchRequest {
 
 message ConvertResponseItem {
   Money  converted = 1;
-  string product_id = 2;
+  string correlation_id = 2;
 }
 
 message ConvertBatchResponse {

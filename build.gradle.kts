@@ -1,7 +1,3 @@
-import io.micronaut.gradle.docker.MicronautDockerfile
-import io.micronaut.gradle.docker.NativeImageDockerfile
-import org.gradle.kotlin.dsl.named
-
 plugins {
     kotlin("jvm") version "2.0.21" apply false
     kotlin("kapt") version "2.0.21" apply false

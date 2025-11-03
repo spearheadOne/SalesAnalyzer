@@ -17,6 +17,11 @@ aws:
       endpoint-override: http://localhost:4566
       queueUrl: http://localhost:4566/000000000000/sales-queue
 
+grpc:
+  channels:
+    fx:
+      address: "dns:///localhost:9028"
+      plaintext: true
 
 logging:
   level:

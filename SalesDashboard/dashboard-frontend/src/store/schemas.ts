@@ -21,6 +21,8 @@ export const TimeSeriesPointSchema = z.object({
     revenue: z.number()
 })
 
+
+//TODO: adjust to AggDTO in backend
 export const AggRowSchema = z.object({
         eventTime: z.coerce.date(),
         productId: z.string(),

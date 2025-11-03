@@ -31,6 +31,15 @@ aws:
      sqs:
        queueUrl: ${SQS_QUEUE_URL}
 
+
+grpc:
+  channels:
+    fx:
+      address: "dns:///fx-service.internal:9028"
+      plaintext: true
+
+default-currency: EUR
+
 logging:
   level:
     root: INFO

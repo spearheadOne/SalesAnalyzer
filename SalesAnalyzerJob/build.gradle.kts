@@ -25,6 +25,7 @@ dependencies {
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.liquibase:micronaut-liquibase")
+    implementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
 
     runtimeOnly("org.postgresql:postgresql:42.7.3")
 
@@ -38,6 +39,7 @@ dependencies {
     implementation("org.mybatis:mybatis:3.5.19")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     kapt("io.micronaut:micronaut-inject-java")
     kaptTest("io.micronaut:micronaut-inject-java")

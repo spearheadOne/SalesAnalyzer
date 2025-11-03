@@ -38,7 +38,7 @@ class FxServiceIT {
                             .setSeconds(Instant.now().epochSecond)
                             .build()
                     )
-                    .setProductId("test-1")
+                    .setCorrelationId("test-1")
                     .build()
             )
             .addItems(
@@ -55,7 +55,7 @@ class FxServiceIT {
                             .setSeconds(Instant.now().epochSecond)
                             .build()
                     )
-                    .setProductId("test-2")
+                    .setCorrelationId("test-2")
                     .build()
             )
             .build()
@@ -66,7 +66,7 @@ class FxServiceIT {
             assertEquals("EUR", it.converted.currencyCode)
         }
 
-        assertEquals("test-1", res.itemsList.first().productId)
+        assertEquals("test-1", res.itemsList.first().correlationId)
         assertEquals("84.75", res.itemsList.first().converted.amount)
         assertEquals("74.07", res.itemsList.last().converted.amount)
 

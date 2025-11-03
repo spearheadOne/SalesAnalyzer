@@ -1,20 +1,31 @@
 package org.abondar.experimental.sales.analyzer.job
 
+import com.google.protobuf.Timestamp
 import io.micronaut.serde.ObjectMapper
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.abondar.experimental.sales.analyzer.data.SalesRecord
-import org.abondar.experimental.sales.analyzer.job.data.AggMapper
+import org.abondar.experimental.sales.analyzer.fx.ConvertBatchRequest
+import org.abondar.experimental.sales.analyzer.fx.ConvertRequestItem
+import org.abondar.experimental.sales.analyzer.fx.Money
+import org.abondar.experimental.sales.analyzer.job.fx.FxClient
+import org.abondar.experimental.sales.analyzer.job.mapper.AggMapper
 import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer
 import org.slf4j.LoggerFactory
 import software.amazon.kinesis.lifecycle.events.*
 import software.amazon.kinesis.processor.ShardRecordProcessor
 import java.math.BigDecimal
 import java.time.Instant
+import java.util.*
+import kotlin.time.Duration.Companion.milliseconds
 
 class SalesRecordProcessor(
     private val objectMapper: ObjectMapper,
     private val aggMapper: AggMapper,
-    private val sqsProducer: SqsProducer
+    private val sqsProducer: SqsProducer,
+    private val fxClient: FxClient,
+    private val defaultCurrency: String
 ) : ShardRecordProcessor {
 
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -24,15 +35,12 @@ class SalesRecordProcessor(
     }
 
     override fun processRecords(processRecordsInput: ProcessRecordsInput?) {
-
-        var orders = 0L
-        var units = 0L
-        var revenue = BigDecimal.ZERO
-        var productId = ""
-        var productName = ""
-        var category = ""
-
+        var currency: Currency
+        val defCur = Currency.getInstance(defaultCurrency)
         val aggRows = mutableListOf<AggRow>()
+        val fxRows = mutableMapOf<String, AggRow.Builder>()
+        val convertRequestBatch = mutableListOf<ConvertRequestItem>()
+
         processRecordsInput?.records()?.forEach { rec ->
             try {
                 val recBytes = rec.data().asReadOnlyBuffer().let { buffer ->
@@ -40,31 +48,58 @@ class SalesRecordProcessor(
                 }
                 val salesRecord = objectMapper.readValue(recBytes, SalesRecord::class.java)
 
-                orders += 1
-                units += salesRecord.amount.toLong()
+                currency = salesRecord.currency
 
-                //TODO: keep in mind currency: we need to convert currency if it's different from default one
-                revenue = revenue.add(salesRecord.price.multiply(BigDecimal(salesRecord.amount)))
-                productName = salesRecord.productName
-                productId = salesRecord.productId
-                category = salesRecord.category
-                val eventTime = Instant.ofEpochMilli(salesRecord.timestamp.toEpochMilli())
+                val row = AggRow.builder().apply {
+                    eventTime = salesRecord.timestamp
+                    productName = salesRecord.productName
+                    productId = salesRecord.productId
+                    units = salesRecord.amount.toLong()
+                    category = salesRecord.category
+                    currency = defCur.currencyCode.let { Currency.getInstance(it) }
+                }
 
-                aggRows += AggRow(
-                    eventTime,
-                    productId,
-                    productName,
-                    category,
-                    orders,
-                    units,
-                    revenue
-                )
+                if (currency == defCur) {
+                    row.revenue = salesRecord.price.multiply(BigDecimal(salesRecord.amount))
+                    aggRows.add(row.build())
+                } else {
+                    val correlationId = UUID.randomUUID().toString()
+                    convertRequestBatch.add(
+                        buildConvertRequestItem(
+                            salesRecord.price, currency,
+                            salesRecord.timestamp, defCur,
+                            correlationId
+                        )
+                    )
+                    fxRows[correlationId] = row
+                }
+
             } catch (ex: Exception) {
                 log.error("Error processing record", ex)
             }
         }
 
-        if (!aggRows.isEmpty()) {
+        if (convertRequestBatch.isNotEmpty()) {
+            val convertBatchResponse = runBlocking {
+                withTimeout(800.milliseconds) {
+                    fxClient.convertBatch(
+                        ConvertBatchRequest.newBuilder()
+                            .addAllItems(convertRequestBatch)
+                            .build()
+                    )
+                }
+            }
+
+            convertBatchResponse.itemsList.forEach {res ->
+                val row = fxRows[res.correlationId]!!
+
+                val convertedPrice = res.converted.amount.toBigDecimal()
+                row.revenue = convertedPrice.multiply(BigDecimal(row.units))
+                aggRows.add(row.build())
+            }
+        }
+
+        if (aggRows.isNotEmpty()) {
             aggMapper.insertUpdateAgg(aggRows)
             sqsProducer.sendMessage(aggRows)
         }
@@ -83,4 +118,26 @@ class SalesRecordProcessor(
         log.info("Shutting down requested")
         shutdownRequestedInput?.checkpointer()?.checkpoint()
     }
+
+    private fun buildConvertRequestItem(
+        amount: BigDecimal,
+        curCode: Currency,
+        asOf: Instant,
+        targetCurrency: Currency,
+        correlationId: String
+    ) = ConvertRequestItem.newBuilder()
+        .setSource(
+            Money.newBuilder()
+                .setAmount(amount.toString())
+                .setCurrencyCode(curCode.currencyCode)
+                .build()
+        )
+        .setAsOf(
+            Timestamp.newBuilder()
+                .setNanos(asOf.nano)
+                .build()
+        )
+        .setTargetCurrencyCode(targetCurrency.currencyCode)
+        .setCorrelationId(correlationId)
+        .build()
 }
