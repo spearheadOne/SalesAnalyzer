@@ -1,4 +1,4 @@
-package org.abondar.experimental.sales.analyzer.job.data
+package org.abondar.experimental.sales.analyzer.job.mapper
 
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.apache.ibatis.annotations.Delete
@@ -15,7 +15,8 @@ interface AggTestMapper {
             "            category,\n" +
             "            orders,\n" +
             "            units,\n" +
-            "            revenue\n" +
+            "            revenue,\n" +
+            "            currency\n" +
             "        from sales_agg")
     fun getAggregates(): List<AggRow>
 

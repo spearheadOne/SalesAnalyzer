@@ -1,7 +1,7 @@
 package org.abondar.experimental.sales.analyzer.ingester
 
 import jakarta.inject.Singleton
-import org.abondar.experimental.sales.analyzer.data.ColumnHeaders
+import org.abondar.experimental.sales.analyzer.ingester.ColumnHeaders
 import org.abondar.experimental.sales.analyzer.data.SalesRecord
 
 import java.io.BufferedReader

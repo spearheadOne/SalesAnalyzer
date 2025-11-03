@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.abondar.experimental.sales.analyzer.job.data.AggMapper">
+<mapper namespace="org.abondar.experimental.sales.analyzer.job.mapper.AggMapper">
     <insert id="insertUpdateAgg" parameterType="list">
         INSERT INTO sales_agg (
         event_time,
@@ -12,7 +12,8 @@
         category,
         orders,
         units,
-        revenue
+        revenue,
+        currency
         ) VALUES
         <foreach collection="list" item="row" separator=",">
             (
@@ -22,7 +23,8 @@
             #{row.category},
             #{row.orders},
             #{row.units},
-            #{row.revenue,jdbcType=NUMERIC}
+            #{row.revenue,jdbcType=NUMERIC},
+            #{row.currency}
             )
         </foreach>
         ON CONFLICT (event_time, product_id) DO UPDATE

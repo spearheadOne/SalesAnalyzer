@@ -16,5 +16,5 @@ data class AggRow(
     val orders: Long,
     val units: Long,
     val revenue: BigDecimal,
-    val currency: Currency
+    val currency: String
 )

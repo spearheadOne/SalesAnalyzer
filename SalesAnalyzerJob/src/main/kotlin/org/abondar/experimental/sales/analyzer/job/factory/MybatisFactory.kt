@@ -23,7 +23,7 @@ class MybatisFactory(
         val transactionFactory: TransactionFactory = JdbcTransactionFactory()
         val mybatisEnvironment = Environment(mybatisEnv, transactionFactory, dataSource)
         val config = Configuration(mybatisEnvironment)
-        config.addMappers("org.abondar.experimental.sales.analyzer.job.data")
+        config.addMappers("org.abondar.experimental.sales.analyzer.job.mapper")
 
         return SqlSessionFactoryBuilder().build(config)
     }

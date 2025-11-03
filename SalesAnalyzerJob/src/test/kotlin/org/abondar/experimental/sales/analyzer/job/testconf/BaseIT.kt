@@ -2,7 +2,8 @@ package org.abondar.experimental.sales.analyzer.job.testconf
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.PropertySource
-import org.abondar.experimental.sales.analyzer.job.data.AggTestMapper
+import org.abondar.experimental.sales.analyzer.job.mapper.AggTestMapper
+
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.testcontainers.containers.PostgreSQLContainer
