@@ -6,6 +6,7 @@ import io.micronaut.http.client.StreamingHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import org.abondar.experimental.sales.analyzer.dashboard.stream.Feed
 import org.abondar.experimental.sales.analyzer.dashboard.testconf.BaseIT
+import org.abondar.experimental.sales.analyzer.data.AggDto
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -50,11 +51,10 @@ class SalesDashBoardControllerStreamIT : BaseIT() {
 
     @Test
     fun `test streaming`() {
-        val newAgg = AggRow(
+        val newAgg = AggDto(
             Instant.now(),
             "test-stream", "test-stream", "test",
-            1, 1, BigDecimal.TEN
-        )
+            1, 1, "10.0","EUR")
         val feed = applicationContext.getBean(Feed::class.java)
         feed.emit(newAgg)
 

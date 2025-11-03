@@ -5,7 +5,7 @@ import io.micronaut.jms.annotations.Queue
 import io.micronaut.jms.sqs.configuration.SqsConfiguration.CONNECTION_FACTORY_BEAN_NAME
 import io.micronaut.messaging.annotation.MessageBody
 import io.micronaut.serde.ObjectMapper
-import org.abondar.experimental.sales.analyzer.data.AggRow
+import org.abondar.experimental.sales.analyzer.data.AggDto
 import org.slf4j.LoggerFactory
 
 @JMSListener(CONNECTION_FACTORY_BEAN_NAME)
@@ -17,9 +17,9 @@ class QueueListener(
 
     @Queue("\${aws.sqs.queueName}")
     fun receiveMessage(@MessageBody msg: String) {
-        val aggRow = objectMapper.readValue(msg, AggRow::class.java)
-        log.info("Received message $aggRow")
-        feed.emit(aggRow)
+        val aggDto = objectMapper.readValue(msg, AggDto::class.java)
+        log.info("Received message $aggDto")
+        feed.emit(aggDto)
     }
 
 }

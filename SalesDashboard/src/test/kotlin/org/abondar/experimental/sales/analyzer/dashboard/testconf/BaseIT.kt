@@ -26,7 +26,7 @@ open class BaseIT {
 
         val agg = AggRow(
             Instant.now(), "test", "test", "test",
-            1, 1, BigDecimal(10)
+            1, 1, BigDecimal(10),"EUR"
         )
 
         @Container

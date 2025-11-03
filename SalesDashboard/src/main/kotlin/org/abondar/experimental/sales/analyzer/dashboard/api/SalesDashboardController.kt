@@ -20,7 +20,7 @@ import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
 import org.abondar.experimental.sales.analyzer.dashboard.stream.Feed
-import org.abondar.experimental.sales.analyzer.data.AggRow
+import org.abondar.experimental.sales.analyzer.data.AggDto
 import reactor.core.publisher.Flux
 
 @Tag(name = "Sales dashboard", description = "Operations related to fetching various aggregated sales data")
@@ -133,5 +133,5 @@ class SalesDashboardController(
         ]
     )
     @Get(uri = "/stream", produces = [MediaType.APPLICATION_JSON_STREAM])
-    fun streamTimeSeries(): Flux<AggRow>  = feed.stream()
+    fun streamTimeSeries(): Flux<AggDto> = feed.stream()
 }
