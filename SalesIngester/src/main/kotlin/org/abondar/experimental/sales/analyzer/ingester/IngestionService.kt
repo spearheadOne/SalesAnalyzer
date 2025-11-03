@@ -15,18 +15,17 @@ class IngestionService(
     private val publisher: IngestionPublisher
 ) {
 
-    val batchSize = 500
-
     suspend fun ingestData(data: InputStream) {
         val batch = ArrayList<SalesRecord>()
+        var bytesInBatch = 0
+        val lastFlush = System.currentTimeMillis()
 
         BufferedReader(InputStreamReader(data)).useLines { lines ->
             lines.forEach { line ->
-                val cols = line.split(',')
+                if (line.isBlank()) return@forEach
+                ColumnHeaders.TIMESTAMP.header?.let { if (line.startsWith(it)) return@forEach }
 
-                if (cols[0] == ColumnHeaders.TIMESTAMP.header) {
-                    return@forEach
-                }
+                val cols = line.split(',')
 
                 batch.add(
                     SalesRecord(
@@ -40,7 +39,10 @@ class IngestionService(
                     )
                 )
 
-                if (batch.size == batchSize) {
+                bytesInBatch +=line.toByteArray().size
+                val elapsedTime = System.currentTimeMillis() - lastFlush
+
+                if (batch.size == MAX_BATCH_SIZE || bytesInBatch >= MAX_BYTES || elapsedTime >= MAX_ELAPSED_MS) {
                     publisher.publishMessage(batch)
                     batch.clear()
                 }
@@ -50,5 +52,11 @@ class IngestionService(
         if (batch.isNotEmpty()) {
             publisher.publishMessage(batch)
         }
+    }
+
+    companion object {
+        const val MAX_BATCH_SIZE = 500
+        const val MAX_ELAPSED_MS = 200L
+        const val MAX_BYTES = 4_500_000 // 4.5 mb
     }
 }

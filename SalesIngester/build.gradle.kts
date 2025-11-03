@@ -30,8 +30,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
-
-
     kapt("io.micronaut:micronaut-inject-java")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
