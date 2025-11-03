@@ -23,6 +23,7 @@ class FxService(
             val convertedAmount = currencyConverter.convertAmount(srcCurrency, srcAmount, dstCurrency, asOf)
 
             ConvertResponseItem.newBuilder()
+                .setProductId(item.productId)
                 .setConverted(
                     Money.newBuilder()
                         .setCurrencyCode(dstCurrency.currencyCode)

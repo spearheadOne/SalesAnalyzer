@@ -2,7 +2,6 @@ package org.abondar.experimental.sales.analyzer.fx
 
 import com.google.protobuf.Timestamp
 import io.grpc.ManagedChannel
-import io.micronaut.context.annotation.Property
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -11,7 +10,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
 import java.time.Instant
 
 @MicronautTest
@@ -40,6 +38,7 @@ class FxServiceIT {
                             .setSeconds(Instant.now().epochSecond)
                             .build()
                     )
+                    .setProductId("test-1")
                     .build()
             )
             .addItems(
@@ -56,6 +55,7 @@ class FxServiceIT {
                             .setSeconds(Instant.now().epochSecond)
                             .build()
                     )
+                    .setProductId("test-2")
                     .build()
             )
             .build()
@@ -66,6 +66,7 @@ class FxServiceIT {
             assertEquals("EUR", it.converted.currencyCode)
         }
 
+        assertEquals("test-1", res.itemsList.first().productId)
         assertEquals("84.75", res.itemsList.first().converted.amount)
         assertEquals("74.07", res.itemsList.last().converted.amount)
 
