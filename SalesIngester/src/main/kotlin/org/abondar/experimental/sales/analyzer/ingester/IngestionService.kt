@@ -35,7 +35,7 @@ class IngestionService(
                         category = cols[ColumnHeaders.CATEGORY.index],
                         price = cols[ColumnHeaders.PRICE.index].toBigDecimal(),
                         currency = Currency.getInstance(cols[ColumnHeaders.CURRENCY.index].uppercase()),
-                        amount = cols[ColumnHeaders.AMOUNT.index].toInt(),
+                        amount = cols[ColumnHeaders.AMOUNT.index].toLong(),
                     )
                 )
 

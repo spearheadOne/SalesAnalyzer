@@ -14,6 +14,6 @@ data class SalesRecord(
     val productName: String,
     val category: String,
     val price: BigDecimal,
-    val amount: Int,
+    val amount: Long,
     val currency: Currency,
 )
