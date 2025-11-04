@@ -22,6 +22,6 @@ data class AggDto(
 @Serdeable
 @Introspected
 data class OrigPrice(
-    val amount: String,
+    val price: String,
     val currency: String
 )

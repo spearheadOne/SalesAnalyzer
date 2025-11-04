@@ -3,6 +3,7 @@ package org.abondar.experimental.sales.analyzer.job
 import io.micronaut.serde.ObjectMapper
 import kotlinx.coroutines.runBlocking
 import org.abondar.experimental.sales.analyzer.data.AggRow
+import org.abondar.experimental.sales.analyzer.data.AggRow.Companion.toDto
 import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer
 import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
 import org.abondar.experimental.sales.analyzer.job.testconf.Properties
@@ -35,11 +36,11 @@ class SqsProducerIT : BaseIT() {
         val sqsProducer = SqsProducer(sqsClient, objectMapper, queueUrl)
 
         val agg = AggRow(
-            Instant.now(), "test", "test", "test", 1, 1, BigDecimal(10)
-        )
+            Instant.now(), "test", "test", "test", 1, 1,
+            BigDecimal(10), "EUR")
 
         runBlocking {
-            sqsProducer.sendMessage(listOf(agg))
+            sqsProducer.sendMessage(listOf(agg.toDto()))
         }
 
         val msg = sqsClient.receiveMessage(

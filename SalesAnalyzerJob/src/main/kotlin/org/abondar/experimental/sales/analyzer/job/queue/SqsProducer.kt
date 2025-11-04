@@ -3,6 +3,7 @@ package org.abondar.experimental.sales.analyzer.job.queue
 import io.micronaut.context.annotation.Value
 import io.micronaut.serde.ObjectMapper
 import jakarta.inject.Singleton
+import org.abondar.experimental.sales.analyzer.data.AggDto
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequest
@@ -14,12 +15,13 @@ class SqsProducer(
     private val objectMapper: ObjectMapper,
     @param:Value("\${aws.sqs.queueUrl:}") private val queueUrl: String
 ) {
-    fun sendMessage(rows: List<AggRow>) {
+
+    fun sendMessage(rows: List<AggDto>) {
         rows.chunked(10).forEach { chunk ->
-            val entries = chunk.mapIndexed { idx, row ->
+            val entries = chunk.mapIndexed { idx, dto ->
                 SendMessageBatchRequestEntry.builder()
                     .id(idx.toString())
-                    .messageBody(objectMapper.writeValueAsString(row))
+                    .messageBody(objectMapper.writeValueAsString(dto))
                     .build()
             }
 

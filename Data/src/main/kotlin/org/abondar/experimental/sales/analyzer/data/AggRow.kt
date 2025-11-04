@@ -20,6 +20,18 @@ data class AggRow(
     companion object {
         fun builder() = Builder()
 
+        fun AggRow.toDto(orig: OrigPrice? = null) = AggDto(
+            eventTime = eventTime,
+            productId = productId,
+            productName = productName,
+            category = category,
+            orders = orders,
+            units = units,
+            revenue = revenue.toPlainString(),
+            currency = currency,
+            origPrice = orig
+        )
+
         inline fun build(init: Builder.() -> Unit): AggRow =
             Builder().apply(init).build()
     }

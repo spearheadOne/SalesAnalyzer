@@ -4,7 +4,10 @@ import com.google.protobuf.Timestamp
 import io.micronaut.serde.ObjectMapper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import org.abondar.experimental.sales.analyzer.data.AggDto
 import org.abondar.experimental.sales.analyzer.data.AggRow
+import org.abondar.experimental.sales.analyzer.data.AggRow.Companion.toDto
+import org.abondar.experimental.sales.analyzer.data.OrigPrice
 import org.abondar.experimental.sales.analyzer.data.SalesRecord
 import org.abondar.experimental.sales.analyzer.fx.ConvertBatchRequest
 import org.abondar.experimental.sales.analyzer.fx.ConvertRequestItem
@@ -16,9 +19,15 @@ import org.slf4j.LoggerFactory
 import software.amazon.kinesis.lifecycle.events.*
 import software.amazon.kinesis.processor.ShardRecordProcessor
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Instant
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
+
+data class PendingRow(
+    val row: AggRow.Builder,
+    val originalPrice: OrigPrice
+)
 
 class SalesRecordProcessor(
     private val objectMapper: ObjectMapper,
@@ -35,11 +44,11 @@ class SalesRecordProcessor(
     }
 
     override fun processRecords(processRecordsInput: ProcessRecordsInput?) {
-        var currency: Currency
         val defCur = Currency.getInstance(defaultCurrency)
         val aggRows = mutableListOf<AggRow>()
-        val fxRows = mutableMapOf<String, AggRow.Builder>()
+        val fxRows = mutableMapOf<String, PendingRow>()
         val convertRequestBatch = mutableListOf<ConvertRequestItem>()
+        val messages = mutableListOf<AggDto>()
 
         processRecordsInput?.records()?.forEach { rec ->
             try {
@@ -48,30 +57,31 @@ class SalesRecordProcessor(
                 }
                 val salesRecord = objectMapper.readValue(recBytes, SalesRecord::class.java)
 
-                currency = salesRecord.currency
-
                 val row = AggRow.builder().apply {
                     eventTime = salesRecord.timestamp
                     productName = salesRecord.productName
                     productId = salesRecord.productId
-                    units = salesRecord.amount.toLong()
+                    units = salesRecord.amount
                     category = salesRecord.category
-                    currency = defCur.currencyCode.let { Currency.getInstance(it) }
+                    currency = defCur.currencyCode
                 }
 
-                if (currency == defCur) {
-                    row.revenue = salesRecord.price.multiply(BigDecimal(salesRecord.amount))
-                    aggRows.add(row.build())
+                if (salesRecord.currency == defCur) {
+                    row.revenue = salesRecord.price.multiply(BigDecimal.valueOf(salesRecord.amount))
+                    val aggRow = row.build()
+                    aggRows.add(aggRow)
+                    messages.add(aggRow.toDto())
                 } else {
                     val correlationId = UUID.randomUUID().toString()
                     convertRequestBatch.add(
                         buildConvertRequestItem(
-                            salesRecord.price, currency,
+                            salesRecord.price, salesRecord.currency,
                             salesRecord.timestamp, defCur,
                             correlationId
                         )
                     )
-                    fxRows[correlationId] = row
+                    fxRows[correlationId] = PendingRow(row, OrigPrice(salesRecord.price.toPlainString(),
+                        salesRecord.currency.currencyCode))
                 }
 
             } catch (ex: Exception) {
@@ -90,18 +100,28 @@ class SalesRecordProcessor(
                 }
             }
 
-            convertBatchResponse.itemsList.forEach {res ->
-                val row = fxRows[res.correlationId]!!
+            convertBatchResponse.itemsList.forEach { res ->
+                val pending = fxRows.remove(res.correlationId)
+                    ?: error("Unknown correlationId: ${res.correlationId}")
+                val r = pending.row
 
                 val convertedPrice = res.converted.amount.toBigDecimal()
-                row.revenue = convertedPrice.multiply(BigDecimal(row.units))
-                aggRows.add(row.build())
+                r.revenue = convertedPrice.multiply(BigDecimal(r.units))
+                    .setScale(defCur.defaultFractionDigits.coerceAtLeast(0), RoundingMode.HALF_UP)
+
+
+                val row = r.build()
+                aggRows.add(row)
+                messages.add(row.toDto(pending.originalPrice))
             }
         }
 
         if (aggRows.isNotEmpty()) {
             aggMapper.insertUpdateAgg(aggRows)
-            sqsProducer.sendMessage(aggRows)
+        }
+
+        if (messages.isNotEmpty()) {
+            sqsProducer.sendMessage(messages)
         }
     }
 
@@ -134,6 +154,7 @@ class SalesRecordProcessor(
         )
         .setAsOf(
             Timestamp.newBuilder()
+                .setSeconds(asOf.epochSecond)
                 .setNanos(asOf.nano)
                 .build()
         )
