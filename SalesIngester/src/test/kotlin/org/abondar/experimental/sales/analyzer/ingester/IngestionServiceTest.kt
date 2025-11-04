@@ -44,7 +44,7 @@ class IngestionServiceTest {
         assertEquals("Wireless Mouse", records.first().productName)
         assertEquals("Electronics", records.first().category)
         assertEquals("24.99".toBigDecimal(), records.first().price)
-        assertEquals(Currency.getInstance("EUR"), records.first().currency)
+        assertEquals("EUR", records.first().currency)
         assertEquals(2, records.first().amount)
     }
 

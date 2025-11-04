@@ -1,5 +1,11 @@
 package org.abondar.experimental.sales.analyzer.job
 
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import org.abondar.experimental.sales.analyzer.fx.ConvertBatchResponse
+import org.abondar.experimental.sales.analyzer.fx.ConvertResponseItem
+import org.abondar.experimental.sales.analyzer.fx.Money
+import org.abondar.experimental.sales.analyzer.job.fx.FxClient
 import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
 import org.abondar.experimental.sales.analyzer.job.testconf.Containers
 import org.abondar.experimental.sales.analyzer.job.testconf.Properties
@@ -7,6 +13,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.any
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest
@@ -17,6 +26,7 @@ import software.amazon.awssdk.services.sqs.model.CreateQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import java.time.Instant
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.milliseconds
 
 
 class SalesJobAnalyzerIT: BaseIT(){
@@ -50,6 +60,28 @@ class SalesJobAnalyzerIT: BaseIT(){
             CreateQueueRequest.builder()
                 .queueName("sales-queue").build()
         ).get(5, TimeUnit.SECONDS).queueUrl()
+
+
+        fxClient = mock(FxClient::class.java)
+        runBlocking {
+            withTimeout(800.milliseconds) {
+                `when`(fxClient.convertBatch(any())).thenReturn(
+                    ConvertBatchResponse.newBuilder()
+                        .addItems(
+                            ConvertResponseItem.newBuilder()
+                                .setCorrelationId("test")
+                                .setConverted(
+                                    Money.newBuilder()
+                                        .setAmount("10.00")
+                                        .setCurrencyCode("EUR")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+            }
+        }
     }
 
     @Test
@@ -70,7 +102,7 @@ class SalesJobAnalyzerIT: BaseIT(){
         putRecord(
             """
             {"timestamp":"${now.plusSeconds(20)}","orderId":"O2","customerId":"C1","productId":"P1",
-             "productName":"Mouse","category":"Electronics","price":"5.00","amount":1,"currency":"EUR","region":"DE"}
+             "productName":"Mouse","category":"Electronics","price":"5.00","amount":1,"currency":"USD","region":"DE"}
         """.trimIndent()
         )
 

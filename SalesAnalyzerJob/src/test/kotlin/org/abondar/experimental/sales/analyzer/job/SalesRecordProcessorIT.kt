@@ -1,10 +1,10 @@
 package org.abondar.experimental.sales.analyzer.job
 
 import io.micronaut.serde.ObjectMapper
-import junit.framework.TestCase.assertEquals
-import org.abondar.experimental.sales.analyzer.job.data.AggMapper
+import org.abondar.experimental.sales.analyzer.job.mapper.AggMapper
 import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer
 import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import software.amazon.awssdk.services.kinesis.model.Record
 import software.amazon.kinesis.lifecycle.events.ProcessRecordsInput
@@ -24,11 +24,9 @@ class SalesRecordProcessorIT : BaseIT() {
         val aggMapper = applicationContext.getBean(AggMapper::class.java)
         val objectMapper = applicationContext.getBean(ObjectMapper::class.java)
         val sqsProducer = applicationContext.getBean(SqsProducer::class.java)
-
-
         testMapper.deleteAll()
 
-        val processor = SalesRecordProcessor(objectMapper, aggMapper,sqsProducer)
+        val processor = SalesRecordProcessor(objectMapper, aggMapper, sqsProducer, fxClient, "EUR")
 
         val now = Instant.now()
         val records = listOf(
@@ -41,7 +39,7 @@ class SalesRecordProcessorIT : BaseIT() {
             jsonRecord(
                 """
             {"timestamp":"${now.plusSeconds(20)}","orderId":"O2","customerId":"C1","productId":"P1",
-             "productName":"Mouse","category":"Electronics","price":"5.00","amount":1,"currency":"EUR","region":"DE"}
+             "productName":"Mouse","category":"Electronics","price":"5.00","amount":1,"currency":"USD","region":"DE"}
         """.trimIndent(), 2
             ),
             jsonRecord(
@@ -109,7 +107,7 @@ class SalesRecordProcessorIT : BaseIT() {
         override fun prepareCheckpoint(
             sequenceNumber: String?,
             subSequenceNumber: Long
-        ): PreparedCheckpointer? {
+        ): PreparedCheckpointer {
             TODO("Not yet implemented")
         }
 

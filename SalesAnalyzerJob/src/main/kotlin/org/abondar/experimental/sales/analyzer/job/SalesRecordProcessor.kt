@@ -55,7 +55,9 @@ class SalesRecordProcessor(
                 val recBytes = rec.data().asReadOnlyBuffer().let { buffer ->
                     ByteArray(buffer.remaining()).apply { buffer.get(this) }
                 }
+
                 val salesRecord = objectMapper.readValue(recBytes, SalesRecord::class.java)
+                val recordCurrency = Currency.getInstance(salesRecord.currency)
 
                 val row = AggRow.builder().apply {
                     eventTime = salesRecord.timestamp
@@ -63,10 +65,10 @@ class SalesRecordProcessor(
                     productId = salesRecord.productId
                     units = salesRecord.amount
                     category = salesRecord.category
-                    currency = defCur.currencyCode
+                    this.currency = defCur.currencyCode
                 }
 
-                if (salesRecord.currency == defCur) {
+                if ( recordCurrency == defCur) {
                     row.revenue = salesRecord.price.multiply(BigDecimal.valueOf(salesRecord.amount))
                     val aggRow = row.build()
                     aggRows.add(aggRow)
@@ -75,13 +77,13 @@ class SalesRecordProcessor(
                     val correlationId = UUID.randomUUID().toString()
                     convertRequestBatch.add(
                         buildConvertRequestItem(
-                            salesRecord.price, salesRecord.currency,
+                            salesRecord.price, recordCurrency,
                             salesRecord.timestamp, defCur,
                             correlationId
                         )
                     )
                     fxRows[correlationId] = PendingRow(row, OrigPrice(salesRecord.price.toPlainString(),
-                        salesRecord.currency.currencyCode))
+                        recordCurrency.currencyCode))
                 }
 
             } catch (ex: Exception) {
