@@ -16,7 +16,8 @@ interface SalesDashboardTestMapper {
         category,
         orders,
         units,
-        revenue
+        revenue,
+        currency
     ) VALUES (
         #{eventTime},
         #{productId},
@@ -24,7 +25,8 @@ interface SalesDashboardTestMapper {
         #{category},
         #{orders},
         #{units},
-        #{revenue}
+        #{revenue},
+        #{currency}
     )
 """)
     fun insertAgg(agg: AggRow);

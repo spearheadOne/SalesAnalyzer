@@ -16,7 +16,7 @@ class SalesRecordProcessorFactory(
     private val objectMapper: ObjectMapper,
     private val sqsProducer: SqsProducer,
     private val fxClient: FxClient,
-    @param:Value("\${default.currency:}") private val defaultCurrency: String
+    @param:Value("\${default-currency:}") private val defaultCurrency: String
 ) : ShardRecordProcessorFactory {
 
     override fun shardRecordProcessor(): ShardRecordProcessor? {

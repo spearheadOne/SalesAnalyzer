@@ -40,6 +40,8 @@ aws:
     sqs:
       queueName: sales-queue
 
+default-currency: EUR
+
 logging:
   level:
     root: INFO

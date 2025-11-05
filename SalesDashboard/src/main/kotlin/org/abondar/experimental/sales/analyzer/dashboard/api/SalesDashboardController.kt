@@ -1,5 +1,6 @@
 package org.abondar.experimental.sales.analyzer.dashboard.api
 
+import io.micronaut.context.annotation.Value
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
@@ -17,8 +18,12 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardMapper
 import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue
+import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenueDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue
+import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenueDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
+import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPointDto
+import org.abondar.experimental.sales.analyzer.dashboard.model.toDto
 import org.abondar.experimental.sales.analyzer.dashboard.stream.Feed
 import org.abondar.experimental.sales.analyzer.data.AggDto
 import reactor.core.publisher.Flux
@@ -28,7 +33,8 @@ import reactor.core.publisher.Flux
 @Controller("/dashboard")
 class SalesDashboardController(
     private val mapper: SalesDashboardMapper,
-    private val feed: Feed
+    private val feed: Feed,
+    @param:Value("\${default-currency:}") private val defaultCurrency: String
 ) {
 
     @Operation(
@@ -54,9 +60,10 @@ class SalesDashboardController(
             schema = Schema(type = "string", pattern = "\\d+[mMhHdD]")
         )
         @PathVariable @NotBlank period: String
-    ): List<TimeSeriesPoint> {
+    ): List<TimeSeriesPointDto> {
         val dbPeriod = PeriodConverter.toPeriod(period)
-        return mapper.timeSeriesPeriod(dbPeriod)
+        val res = mapper.timeSeriesPeriod(dbPeriod)
+        return res.map { it.toDto(defaultCurrency) }
     }
 
 
@@ -86,9 +93,10 @@ class SalesDashboardController(
         @Min(1) @Max(100)
 
         @QueryValue(defaultValue = "10") limit: Int
-    ): List<CategoryRevenue> {
+    ): List<CategoryRevenueDto> {
         val dbPeriod = PeriodConverter.toPeriod(period)
-        return mapper.topCategoriesPerPeriod(dbPeriod, limit)
+        val res = mapper.topCategoriesPerPeriod(dbPeriod, limit)
+        return res.map { it.toDto(defaultCurrency) }
     }
 
     @Operation(
@@ -116,9 +124,10 @@ class SalesDashboardController(
         @PathVariable @NotBlank period: String,
         @Min(1) @Max(100)
         @QueryValue(defaultValue = "10") limit: Int
-    ): List<ProductsRevenue> {
+    ): List<ProductsRevenueDto> {
         val dbPeriod = PeriodConverter.toPeriod(period)
-        return mapper.topProductsByRevenue(dbPeriod, limit)
+        val res = mapper.topProductsByRevenue(dbPeriod, limit)
+        return res.map { it.toDto(defaultCurrency) }
     }
 
     @Operation(

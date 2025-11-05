@@ -7,8 +7,11 @@ import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
 import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue
+import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenueDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue
+import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenueDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
+import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPointDto
 import org.abondar.experimental.sales.analyzer.dashboard.testconf.BaseIT
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -49,7 +52,7 @@ class SalesDashboardControllerIT : BaseIT() {
     fun `test get time series`() {
         val request = HttpRequest.GET<Any>("$apiUrl/time-series/1m")
             .accept(MediaType.APPLICATION_JSON)
-        val res = client.toBlocking().exchange(request, Array<TimeSeriesPoint>::class.java)
+        val res = client.toBlocking().exchange(request, Array<TimeSeriesPointDto>::class.java)
 
         assertEquals(HttpStatus.OK, res.status)
 
@@ -65,7 +68,7 @@ class SalesDashboardControllerIT : BaseIT() {
             .accept(MediaType.APPLICATION_JSON)
 
         val ex = assertThrows(HttpClientResponseException::class.java) {
-            client.toBlocking().exchange(request, Array<TimeSeriesPoint>::class.java)
+            client.toBlocking().exchange(request, Array<TimeSeriesPointDto>::class.java)
         }
         assertEquals(HttpStatus.BAD_REQUEST, ex.status)
     }
@@ -74,7 +77,7 @@ class SalesDashboardControllerIT : BaseIT() {
     fun `test get categories`() {
         val request = HttpRequest.GET<Any>("$apiUrl/categories/1m")
             .accept(MediaType.APPLICATION_JSON)
-        val res = client.toBlocking().exchange(request, Array<CategoryRevenue>::class.java)
+        val res = client.toBlocking().exchange(request, Array<CategoryRevenueDto>::class.java)
 
         assertEquals(HttpStatus.OK, res.status)
 
@@ -82,7 +85,7 @@ class SalesDashboardControllerIT : BaseIT() {
         assertTrue(body.isNotEmpty())
         assertEquals(1, body.size)
         assertEquals(agg.category, body.first().category)
-        assertEquals(agg.revenue, body.first().revenue)
+        assertEquals(agg.revenue.toPlainString(), body.first().revenue)
     }
 
 
@@ -90,7 +93,7 @@ class SalesDashboardControllerIT : BaseIT() {
     fun `test get products`() {
         val request = HttpRequest.GET<Any>("$apiUrl/products/1m")
             .accept(MediaType.APPLICATION_JSON)
-        val res = client.toBlocking().exchange(request, Array<ProductsRevenue>::class.java)
+        val res = client.toBlocking().exchange(request, Array<ProductsRevenueDto>::class.java)
 
         assertEquals(HttpStatus.OK, res.status)
 
@@ -98,7 +101,7 @@ class SalesDashboardControllerIT : BaseIT() {
         assertTrue(body.isNotEmpty())
         assertEquals(1, body.size)
         assertEquals(agg.productName, body.first().productName)
-        assertEquals(agg.revenue, body.first().revenue)
+        assertEquals(agg.revenue.toPlainString(), body.first().revenue)
         assertEquals(agg.units, body.first().units)
         assertEquals(agg.orders, body.first().orders)
     }
