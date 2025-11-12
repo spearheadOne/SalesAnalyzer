@@ -13,12 +13,20 @@ data class CategoryRevenue(
 
 @Introspected
 @Serdeable
-data class CategoryRevenueDto(
+data class CategoryRevenueItemDto(
     val category: String,
     val revenue: String,
     val currency: String
 )
 
-fun CategoryRevenue.toDto(currency: String): CategoryRevenueDto {
-    return CategoryRevenueDto(category, revenue.toPlainString(), currency)
+@Introspected
+@Serdeable
+data class CategoryRevenueDto(
+    val defaultCurrency: String,
+    val items: List<CategoryRevenueItemDto>
+)
+
+
+fun CategoryRevenue.toDto(currency: String): CategoryRevenueItemDto {
+    return CategoryRevenueItemDto(category, revenue.toPlainString(), currency)
 }

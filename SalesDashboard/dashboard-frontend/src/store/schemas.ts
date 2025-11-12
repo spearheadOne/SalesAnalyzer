@@ -1,52 +1,69 @@
 import {z} from 'zod'
+import {parseNumericString} from "../util/util.ts";
 
-//todo: add currency fields
-export const CategoryRevenueSchema = z.object({
+export const CategoryRevenueItemSchema = z.object({
     category: z.string(),
-    revenue: z.number()
+    revenue: z.preprocess(parseNumericString, z.number()),
+    currency: z.string().optional()
 })
 
-export const ProductsRevenueSchema = z.object({
+export const ProductsRevenueItemSchema = z.object({
     productId: z.string(),
     productName: z.string(),
-    revenue: z.number(),
+    revenue: z.preprocess(parseNumericString, z.number()),
+    currency: z.string().optional(),
     orders: z.number(),
     units: z.number()
 })
 
-export const TimeSeriesPointSchema = z.object({
+export const TimeSeriesPointDtoSchema = z.object({
     eventTime: z.coerce.date(),
     productId: z.string(),
     productName: z.string(),
-    revenue: z.number()
+    revenue: z.preprocess(parseNumericString, z.number()),
+    currency: z.string().optional()
 })
 
+export const CategoryRevenueResponseSchema = z.object({
+    defaultCurrency: z.string().optional(),
+    items: z.array(CategoryRevenueItemSchema)
+});
+
+export const ProductsRevenueResponseSchema = z.object({
+    defaultCurrency: z.string().optional(),
+    items: z.array(ProductsRevenueItemSchema)
+});
+
+export const TimeSeriesResponseSchema = z.object({
+    defaultCurrency: z.string().optional(),
+    points: z.array(TimeSeriesPointDtoSchema)
+});
 
 //TODO: adjust to AggDTO in backend
 export const AggRowSchema = z.object({
-        eventTime: z.coerce.date(),
-        productId: z.string(),
-        productName: z.string(),
-        category: z.string(),
-        orders: z.number(),
-        units: z.number(),
-        revenue: z.number()
-    })
+    eventTime: z.coerce.date(),
+    productId: z.string(),
+    productName: z.string(),
+    category: z.string(),
+    orders: z.number(),
+    units: z.number(),
+    revenue: z.number()
+})
 
-export const CategoryRevenueListSchema = z.array(CategoryRevenueSchema)
-export const ProductsRevenueListSchema = z.array(ProductsRevenueSchema)
-export const TimeSeriesPointListSchema = z.array(TimeSeriesPointSchema)
+export type CategoryRevenueResponse = z.infer<typeof CategoryRevenueResponseSchema>
+export type ProductsRevenueResponse = z.infer<typeof ProductsRevenueResponseSchema>
+export type TimeSeriesResponse = z.infer<typeof TimeSeriesResponseSchema>
 
-export type CategoryRevenue = z.infer<typeof CategoryRevenueSchema>
-export type ProductsRevenue = z.infer<typeof ProductsRevenueSchema>
-export type TimeSeriesPoint = z.infer<typeof TimeSeriesPointSchema>
+export type CategoryRevenue = z.infer<typeof CategoryRevenueItemSchema>
+export type ProductsRevenue = z.infer<typeof ProductsRevenueItemSchema>
+export type TimeSeriesPoint = z.infer<typeof TimeSeriesPointDtoSchema>
 
 
 export type ResponseMap = {
-    categoryResponse: CategoryRevenue[];
-    productsResponse: ProductsRevenue[];
-    timeSeriesResponse: TimeSeriesPoint[];
-}
+    categoryResponse: CategoryRevenueResponse;
+    productsResponse: ProductsRevenueResponse;
+    timeSeriesResponse: TimeSeriesResponse;
+};
 
 export const DataKeys = {
     Category: 'categoryResponse',
@@ -56,9 +73,8 @@ export const DataKeys = {
 
 export type DataType = typeof DataKeys[keyof typeof DataKeys]
 
-export const schemaMap: { [K in DataType]: z.ZodType<ResponseMap[K]>} = {
-    categoryResponse: CategoryRevenueListSchema,
-    productsResponse: ProductsRevenueListSchema,
-    timeSeriesResponse: TimeSeriesPointListSchema,
-}
-
+export const schemaMap: { [K in DataType]: z.ZodType<ResponseMap[K]> } = {
+    categoryResponse: CategoryRevenueResponseSchema,
+    productsResponse: ProductsRevenueResponseSchema,
+    timeSeriesResponse: TimeSeriesResponseSchema,
+};

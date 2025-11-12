@@ -1,9 +1,25 @@
 import type {StoreApi} from "zustand/vanilla";
 import {useSyncExternalStore} from "react";
 
-export function formatCurrency(n: number){
-    return n.toLocaleString(undefined, {maximumFractionDigits: 2})
+export function getCurrency(currency: string) {
+    return currency && currency.trim() ? currency : 'EUR';
 }
+
+export function formatRevenue(n: number | string, currencyCode: string) {
+    const num = typeof n === 'number' ? n : Number(String(n).replace(/[^\d.-]/g, ''));
+    if (!Number.isFinite(num)) return '-';
+
+    const hasFraction = Math.abs(num - Math.trunc(num)) >= 0.005;
+    const fmt = new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: currencyCode,
+        currencyDisplay: 'symbol',
+        minimumFractionDigits: hasFraction ? 2 : 0,
+        maximumFractionDigits: hasFraction ? 2 : 0,
+    });
+    return fmt.format(num);
+}
+
 
 export function formatTime(iso: string) {
     const d = new Date(iso);
@@ -25,4 +41,11 @@ export function useStoreSelector<S, T>(store: StoreApi<S>, selector: (s: S) => T
         () => selector(store.getState()),// get snapshot (client)
         () => selector(store.getState()) // get snapshot (SSR)
     )
+}
+
+export function parseNumericString (v: unknown): unknown {
+    if (typeof v === 'string') {
+        return Number(v.replace(/[^\d.-]/g, ''));
+    }
+    return v;
 }

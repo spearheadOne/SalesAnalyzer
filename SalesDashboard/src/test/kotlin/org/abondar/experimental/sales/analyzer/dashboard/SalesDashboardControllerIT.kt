@@ -6,11 +6,11 @@ import io.micronaut.http.MediaType
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
-import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenue
 import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenueDto
-import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenue
-import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenueDto
-import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
+import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenueItemDto
+import org.abondar.experimental.sales.analyzer.dashboard.model.ProductRevenueDto
+import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenueItemDto
+import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPointDto
 import org.abondar.experimental.sales.analyzer.dashboard.testconf.BaseIT
 import org.junit.jupiter.api.AfterEach
@@ -52,14 +52,17 @@ class SalesDashboardControllerIT : BaseIT() {
     fun `test get time series`() {
         val request = HttpRequest.GET<Any>("$apiUrl/time-series/1m")
             .accept(MediaType.APPLICATION_JSON)
-        val res = client.toBlocking().exchange(request, Array<TimeSeriesPointDto>::class.java)
+        val res = client.toBlocking().exchange(request, TimeSeriesDto::class.java)
 
         assertEquals(HttpStatus.OK, res.status)
 
         val body = res.body()
-        assertTrue(body.isNotEmpty())
-        assertEquals(1, body.size)
-        assertEquals(agg.productName, body.first().productName)
+        assertNotNull(body)
+
+        val points = body.points
+        assertTrue(points.isNotEmpty())
+        assertEquals(1, points.size)
+        assertEquals(agg.productName, points.first().productName)
     }
 
     @Test
@@ -77,15 +80,18 @@ class SalesDashboardControllerIT : BaseIT() {
     fun `test get categories`() {
         val request = HttpRequest.GET<Any>("$apiUrl/categories/1m")
             .accept(MediaType.APPLICATION_JSON)
-        val res = client.toBlocking().exchange(request, Array<CategoryRevenueDto>::class.java)
+        val res = client.toBlocking().exchange(request, CategoryRevenueDto::class.java)
 
         assertEquals(HttpStatus.OK, res.status)
 
         val body = res.body()
-        assertTrue(body.isNotEmpty())
-        assertEquals(1, body.size)
-        assertEquals(agg.category, body.first().category)
-        assertEquals(agg.revenue.toPlainString(), body.first().revenue)
+        assertNotNull(body)
+
+        val items = body.items
+        assertTrue(items.isNotEmpty())
+        assertEquals(1, items.size)
+        assertEquals(agg.category, items.first().category)
+        assertEquals(agg.revenue.toPlainString(), items.first().revenue)
     }
 
 
@@ -93,17 +99,20 @@ class SalesDashboardControllerIT : BaseIT() {
     fun `test get products`() {
         val request = HttpRequest.GET<Any>("$apiUrl/products/1m")
             .accept(MediaType.APPLICATION_JSON)
-        val res = client.toBlocking().exchange(request, Array<ProductsRevenueDto>::class.java)
+        val res = client.toBlocking().exchange(request, ProductRevenueDto::class.java)
 
         assertEquals(HttpStatus.OK, res.status)
 
         val body = res.body()
-        assertTrue(body.isNotEmpty())
-        assertEquals(1, body.size)
-        assertEquals(agg.productName, body.first().productName)
-        assertEquals(agg.revenue.toPlainString(), body.first().revenue)
-        assertEquals(agg.units, body.first().units)
-        assertEquals(agg.orders, body.first().orders)
+        assertNotNull(body)
+
+        val items = body.items
+        assertTrue(items.isNotEmpty())
+        assertEquals(1, items.size)
+        assertEquals(agg.productName, items.first().productName)
+        assertEquals(agg.revenue.toPlainString(), items.first().revenue)
+        assertEquals(agg.units, items.first().units)
+        assertEquals(agg.orders, items.first().orders)
     }
 
 

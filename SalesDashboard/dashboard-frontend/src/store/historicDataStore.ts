@@ -2,18 +2,19 @@
 import {create} from "zustand/react";
 import api from './axios.ts';
 import {
-    type CategoryRevenue, DataKeys, type DataType,
-    type ProductsRevenue,
+    type CategoryRevenueResponse, DataKeys, type DataType,
+    type ProductsRevenueResponse,
     type ResponseMap,
     schemaMap,
-    type TimeSeriesPoint
+    type TimeSeriesResponse
 } from "./schemas.ts";
+import {z} from "zod";
 
 interface HistoricDataStore {
 
-    categoryResponse: CategoryRevenue[] | null;
-    productsResponse: ProductsRevenue[] | null;
-    timeSeriesResponse: TimeSeriesPoint[] | null;
+    categoryResponse: CategoryRevenueResponse | null;
+    productsResponse: ProductsRevenueResponse | null;
+    timeSeriesResponse: TimeSeriesResponse | null;
 
     error?: string;
 
@@ -29,7 +30,7 @@ export const useHistoricDataStore = create<HistoricDataStore>((set) => {
         set({[dataType]: null, error: undefined} as Partial<HistoricDataStore>);
         try {
             const res = await api.get(uri);
-            const parsed = schemaMap[dataType].parse(res.data) as ResponseMap[T];
+            const parsed = (schemaMap[dataType] as z.ZodTypeAny).parse(res.data) as ResponseMap[T];
             set({[dataType]: parsed} as Partial<HistoricDataStore>)
         } catch (err: any) {
             const message = err?.name === 'ZodError' ? 'Invalid server data' : (err?.message || 'Request failed')

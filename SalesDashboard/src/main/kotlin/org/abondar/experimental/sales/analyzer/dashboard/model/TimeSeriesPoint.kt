@@ -24,6 +24,14 @@ data class TimeSeriesPointDto(
     val currency: String
 )
 
+@Introspected
+@Serdeable
+data class TimeSeriesDto(
+    val defaultCurrency: String,
+    val points: List<TimeSeriesPointDto>
+)
+
+
 fun TimeSeriesPoint.toDto(currency: String): TimeSeriesPointDto {
     return TimeSeriesPointDto(eventTime, productId, productName, revenue.toPlainString(), currency)
 }

@@ -2,21 +2,32 @@ import {useHistoricDataStore} from "../store/historicDataStore.ts";
 import {useMemo} from "react";
 import {Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {DataCard} from "./DataCard.tsx";
-import {formatCurrency} from "../util/util.ts";
 
 //use for testing without a backend
 //@ts-ignore
 import {MOCK_CATEGORY_DATA} from "../util/mockData.ts";
+import {formatRevenue, getCurrency} from "../util/util.ts";
 
 export default function TopCategoriesChart() {
     const categoryResponse = useHistoricDataStore((state) => state.categoryResponse);
     const fetchCategoryRevenue = useHistoricDataStore((state) => state.fetchCategoryRevenue);
-
-    const data = useMemo(() => categoryResponse ?? [], [categoryResponse])
+    const data = useMemo(
+        () => categoryResponse?.items ?? [],
+        [categoryResponse]
+    );
+    const currency = getCurrency(
+        categoryResponse?.defaultCurrency ||
+        data?.[0]?.currency ||
+        'EUR'
+    );
 
     //use for testing without a backend
     //@ts-ignore
-    //const data = useMemo(() => MOCK_CATEGORY_DATA ?? [], [MOCK_CATEGORY_DATA])
+    // const data = useMemo(
+    //     () => MOCK_CATEGORY_DATA.items ?? [],
+    //     [MOCK_CATEGORY_DATA]
+    // );
+    // const currency = getCurrency(MOCK_CATEGORY_DATA?.defaultCurrency ?? data[0]?.currency)
 
     return (
         <DataCard title={"Top categories for "}
@@ -36,11 +47,17 @@ export default function TopCategoriesChart() {
                                      angle={-30}
                                      height={30}
                               />
-                              <YAxis type="number"
-                                     tickFormatter={(value) => formatCurrency(Number(value))}
+                              <YAxis
+                                  yAxisId="left"
+                                  type="number"
+                                  tickFormatter={(v) => formatRevenue(v, currency)}
                               />
-                              //TODO: display based on currency from backend
-                              <Tooltip formatter={(value) => [`€${formatCurrency(Number(value))}`, 'Revenue']}/>
+                              <Tooltip
+                                  formatter={(value: any, _name, info: any) => {
+                                      const rowCurrency = info?.payload?.currency ?? currency;
+                                      return [formatRevenue(Number(value), rowCurrency), 'Revenue'];
+                                  }}
+                              />
                               <Bar dataKey="revenue" fill="#8884d8"/>
                           </BarChart>
                       </ResponsiveContainer>

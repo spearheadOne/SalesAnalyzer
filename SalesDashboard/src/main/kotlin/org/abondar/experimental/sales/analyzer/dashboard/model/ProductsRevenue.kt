@@ -15,7 +15,7 @@ data class ProductsRevenue(
 
 @Introspected
 @Serdeable
-data class ProductsRevenueDto(
+data class ProductsRevenueItemDto(
     val productId: String,
     val productName: String,
     val revenue: String,
@@ -24,6 +24,14 @@ data class ProductsRevenueDto(
     val currency: String
 )
 
-fun ProductsRevenue.toDto(currency: String): ProductsRevenueDto {
-    return ProductsRevenueDto(productId, productName, revenue.toPlainString(), orders, units, currency)
+@Introspected
+@Serdeable
+data class ProductRevenueDto(
+    val defaultCurrency: String,
+    val items: List<ProductsRevenueItemDto>
+)
+
+
+fun ProductsRevenue.toDto(currency: String): ProductsRevenueItemDto {
+    return ProductsRevenueItemDto(productId, productName, revenue.toPlainString(), orders, units, currency)
 }

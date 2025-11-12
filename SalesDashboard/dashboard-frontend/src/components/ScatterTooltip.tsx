@@ -1,4 +1,4 @@
-import {formatCurrency, formatTime} from "../util/util.ts";
+import {formatTime} from "../util/util.ts";
 import type {TimeSeriesPoint} from "../store/schemas.ts";
 
 type ScatterTooltipProps = {
@@ -16,7 +16,7 @@ export default function ScatterTooltip({point} : ScatterTooltipProps) {
                 </div>
                 <div><span className="text-muted">ID: </span>{point.productId ?? ''}</div>
                 <div className="mt-1">
-                    <span className="text-muted">Revenue: </span>€{formatCurrency(Number(point.revenue ?? 0))}
+                    <span className="text-muted">Revenue: </span>€{(point.revenue ?? 0)}
                 </div>
             </div>
         </div>

@@ -2,22 +2,41 @@ import {useHistoricDataStore} from "../store/historicDataStore.ts";
 import {useMemo} from "react";
 import {DataCard} from "./DataCard.tsx";
 import {Area, Bar, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {formatCurrency} from "../util/util.ts";
 
 //use for testing without backend
 //@ts-ignore
 import {MOCK_PRODUCT_DATA} from "../util/mockData.ts";
+import {formatRevenue, getCurrency} from "../util/util.ts";
 
 export default function TopProductsChart() {
     const productsResponse = useHistoricDataStore((state) => state.productsResponse);
     const fetchProductsRevenue = useHistoricDataStore((state) => state.fetchProductsRevenue);
 
-    const data = useMemo(() => productsResponse ?? [], [productsResponse])
+
+    const data = useMemo(() =>
+            (productsResponse?.items ?? []).map(d => ({
+                ...d,
+                revenue: Number(d.revenue), // must be numeric
+            })),
+        []
+    );
+    const currency = getCurrency(
+        productsResponse?.defaultCurrency ||
+        data?.[0]?.currency ||
+        'EUR'
+    );
 
 
     //use for testing without backend
     //@ts-ignore
-    //const data = useMemo(() => MOCK_PRODUCT_DATA ?? [], [MOCK_PRODUCT_DATA])
+    // const data = useMemo(() =>
+    //         (MOCK_PRODUCT_DATA.items ?? []).map(d => ({
+    //             ...d,
+    //             revenue: Number(d.revenue), // must be numeric
+    //         })),
+    //     []
+    // );
+    // const currency = getCurrency(MOCK_PRODUCT_DATA?.defaultCurrency ?? data[0]?.currency);
 
     return (
         <DataCard title={"Top products for "}
@@ -36,19 +55,16 @@ export default function TopProductsChart() {
                                      angle={-30}
                                      height={30}
                               />
-                              <YAxis yAxisId="left"
-                                     tickFormatter={(value) => formatCurrency(Number(value) as number)}
-                                     width={70}
+                              <YAxis
+                                  yAxisId="left"
+                                  type="number"
+                                  tickFormatter={(v) => formatRevenue(v, currency)}
                               />
-                              <Tooltip formatter={(value, name) => {
-                                  const v = Number(value);
-                                  //TODO: keep in mind currency
-                                  if (name === 'Revenue') return [`€${formatCurrency(Number(value))}`, name];
-                                  return [v.toLocaleString(), String(name)];
-                              }}
-                                       labelFormatter={(label, payload) =>
-                                           payload?.[0]?.payload?.productId ?? String(label)
-                                       }
+                              <Tooltip
+                                  formatter={(value: any, _name, info: any) => {
+                                      const rowCurrency = info?.payload?.currency ?? currency;
+                                      return [formatRevenue(Number(value), rowCurrency), 'Revenue'];
+                                  }}
                               />
                               <Area
                                   yAxisId="right"
