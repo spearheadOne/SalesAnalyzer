@@ -1,6 +1,6 @@
 
 import {create} from "zustand/react";
-import api from './axios.ts';
+import api, {buildUrl} from './client.ts';
 import {
     type CategoryRevenueResponse, DataKeys, type DataType,
     type ProductsRevenueResponse,
@@ -35,14 +35,6 @@ export const useHistoricDataStore = create<HistoricDataStore>((set) => {
         } catch (err: any) {
             const message = err?.name === 'ZodError' ? 'Invalid server data' : (err?.message || 'Request failed')
             set({ error: message })
-        }
-    }
-
-    const buildUrl = (path: string, period: string, limit?: number) => {
-        if (limit != null) {
-            return `${path}/${encodeURIComponent(period)}?limit=${limit}`
-        } else {
-            return `${path}/${encodeURIComponent(period)}`
         }
     }
 

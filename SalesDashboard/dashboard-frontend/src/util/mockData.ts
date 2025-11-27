@@ -1,4 +1,6 @@
 // Mock data for testing visuals without calling the backend
+import type {AggRow} from "../store/schemas.ts";
+
 export const MOCK_CATEGORY_DATA = {
     defaultCurrency: 'EUR',
     items: [
@@ -36,6 +38,43 @@ export const MOCK_TIME_SERIES = {
         { eventTime: isoMinutesAgo(0),  productId: 'P-2001', productName: 'Noise-cancel Headphones', revenue: 160.00 }
     ]
 };
+
+
+export const MOCK_AGG_ROWS: AggRow[] = [
+    {
+        eventTime: new Date("2025-01-01T12:00:00.000Z"),
+        productId: "P-1001",
+        productName: "Wireless Mouse",
+        category: "Electronics",
+        orders: 51,
+        units: 5232,
+        revenue: 149.95,
+        currency: "EUR",
+        origPrice: { price: 39.99, currency: "EUR" }
+    },
+    {
+        eventTime: new Date("2025-01-01T12:00:01.000Z"),
+        productId: "P-2042",
+        productName: "Coffee Beans Premium 1kg",
+        category: "Groceries",
+        orders: 267,
+        units: 221321,
+        revenue: 44.00,
+        currency: "EUR",
+        origPrice: { price: 19.99, currency: "EUR" }
+    },
+    {
+        eventTime: new Date("2025-01-01T12:00:02.000Z"),
+        productId: "P-9003",
+        productName: "Gaming Keyboard RGB",
+        category: "Electronics",
+        orders: 300,
+        units: 355,
+        revenue: 199.50,
+        currency: "EUR",
+        origPrice: { price: 69.99, currency: "EUR" }
+    }
+];
 
 function isoMinutesAgo(mins: number): Date {
     const d = new Date();

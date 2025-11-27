@@ -27,7 +27,7 @@ export default function TimeSeriesChart() {
 
 
     //use for testing without a backend
-    // //ts-ignore
+    //ts-ignore
     // const data = useMemo(() => {
     //     return (MOCK_TIME_SERIES.points ?? []).map(point => ({
     //         ...point,

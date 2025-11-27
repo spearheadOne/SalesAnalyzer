@@ -39,7 +39,6 @@ export const TimeSeriesResponseSchema = z.object({
     points: z.array(TimeSeriesPointDtoSchema)
 });
 
-//TODO: adjust to AggDTO in backend
 export const AggRowSchema = z.object({
     eventTime: z.coerce.date(),
     productId: z.string(),
@@ -47,12 +46,20 @@ export const AggRowSchema = z.object({
     category: z.string(),
     orders: z.number(),
     units: z.number(),
-    revenue: z.number()
+    revenue: z.preprocess(parseNumericString, z.number()),
+    currency: z.string().optional(),
+    origPrice: z.object({
+        price: z.preprocess(parseNumericString, z.number()),
+        currency: z.string()
+    })
+        .optional()
 })
+
 
 export type CategoryRevenueResponse = z.infer<typeof CategoryRevenueResponseSchema>
 export type ProductsRevenueResponse = z.infer<typeof ProductsRevenueResponseSchema>
 export type TimeSeriesResponse = z.infer<typeof TimeSeriesResponseSchema>
+export type AggRow = z.infer<typeof AggRowSchema>
 
 export type CategoryRevenue = z.infer<typeof CategoryRevenueItemSchema>
 export type ProductsRevenue = z.infer<typeof ProductsRevenueItemSchema>
