@@ -1,14 +1,12 @@
 package org.abondar.experimental.sales.analyzer.ingester
 
 import jakarta.inject.Singleton
-import org.abondar.experimental.sales.analyzer.ingester.ColumnHeaders
 import org.abondar.experimental.sales.analyzer.data.SalesRecord
 
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.time.Instant
-import java.util.Currency
 
 @Singleton
 class IngestionService(
@@ -18,7 +16,8 @@ class IngestionService(
     suspend fun ingestData(data: InputStream) {
         val batch = ArrayList<SalesRecord>()
         var bytesInBatch = 0
-        val lastFlush = System.currentTimeMillis()
+        var batchStartTime = System.currentTimeMillis()
+
 
         BufferedReader(InputStreamReader(data)).useLines { lines ->
             lines.forEach { line ->
@@ -40,10 +39,12 @@ class IngestionService(
                 )
 
                 bytesInBatch +=line.toByteArray().size
-                val elapsedTime = System.currentTimeMillis() - lastFlush
+                val elapsedTime = System.currentTimeMillis() - batchStartTime
 
                 if (batch.size == MAX_BATCH_SIZE || bytesInBatch >= MAX_BYTES || elapsedTime >= MAX_ELAPSED_MS) {
                     publisher.publishMessage(batch)
+                    bytesInBatch = 0
+                    batchStartTime = System.currentTimeMillis()
                     batch.clear()
                 }
             }

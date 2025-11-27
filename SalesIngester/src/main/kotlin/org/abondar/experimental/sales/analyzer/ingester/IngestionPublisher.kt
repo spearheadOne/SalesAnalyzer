@@ -5,6 +5,7 @@ import io.micronaut.serde.ObjectMapper
 import jakarta.inject.Singleton
 import kotlinx.coroutines.future.await
 import org.abondar.experimental.sales.analyzer.data.SalesRecord
+import org.slf4j.LoggerFactory
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
 import software.amazon.awssdk.services.kinesis.model.PutRecordsRequest
@@ -15,6 +16,8 @@ class IngestionPublisher(
     private val mapper: ObjectMapper,
     private val kinesisClient: KinesisAsyncClient
 ) {
+
+    private val log = LoggerFactory.getLogger(this::class.java)
 
     @Value("\${aws.services.kinesis.stream}")
     lateinit var streamName: String
@@ -33,8 +36,11 @@ class IngestionPublisher(
             .records(entries)
             .build()
 
-        kinesisClient.putRecords(req).await()
-
+        var resp = kinesisClient.putRecords(req).await()
+        val failed = resp.failedRecordCount() ?: 0
+        if (failed > 0) {
+            log.warn("Failed to publish $failed records")
+        }
     }
 
 }

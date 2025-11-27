@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory
 import software.amazon.awssdk.eventnotifications.s3.model.S3EventNotification
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 class IngestionHandler : MicronautRequestHandler<String, Void> {
 
@@ -38,7 +40,8 @@ class IngestionHandler : MicronautRequestHandler<String, Void> {
             .filter { it.s3.bucket.name == salesBucket }
             .forEach { record ->
                 val bucket = record.s3.bucket.name
-                val key = record.s3.`object`.key
+                val rawKey = record.s3.`object`.key
+                val key =  URLDecoder.decode(rawKey, StandardCharsets.UTF_8)
 
                 log.info("Processing $key from bucket $bucket")
 
