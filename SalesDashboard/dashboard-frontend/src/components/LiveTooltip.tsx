@@ -1,7 +1,18 @@
 import type {AggRow} from "../store/schemas.ts";
-import type {TooltipProps} from "recharts";
 
-export const LiveTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+export interface CustomTooltipProps {
+    active?: boolean;
+    payload?: Array<{
+        value: number;
+        name: string;
+        color?: string;
+        payload: AggRow;
+    }>;
+    label?: string;
+}
+
+
+export const LiveTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (!active || !payload || payload.length === 0) return null;
 
     const row = payload[0].payload as AggRow;

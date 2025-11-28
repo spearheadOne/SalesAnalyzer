@@ -25,14 +25,17 @@ beforeEach(() => {
 describe('TimeSeriesChart', () => {
     it('renders with data', () => {
         useHistoricDataStore.setState({
-            timeSeriesResponse: [
-                {
-                    eventTime: new Date(),
-                    productId: '',
-                    productName: 'Mechanical KB',
-                    revenue: 110.00
-                }
-            ],
+            timeSeriesResponse: {
+                defaultCurrency: "EUR",
+                points: [
+                    {
+                        eventTime: new Date(),
+                        productId: '',
+                        productName: 'Mechanical KB',
+                        revenue: 110.00
+                    }
+                    ],
+            }
         })
 
         render(<TimeSeriesChart/>)

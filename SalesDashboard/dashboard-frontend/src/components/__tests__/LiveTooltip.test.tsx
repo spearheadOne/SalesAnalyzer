@@ -1,9 +1,7 @@
 import {describe, it, expect} from "vitest";
 import {render, screen} from "@testing-library/react";
-import {LiveTooltip} from "../LiveTooltip.tsx";
+import {type CustomTooltipProps, LiveTooltip} from "../LiveTooltip.tsx";
 import type {AggRow} from "../../store/schemas.ts";
-import type {TooltipProps} from "recharts";
-
 
 describe('LiveTooltip', ()=>{
     it('should render a tooltip',()=>{
@@ -22,7 +20,7 @@ describe('LiveTooltip', ()=>{
             },
         };
 
-        const payload: TooltipProps<number, string>["payload"] = [
+        const payload: CustomTooltipProps['payload'] = [
             {
                 value: mockRow.revenue,
                 name: "revenue",
@@ -30,7 +28,6 @@ describe('LiveTooltip', ()=>{
                 payload: mockRow,
             },
         ];
-
 
         render(
             <LiveTooltip

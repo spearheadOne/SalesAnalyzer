@@ -1,5 +1,5 @@
 import {useHistoricDataStore} from "../../store/historicDataStore.ts";
-import {describe, expect, it, beforeEach, beforeAll} from "vitest";
+import {beforeAll, beforeEach, describe, expect, it} from "vitest";
 import {render, screen} from "@testing-library/react";
 import TopCategoriesChart from "../TopCategoriesChart.tsx";
 
@@ -7,9 +7,14 @@ const testHistoricState = useHistoricDataStore.getState()
 
 beforeAll(() => {
     global.ResizeObserver = class {
-        observe() {}
-        unobserve() {}
-        disconnect() {}
+        observe() {
+        }
+
+        unobserve() {
+        }
+
+        disconnect() {
+        }
     }
 })
 
@@ -20,21 +25,24 @@ beforeEach(() => {
 describe('TopCategoriesChart', () => {
     it('renders with data', () => {
         useHistoricDataStore.setState({
-            categoryResponse: [
-                { category: 'Electronics', revenue: 15000 },
-                { category: 'Books',       revenue: 8000  },
-            ],
+            categoryResponse: {
+                defaultCurrency: "EUR",
+                items: [
+                    {category: 'Electronics', revenue: 15000},
+                    {category: 'Books', revenue: 8000}
+                ],
+            }
         })
 
-        render(<TopCategoriesChart />)
+        render(<TopCategoriesChart/>)
 
         expect(document.querySelector('svg')).not.toBeNull
     })
 
     it('renders with no data', () => {
-        useHistoricDataStore.setState({ categoryResponse: null })
+        useHistoricDataStore.setState({categoryResponse: null})
 
-        render(<TopCategoriesChart />)
+        render(<TopCategoriesChart/>)
         expect(screen.getByText(/no data available/i)).not.toBeNull
     })
 })
