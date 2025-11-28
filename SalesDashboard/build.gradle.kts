@@ -1,6 +1,5 @@
 import io.micronaut.gradle.docker.MicronautDockerfile
 import io.micronaut.gradle.docker.NativeImageDockerfile
-import org.gradle.kotlin.dsl.named
 
 plugins {
     kotlin("jvm")
@@ -60,12 +59,46 @@ micronaut {
     }
 }
 
+
+val frontendDir = file("${projectDir}/dashboard-frontend")
+val frontendBuildDir = file("${projectDir}/src/main/resources/public")
+
+tasks.register<Exec>("yarnInstall") {
+    workingDir = frontendDir
+    commandLine("yarn", "install")
+    inputs.file("${frontendDir}/package.json")
+    inputs.file("${frontendDir}/yarn.lock")
+    outputs.dir("${frontendDir}/node_modules")
+}
+
+tasks.register<Exec>("yarnBuild") {
+    dependsOn("yarnInstall")
+    workingDir = frontendDir
+    commandLine("yarn", "build")
+    inputs.dir(frontendDir)
+    outputs.dir(frontendBuildDir)
+}
+
+tasks.classes {
+    dependsOn("yarnBuild")
+}
+
+tasks.inspectRuntimeClasspath {
+    dependsOn("yarnBuild")
+}
+
+tasks.processResources {
+    dependsOn("yarnBuild")
+}
+
 tasks.shadowJar {
     archiveBaseName.set("sales-analyzer-dashboard")
     archiveClassifier.set("all")
+    dependsOn("yarnBuild")
 }
 
 tasks.named<JavaExec>("run") {
+    dependsOn("yarnBuild")
     systemProperty("micronaut.environments", "local")
 }
 
