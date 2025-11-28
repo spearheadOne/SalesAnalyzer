@@ -25,22 +25,35 @@ subprojects {
         mavenCentral()
     }
 
-    dependencies {
-        add("implementation","ch.qos.logback:logback-classic:1.5.13")
+    configure<JavaPluginExtension> {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
 
-        add("implementation",platform("software.amazon.awssdk:bom:2.32.23"))
-        add("implementation","software.amazon.awssdk:regions")
-        add("implementation","software.amazon.awssdk:auth")
-        add("implementation" ,"io.micronaut.serde:micronaut-serde-jackson")
-        add ("kapt", "io.micronaut.serde:micronaut-serde-processor")
-        add ("runtimeOnly", "org.yaml:snakeyaml")
+    dependencies {
+        val awsSdkVersion: String by project
+        val logbackVersion: String by project
+        val mockitoVersion: String by project
+        val mockitoKotlinVersion: String by project
+        val kotlinCoroutinesTestVersion: String by project
+        val testcontainersVersion: String by project
+
+
+        add("implementation", "ch.qos.logback:logback-classic:#$logbackVersion")
+
+        add("implementation", platform("software.amazon.awssdk:bom:${awsSdkVersion}"))
+        add("implementation", "software.amazon.awssdk:regions")
+        add("implementation", "software.amazon.awssdk:auth")
+        add("implementation", "io.micronaut.serde:micronaut-serde-jackson")
+        add("kapt", "io.micronaut.serde:micronaut-serde-processor")
+        add("runtimeOnly", "org.yaml:snakeyaml")
 
         add("testImplementation", "io.micronaut.test:micronaut-test-junit5")
-        add("testImplementation", "org.mockito:mockito-core:5.12.0")
-        add("testImplementation", "org.mockito:mockito-junit-jupiter:5.12.0")
-        add("testImplementation", "org.mockito.kotlin:mockito-kotlin:5.3.1")
-        add("testImplementation", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
-        add("testImplementation","org.testcontainers:junit-jupiter:1.20.1")
+        add("testImplementation", "org.mockito:mockito-core:${mockitoVersion}")
+        add("testImplementation", "org.mockito:mockito-junit-jupiter:${mockitoVersion}")
+        add("testImplementation", "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}")
+        add("testImplementation", "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesTestVersion}")
+        add("testImplementation", "org.testcontainers:junit-jupiter:${testcontainersVersion}")
         add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine")
     }
 }

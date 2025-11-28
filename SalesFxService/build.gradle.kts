@@ -16,6 +16,10 @@ plugins {
 group = "org.abondar.experimental.sales.analyzer"
 version = "0.1.0"
 
+val grpcVersion: String by project
+val kotlinCoroutinesVersion: String by project
+
+
 dependencies {
     implementation(project(":Data"))
 
@@ -24,22 +28,25 @@ dependencies {
     implementation("io.micronaut:micronaut-runtime")
 
     implementation("io.micronaut.grpc:micronaut-grpc-server-runtime")
-    implementation("io.grpc:grpc-netty-shaded:1.66.0")
+    implementation("io.grpc:grpc-netty-shaded:$grpcVersion")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
     kapt("io.micronaut:micronaut-inject-java")
     kaptTest("io.micronaut:micronaut-inject-java")
 
-    testImplementation("io.grpc:grpc-testing:1.66.0")
+    testImplementation("io.grpc:grpc-testing:$grpcVersion")
     testImplementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
+}
+
+application {
+    mainClass.set("io.micronaut.grpc.server.GrpcEmbeddedServer")
 }
 
 kotlin {
     jvmToolchain(21)
 }
 
-application {  mainClass.set("io.micronaut.grpc.server.GrpcEmbeddedServer") }
 
 micronaut {
     testRuntime("junit5")

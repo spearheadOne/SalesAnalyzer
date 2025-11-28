@@ -13,6 +13,8 @@ plugins {
 group = "org.abondar.experimental.sales.analyzer"
 version = "0.1.0"
 
+val kotlinCoroutinesVersion: String by project
+val testcontainersVersion: String by project
 
 dependencies {
     implementation(project(":Data"))
@@ -28,12 +30,12 @@ dependencies {
     implementation("software.amazon.awssdk:kinesis")
     implementation("software.amazon.awssdk:s3-event-notifications")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
     kapt("io.micronaut:micronaut-inject-java")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
-    testImplementation("org.testcontainers:localstack:1.19.7")
+    testImplementation("org.testcontainers:localstack:$testcontainersVersion")
 }
 
 application {

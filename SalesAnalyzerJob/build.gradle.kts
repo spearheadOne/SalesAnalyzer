@@ -16,6 +16,12 @@ plugins {
 group = "org.abondar.experimental.sales.analyzer"
 version = "0.1.0"
 
+val mybatisVersion: String by project
+val mybatisJsr310Version: String by project
+val postgresqlVersion: String by project
+val kinesisClientVersion: String by project
+val kotlinCoroutinesVersion: String by project
+val testcontainersVersion: String by project
 
 dependencies {
     implementation(project(":Data"))
@@ -27,30 +33,26 @@ dependencies {
     implementation("io.micronaut.liquibase:micronaut-liquibase")
     implementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
 
-    runtimeOnly("org.postgresql:postgresql:42.7.3")
-
     implementation("software.amazon.awssdk:secretsmanager")
     implementation("software.amazon.awssdk:kinesis")
-    implementation("software.amazon.kinesis:amazon-kinesis-client:2.6.0")
+    implementation("software.amazon.kinesis:amazon-kinesis-client:$kinesisClientVersion")
     implementation("software.amazon.awssdk:dynamodb")
     implementation("software.amazon.awssdk:cloudwatch")
     implementation("software.amazon.awssdk:sqs")
 
-    implementation("org.mybatis:mybatis:3.5.19")
-    implementation("org.mybatis:mybatis-typehandlers-jsr310:1.0.2")
+    runtimeOnly("org.postgresql:postgresql:$postgresqlVersion")
+    implementation("org.mybatis:mybatis:$mybatisVersion")
+    implementation("org.mybatis:mybatis-typehandlers-jsr310:$mybatisJsr310Version")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
     kapt("io.micronaut:micronaut-inject-java")
     kaptTest("io.micronaut:micronaut-inject-java")
 
-    testImplementation("org.testcontainers:postgresql:1.20.1")
-    testImplementation("org.testcontainers:localstack:1.19.7")
+    testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
+    testImplementation("org.testcontainers:localstack:$testcontainersVersion")
 }
 
-kotlin {
-    jvmToolchain(21)
-}
 
 application { mainClass.set("org.abondar.experimental.sales.analyzer.job.Main") }
 
@@ -73,6 +75,11 @@ micronaut {
     }
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
+
 tasks.shadowJar {
     archiveBaseName.set("sales-analyzer-job")
     archiveClassifier.set("all")
@@ -83,9 +90,5 @@ tasks.named<JavaExec>("run") {
 }
 
 tasks.named<NativeImageDockerfile>("dockerfileNative") {
-    args("-Dmicronaut.environments=docker")
-}
-
-tasks.named<MicronautDockerfile>("dockerfile") {
     args("-Dmicronaut.environments=docker")
 }
