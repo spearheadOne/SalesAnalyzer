@@ -13,7 +13,7 @@ export function buildUrl(path: string, period: string, limit?: number){
     }
 }
 
-export const STREAM_URL = API_BASE_URL + '/stream'
+export const STREAM_URL = API_BASE_URL + 'stream'
 
 
 export default api;

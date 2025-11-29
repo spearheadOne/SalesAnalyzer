@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequestEntry
 class SqsProducer(
     private val sqsClient: SqsAsyncClient,
     private val objectMapper: ObjectMapper,
-    @param:Value("\${aws.sqs.queueUrl:}") private val queueUrl: String
+    @param:Value("\${aws.services.sqs.queueUrl:}") private val queueUrl: String
 ) {
 
     fun sendMessage(rows: List<AggDto>) {

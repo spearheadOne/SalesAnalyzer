@@ -26,6 +26,7 @@ object Properties {
             .getEndpointOverride(LocalStackContainer.Service.CLOUDWATCH).toString(),
         "aws.services.sqs.endpoint-override" to container
             .getEndpointOverride(LocalStackContainer.Service.SQS).toString(),
+        "aws.services.sqs.queueUrl" to "http://localhost:4566/000000000000/sales-queue"
     )
 
 }

@@ -19,10 +19,7 @@ import jakarta.validation.constraints.NotBlank
 import org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardMapper
 import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenueDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductRevenueDto
-import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenueItemDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesDto
-import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPoint
-import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPointDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.toDto
 import org.abondar.experimental.sales.analyzer.dashboard.stream.Feed
 import org.abondar.experimental.sales.analyzer.data.AggDto
@@ -148,6 +145,6 @@ class SalesDashboardController(
             ApiResponse(responseCode = "200", description = "Recently added data")
         ]
     )
-    @Get(uri = "/stream", produces = [MediaType.APPLICATION_JSON_STREAM])
+    @Get(uri = "/stream", produces = [MediaType.TEXT_EVENT_STREAM])
     fun streamTimeSeries(): Flux<AggDto> = feed.stream()
 }

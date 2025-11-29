@@ -40,7 +40,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("io.micronaut.grpc.server.GrpcEmbeddedServer")
+    mainClass.set("org.abondar.experimental.sales.analyzer.fx.ApplicationKt")
 }
 
 kotlin {

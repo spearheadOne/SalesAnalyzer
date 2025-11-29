@@ -51,8 +51,7 @@ export const AggRowSchema = z.object({
     origPrice: z.object({
         price: z.preprocess(parseNumericString, z.number()),
         currency: z.string()
-    })
-        .optional()
+    }).optional()
 })
 
 

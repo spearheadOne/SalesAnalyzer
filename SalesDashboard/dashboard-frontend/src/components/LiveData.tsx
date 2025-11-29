@@ -12,10 +12,16 @@ export default function LiveData() {
     const liveData = useLiveDataStore((state) => state.liveData);
     const error = useLiveDataStore((state) => state.error);
 
-    const listenStream = useLiveDataStore((state) => state.listenStream);
+    const {startStream, stopStream} = useLiveDataStore();
+
     useEffect(() => {
-        void listenStream();
-    }, [listenStream]);
+        void startStream();
+
+        return () => {
+            stopStream();
+        }
+    }, []);
+
 
     const data = useMemo(
         () => liveData ?? [],
@@ -40,7 +46,7 @@ export default function LiveData() {
                     <XAxis
                         dataKey="eventTime"
                         tickFormatter={(t) => new Date(t).toLocaleTimeString()}
-                        label={{ value: "Time", position: "insideBottomRight", offset: -5 }}
+                        label={{value: "Time", position: "insideBottomRight", offset: -5}}
                     />
                     <YAxis
                         yAxisId="left"
@@ -59,7 +65,7 @@ export default function LiveData() {
                             position: "insideRight",
                         }}
                     />
-                    <Tooltip content={<LiveTooltip/>} />
+                    <Tooltip content={<LiveTooltip/>}/>
                     <Legend/>
                     <Line
                         yAxisId="left"

@@ -16,7 +16,11 @@ export default function TimeSeriesChart() {
     const fetchTimeSeries = useHistoricDataStore((state) => state.fetchTimeSeries);
 
     const data = useMemo(
-        () => timeSeriesResponse?.points ?? [],
+        () => (timeSeriesResponse?.points ?? []).map(point => ({
+            ...point,
+            timestamp: new Date(point.eventTime).getTime(),
+            revenue: Number(point.revenue)
+        })),
         [timeSeriesResponse]
     );
     const currency = getCurrency(

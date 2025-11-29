@@ -70,6 +70,8 @@ kotlin {
 
 val frontendDir = file("$projectDir/dashboard-frontend")
 val frontendBuildDir = file("$projectDir/src/main/resources/public")
+val runningInIdea = System.getProperty("idea.active") == "true"
+val skipFrontend: Boolean = runningInIdea || (project.findProperty("skipFrontend") == "true")
 
 tasks.register<Exec>("yarnInstall") {
     workingDir = frontendDir
@@ -77,6 +79,8 @@ tasks.register<Exec>("yarnInstall") {
     inputs.file("$frontendDir/package.json")
     inputs.file("$frontendDir/yarn.lock")
     outputs.dir("$frontendDir/node_modules")
+
+    onlyIf { !skipFrontend }
 }
 
 tasks.register<Exec>("yarnBuild") {
@@ -85,29 +89,34 @@ tasks.register<Exec>("yarnBuild") {
     commandLine("yarn", "build")
     inputs.dir(frontendDir)
     outputs.dir(frontendBuildDir)
+
+    onlyIf { !skipFrontend }
 }
 
-tasks.classes {
-    dependsOn("yarnBuild")
-}
+if (!skipFrontend) {
+    tasks.classes {
+        dependsOn("yarnBuild")
+    }
 
-tasks.inspectRuntimeClasspath {
-    dependsOn("yarnBuild")
-}
+    tasks.inspectRuntimeClasspath {
+        dependsOn("yarnBuild")
+    }
 
-tasks.processResources {
-    dependsOn("yarnBuild")
-}
+    tasks.processResources {
+        dependsOn("yarnBuild")
+    }
 
-tasks.shadowJar {
-    archiveBaseName.set("sales-analyzer-dashboard")
-    archiveClassifier.set("all")
-    dependsOn("yarnBuild")
-}
+    tasks.shadowJar {
+        archiveBaseName.set("sales-analyzer-dashboard")
+        archiveClassifier.set("all")
+        dependsOn("yarnBuild")
+    }
 
-tasks.named<JavaExec>("run") {
-    dependsOn("yarnBuild")
-    systemProperty("micronaut.environments", "local")
+    tasks.named<JavaExec>("run") {
+        dependsOn("yarnBuild")
+        systemProperty("micronaut.environments", "local")
+    }
+
 }
 
 tasks.named<NativeImageDockerfile>("dockerfileNative") {

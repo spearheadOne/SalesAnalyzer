@@ -43,9 +43,13 @@ export function useStoreSelector<S, T>(store: StoreApi<S>, selector: (s: S) => T
     )
 }
 
-export function parseNumericString (v: unknown): unknown {
-    if (typeof v === 'string') {
-        return Number(v.replace(/[^\d.-]/g, ''));
+export function parseNumericString(v: unknown): unknown {
+    if (typeof v === "string") {
+        const cleaned = v.replace(/[^\d.-]/g, "");
+        if (cleaned.length === 0) return v;
+
+        const n = Number(cleaned);
+        return Number.isNaN(n) ? v : n;
     }
     return v;
 }

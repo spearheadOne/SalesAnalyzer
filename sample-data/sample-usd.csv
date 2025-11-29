@@ -1,0 +1,11 @@
+timestamp,product_id,product_name,category,price,currency,amount
+2025-11-28T12:00:00Z,PROD003,Mechanical Keyboard,Electronics,98.45,USD,1
+2025-11-28T12:00:21Z,PROD001,Wireless Mouse,Electronics,27.49,USD,2
+2025-11-28T12:01:18Z,PROD003,Mechanical Keyboard,Electronics,98.45,USD,2
+2025-11-28T12:01:39Z,PROD005,Webcam HD,Electronics,65.89,USD,5
+2025-11-28T12:02:32Z,PROD001,Wireless Mouse,Electronics,27.49,USD,1
+2025-11-28T12:02:53Z,PROD001,Wireless Mouse,Electronics,27.49,USD,1
+2025-11-28T12:03:36Z,PROD002,USB-C Cable,Accessories,10.99,USD,3
+2025-11-28T12:04:12Z,PROD003,Mechanical Keyboard,Electronics,98.45,USD,1
+2025-11-28T12:05:05Z,PROD001,Wireless Mouse,Electronics,27.49,USD,3
+2025-11-28T12:05:47Z,PROD003,Mechanical Keyboard,Electronics,98.45,USD,4

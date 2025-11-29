@@ -17,3 +17,5 @@ Tiny sales data analyzer
 
 ./local-infra.sh
 ```
+TODO: curl -X POST http://localhost:8080/data \
+-F "data=@./sample-data/sample.csv"

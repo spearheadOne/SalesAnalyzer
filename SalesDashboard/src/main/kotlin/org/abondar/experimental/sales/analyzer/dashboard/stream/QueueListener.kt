@@ -15,10 +15,10 @@ class QueueListener(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Queue("\${aws.sqs.queueName}")
+    @Queue("\${aws.sqs.queue-name}")
     fun receiveMessage(@MessageBody msg: String) {
         val aggDto = objectMapper.readValue(msg, AggDto::class.java)
-        log.info("Received message $aggDto")
+        log.debug("Received message $aggDto")
         feed.emit(aggDto)
     }
 

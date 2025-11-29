@@ -18,7 +18,7 @@ export default function TopProductsChart() {
                 ...d,
                 revenue: Number(d.revenue), // must be numeric
             })),
-        []
+        [productsResponse]
     );
     const currency = getCurrency(
         productsResponse?.defaultCurrency ||

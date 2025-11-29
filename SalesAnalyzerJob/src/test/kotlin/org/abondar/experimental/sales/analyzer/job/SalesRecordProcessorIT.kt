@@ -4,6 +4,7 @@ import io.micronaut.serde.ObjectMapper
 import org.abondar.experimental.sales.analyzer.job.mapper.AggMapper
 import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer
 import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
+import org.abondar.experimental.sales.analyzer.job.testconf.Properties
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import software.amazon.awssdk.services.kinesis.model.Record
@@ -18,6 +19,9 @@ import java.time.Instant
 
 
 class SalesRecordProcessorIT : BaseIT() {
+
+    override fun extraProperties(): Map<String, Any?> =
+        Properties.localstackAws(LOCALSTACK)
 
     @Test
     fun `test processor logic directly`() {
