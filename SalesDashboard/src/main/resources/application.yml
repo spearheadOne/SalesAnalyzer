@@ -23,7 +23,14 @@ micronaut:
 endpoints:
   health:
     enabled: true
+    sensitive: false
     details-visible: anonymous
+    discovery-client:
+      enabled: false
+    deadlocked-threads:
+      enabled: false
+    graceful-shutdown:
+      enabled: false
   env:
     enabled: true
 
@@ -38,11 +45,14 @@ datasources:
     autoCommit: false
 
 aws:
-    access-key-id: ${AWS_KEY_ID}
-    secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-    region: us-east-2
+  access-key-id: ${AWS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+  region: us-east-2
+  sqs:
+    queue-name: sales-queue
+  services:
     sqs:
-      queue-name: sales-queue
+      queueUrl: ${SQS_QUEUE_URL}
 
 default-currency: EUR
 
