@@ -42,6 +42,10 @@ kotlin {
     jvmToolchain(21)
 }
 
+application {
+    mainClass.set("org.abondar.experimental.sales.analyzer.ingester.ApplicationKt")
+}
+
 micronaut {
     runtime("netty")
     testRuntime("junit5")
