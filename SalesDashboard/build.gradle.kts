@@ -1,5 +1,3 @@
-import io.micronaut.gradle.docker.MicronautDockerfile
-
 plugins {
     kotlin("jvm")
     kotlin("kapt")
@@ -7,6 +5,7 @@ plugins {
 
     application
     id("io.micronaut.application")
+    id("com.google.cloud.tools.jib")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -65,6 +64,56 @@ kotlin {
     jvmToolchain(21)
 }
 
+val baseImage: String by project
+val imageArch: String by project
+val imageOS: String by project
+
+jib {
+    from {
+        image = baseImage
+
+
+        platforms {
+            platform {
+                architecture = imageArch
+                os = imageOS
+            }
+        }
+    }
+
+    to {
+        image = "sales-dashboard:${project.version}"
+    }
+
+    extraDirectories {
+        paths {
+            path {
+                setFrom(
+                    layout.buildDirectory
+                        .dir("install/SalesDashboard")
+                        .get()
+                        .asFile
+                        .toPath()
+                )
+                into = "/app"
+            }
+        }
+
+        permissions = mapOf(
+            "/app/SalesDashboard" to "755"
+        )
+    }
+
+    container {
+        entrypoint = listOf("/app/bin/SalesDashboard")
+
+        environment = mapOf(
+            "MICRONAUT_ENVIRONMENTS" to "aws"
+        )
+
+        ports = listOf("9024")
+    }
+}
 
 val frontendDir = file("$projectDir/dashboard-frontend")
 val frontendBuildDir = file("$projectDir/src/main/resources/public")
@@ -112,15 +161,14 @@ if (!skipFrontend) {
 
 }
 
-tasks.named<MicronautDockerfile>("dockerfile") {
-    args("-Dmicronaut.environments=aws")
-    exposedPorts.set(listOf(9024))
-}
-
 tasks.named("build") {
     dependsOn("installDist")
 }
 
-tasks.dockerBuild {
-    images.add("sales-analyzer-dashboard:${project.version}")
+tasks.named("jib") {
+    dependsOn("installDist")
+}
+
+tasks.named("jibDockerBuild") {
+    dependsOn("installDist")
 }

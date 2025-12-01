@@ -1,5 +1,3 @@
-import io.micronaut.gradle.docker.MicronautDockerfile
-
 plugins {
     kotlin("jvm")
     kotlin("kapt")
@@ -7,6 +5,7 @@ plugins {
 
     application
     id("io.micronaut.application")
+    id("com.google.cloud.tools.jib")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -18,6 +17,9 @@ val postgresqlVersion: String by project
 val kinesisClientVersion: String by project
 val kotlinCoroutinesVersion: String by project
 val testcontainersVersion: String by project
+val baseImage: String by project
+val imageArch: String by project
+val imageOS: String by project
 
 dependencies {
     implementation(project(":Data"))
@@ -49,7 +51,6 @@ dependencies {
     testImplementation("org.testcontainers:localstack:$testcontainersVersion")
 }
 
-
 application {
     mainClass.set("org.abondar.experimental.sales.analyzer.job.Main")
     applicationDefaultJvmArgs = listOf("-Dmicronaut.environments=local")
@@ -67,19 +68,67 @@ kotlin {
     jvmToolchain(21)
 }
 
-tasks.named<JavaExec>("run") {
-    systemProperty("micronaut.environments", "local")
+jib {
+    from {
+        image = baseImage
+
+
+        //TODO: -Djib.from.platforms=linux/amd64 in github actions
+        platforms {
+            platform {
+                architecture = imageArch
+                os = imageOS
+            }
+        }
+    }
+
+    to {
+        //TODO: use ecr based image from param on actions -Djib.to.image="${JOB_ECR_URL}:${TAG}"
+        image = "sales-analyzer-job:${project.version}"
+    }
+
+    extraDirectories {
+        paths {
+            path {
+                setFrom(
+                    layout.buildDirectory
+                        .dir("install/SalesAnalyzerJob")
+                        .get()
+                        .asFile
+                        .toPath()
+                )
+                into = "/app"
+            }
+        }
+
+        permissions = mapOf(
+            "/app/SalesAnalyzerJob" to "755"
+        )
+    }
+
+    container {
+        entrypoint = listOf("/app/bin/SalesAnalyzerJob")
+
+        environment = mapOf(
+            "MICRONAUT_ENVIRONMENTS" to "aws"
+        )
+
+    }
+
 }
 
-tasks.named<MicronautDockerfile>("dockerfile") {
-    args("-Dmicronaut.environments=aws")
+tasks.named<JavaExec>("run") {
+    systemProperty("micronaut.environments", "local")
 }
 
 tasks.named("build") {
     dependsOn("installDist")
 }
 
-tasks.dockerBuild {
+tasks.named("jib") {
     dependsOn("installDist")
-    images.add("sales-analyzer-job:${project.version}")
+}
+
+tasks.named("jibDockerBuild") {
+    dependsOn("installDist")
 }

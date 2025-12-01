@@ -1,13 +1,10 @@
-import io.micronaut.gradle.docker.MicronautDockerfile
-import io.micronaut.gradle.docker.NativeImageDockerfile
-import org.gradle.kotlin.dsl.named
-
 plugins {
     kotlin("jvm")
     kotlin("kapt")
     kotlin("plugin.allopen")
     id("io.micronaut.application")
     id("io.micronaut.aot")
+    id("com.google.cloud.tools.jib")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -15,6 +12,9 @@ version = "0.1.0"
 
 val kotlinCoroutinesVersion: String by project
 val testcontainersVersion: String by project
+val graalBaseImage: String by project
+val imageArch: String by project
+val imageOS: String by project
 
 dependencies {
     implementation(project(":Data"))
@@ -82,14 +82,53 @@ graalvmNative {
     }
 }
 
+jib {
+    from {
+        image = graalBaseImage
+
+
+        platforms {
+            platform {
+                architecture = imageArch
+                os = imageOS
+            }
+        }
+    }
+
+    to {
+        image = "sales-ingester:${project.version}"
+    }
+
+    extraDirectories {
+        paths {
+            path {
+                setFrom("build/native/nativeCompile")
+                into = "/app"
+            }
+        }
+        permissions = mapOf(
+            "/app/SalesIngester" to "755"
+        )
+    }
+
+    container {
+        entrypoint = listOf("/app/SalesIngester")
+
+        environment = mapOf(
+            "MICRONAUT_ENVIRONMENTS" to "aws"
+        )
+
+    }
+}
+
 tasks.named<JavaExec>("run") {
     systemProperty("micronaut.environments", "local")
 }
 
-tasks.named<NativeImageDockerfile>("dockerfileNative") {
-    args("-Dmicronaut.environments=aws")
+tasks.named("jib") {
+    dependsOn("nativeCompile")
 }
 
-tasks.dockerBuildNative {
-    images.add("sales-ingester:${project.version}")
+tasks.named("jibDockerBuild") {
+    dependsOn("nativeCompile")
 }

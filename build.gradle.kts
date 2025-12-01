@@ -5,6 +5,7 @@ plugins {
 
     id("io.micronaut.application") version "4.5.4" apply false
     id("io.micronaut.aot") version "4.5.4" apply false
+    id("com.google.cloud.tools.jib") version "3.5.1" apply false
 }
 
 subprojects {

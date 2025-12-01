@@ -1,7 +1,3 @@
-import io.micronaut.gradle.docker.MicronautDockerfile
-import io.micronaut.gradle.docker.NativeImageDockerfile
-import org.gradle.kotlin.dsl.named
-
 plugins {
     kotlin("jvm")
     kotlin("kapt")
@@ -9,6 +5,7 @@ plugins {
 
     application
     id("io.micronaut.application")
+    id("com.google.cloud.tools.jib")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -16,6 +13,9 @@ version = "0.1.0"
 
 val grpcVersion: String by project
 val kotlinCoroutinesVersion: String by project
+val baseImage: String by project
+val imageArch: String by project
+val imageOS: String by project
 
 
 dependencies {
@@ -55,15 +55,55 @@ micronaut {
     }
 }
 
+jib {
+    from {
+        image = baseImage
+
+
+        platforms {
+            platform {
+                architecture = imageArch
+                os = imageOS
+            }
+        }
+    }
+
+    to {
+        image = "sales-fx-service:${project.version}"
+    }
+
+    extraDirectories {
+        paths {
+            path {
+                setFrom(
+                    layout.buildDirectory
+                        .dir("install/SalesFxService")
+                        .get()
+                        .asFile
+                        .toPath()
+                )
+                into = "/app"
+            }
+        }
+        permissions = mapOf(
+            "/app/SalesFxService" to "755"
+        )
+    }
+
+    container {
+        entrypoint = listOf("/app/bin/SalesFxService")
+        ports = listOf("9028")
+    }
+}
+
 tasks.named("build") {
     dependsOn("installDist")
 }
 
-tasks.named<MicronautDockerfile>("dockerfile") {
-    exposedPorts.set(listOf(9028))
+tasks.named("jib") {
+    dependsOn("installDist")
 }
 
-tasks.dockerBuild {
+tasks.named("jibDockerBuild") {
     dependsOn("installDist")
-    images.add("sales-fx-service:${project.version}")
 }
