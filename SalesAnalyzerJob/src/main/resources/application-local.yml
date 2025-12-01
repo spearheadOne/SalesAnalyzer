@@ -1,6 +1,10 @@
 mybatis:
   environment: local
 
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/sales_metrics
+
 aws:
   account-id: 000000000000
   region: us-east-1

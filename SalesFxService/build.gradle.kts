@@ -8,9 +8,7 @@ plugins {
     kotlin("plugin.allopen")
 
     application
-    id("com.gradleup.shadow")
     id("io.micronaut.application")
-    id("io.micronaut.aot")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -41,6 +39,7 @@ dependencies {
 
 application {
     mainClass.set("org.abondar.experimental.sales.analyzer.fx.ApplicationKt")
+    applicationDefaultJvmArgs = listOf("-Dmicronaut.environments=local")
 }
 
 kotlin {
@@ -54,32 +53,17 @@ micronaut {
         incremental(true)
         annotations("org.abondar.experimental.sales.analyzer.fx*")
     }
-
-    aot {
-        optimizeServiceLoading.set(true)
-        convertYamlToJava.set(false)
-        precomputeOperations.set(true)
-        cacheEnvironment.set(true)
-        optimizeClassLoading.set(true)
-        deduceEnvironment.set(true)
-        optimizeNetty.set(true)
-        replaceLogbackXml.set(false)
-    }
 }
 
-tasks.shadowJar {
-    archiveBaseName.set("sales-analyzer-job")
-    archiveClassifier.set("all")
-}
-
-tasks.named<JavaExec>("run") {
-    systemProperty("micronaut.environments", "local")
-}
-
-tasks.named<NativeImageDockerfile>("dockerfileNative") {
-    args("-Dmicronaut.environments=docker")
+tasks.named("build") {
+    dependsOn("installDist")
 }
 
 tasks.named<MicronautDockerfile>("dockerfile") {
-    args("-Dmicronaut.environments=docker")
+    exposedPorts.set(listOf(9028))
+}
+
+tasks.dockerBuild {
+    dependsOn("installDist")
+    images.add("sales-fx-service:${project.version}")
 }

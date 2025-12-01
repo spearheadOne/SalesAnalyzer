@@ -1,5 +1,4 @@
 import io.micronaut.gradle.docker.MicronautDockerfile
-import io.micronaut.gradle.docker.NativeImageDockerfile
 
 plugins {
     kotlin("jvm")
@@ -7,9 +6,7 @@ plugins {
     kotlin("plugin.allopen")
 
     application
-    id("com.gradleup.shadow")
     id("io.micronaut.application")
-    id("io.micronaut.aot")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -52,6 +49,7 @@ dependencies {
 
 application {
     mainClass.set("org.abondar.experimental.sales.analyzer.dashboard.ApplicationKt")
+    applicationDefaultJvmArgs = listOf("-Dmicronaut.environments=local")
 }
 
 micronaut {
@@ -106,11 +104,6 @@ if (!skipFrontend) {
         dependsOn("yarnBuild")
     }
 
-    tasks.shadowJar {
-        archiveBaseName.set("sales-analyzer-dashboard")
-        archiveClassifier.set("all")
-        dependsOn("yarnBuild")
-    }
 
     tasks.named<JavaExec>("run") {
         dependsOn("yarnBuild")
@@ -119,10 +112,15 @@ if (!skipFrontend) {
 
 }
 
-tasks.named<NativeImageDockerfile>("dockerfileNative") {
-    args("-Dmicronaut.environments=aws")
-}
-
 tasks.named<MicronautDockerfile>("dockerfile") {
     args("-Dmicronaut.environments=aws")
+    exposedPorts.set(listOf(9024))
+}
+
+tasks.named("build") {
+    dependsOn("installDist")
+}
+
+tasks.dockerBuild {
+    images.add("sales-analyzer-dashboard:${project.version}")
 }

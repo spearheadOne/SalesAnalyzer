@@ -10,7 +10,7 @@ ingestion:
   bucket-name: sales-data
 
 aws:
-  region: us-east-2
+  region: eu-west-1
   services:
    kinesis:
      stream: sales-stream

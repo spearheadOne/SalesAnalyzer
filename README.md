@@ -19,3 +19,8 @@ Tiny sales data analyzer
 ```
 TODO: curl -X POST http://localhost:8080/data \
 -F "data=@./sample-data/sample.csv"
+
+
+TODO:  ./build/install/SalesDashboard/bin/SalesDashboard 
+
+TODO:  ./build/native/nativeCompile/SalesIngester

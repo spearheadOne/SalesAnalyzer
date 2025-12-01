@@ -10,7 +10,6 @@ liquibase:
 
 datasources:
   default:
-    url: jdbc:postgresql://localhost:5432/sales_metrics
     driverClassName: org.postgresql.Driver
     username: admin
     password: admin
@@ -19,17 +18,12 @@ datasources:
     autoCommit: false
 
 aws:
-   account-id: ${AWS_ACCOUNT_ID:000000000000}
-   region: us-east-2
-   access-key-id: ${AWS_KEY_ID}
-   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+   region: eu-west-1
    services:
      kinesis:
        stream: sales-stream
        windows:
         size-minutes: 1
-     sqs:
-       queueUrl: ${SQS_QUEUE_URL}
 
 
 grpc:

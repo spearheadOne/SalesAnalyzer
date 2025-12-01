@@ -38,10 +38,6 @@ dependencies {
     testImplementation("org.testcontainers:localstack:$testcontainersVersion")
 }
 
-application {
-    mainClass.set("org.abondar.experimental.sales.analyzer.ingester.ApplicationKt")
-}
-
 kotlin {
     jvmToolchain(21)
 }
@@ -66,6 +62,22 @@ micronaut {
     }
 }
 
+graalvmNative {
+    binaries {
+        named("main") {
+            imageName.set("SalesIngester")
+            buildArgs.add("--verbose")
+            buildArgs.add(
+                "--initialize-at-build-time=" +
+                        "ch.qos.logback," +
+                        "org.slf4j," +
+                        "kotlin.coroutines.intrinsics.CoroutineSingletons"
+            )
+            runtimeArgs.add("-Dmicronaut.environments=local")
+        }
+    }
+}
+
 tasks.named<JavaExec>("run") {
     systemProperty("micronaut.environments", "local")
 }
@@ -74,6 +86,6 @@ tasks.named<NativeImageDockerfile>("dockerfileNative") {
     args("-Dmicronaut.environments=aws")
 }
 
-tasks.named<MicronautDockerfile>("dockerfile") {
-    args("-Dmicronaut.environments=aws")
+tasks.dockerBuildNative {
+    images.add("sales-ingester:${project.version}")
 }

@@ -36,7 +36,6 @@ endpoints:
 
 datasources:
   default:
-    url: jdbc:postgresql://localhost:5432/sales_metrics
     driverClassName: org.postgresql.Driver
     username: admin
     password: admin
@@ -45,14 +44,9 @@ datasources:
     autoCommit: false
 
 aws:
-  access-key-id: ${AWS_KEY_ID}
-  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-  region: us-east-2
+  region: eu-west-1
   sqs:
     queue-name: sales-queue
-  services:
-    sqs:
-      queueUrl: ${SQS_QUEUE_URL}
 
 default-currency: EUR
 

@@ -5,8 +5,6 @@ plugins {
 
     id("io.micronaut.application") version "4.5.4" apply false
     id("io.micronaut.aot") version "4.5.4" apply false
-    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
-    id("com.gradleup.shadow") version "8.3.0" apply false
 }
 
 subprojects {
@@ -39,7 +37,7 @@ subprojects {
         val testcontainersVersion: String by project
 
 
-        add("implementation", "ch.qos.logback:logback-classic:#$logbackVersion")
+        add("implementation", "ch.qos.logback:logback-classic:$logbackVersion")
 
         add("implementation", platform("software.amazon.awssdk:bom:${awsSdkVersion}"))
         add("implementation", "software.amazon.awssdk:regions")
@@ -62,3 +60,4 @@ subprojects {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
