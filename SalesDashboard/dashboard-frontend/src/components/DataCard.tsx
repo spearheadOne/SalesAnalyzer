@@ -1,8 +1,7 @@
 import DashboardControls from "./DashboardControls.tsx";
 import {createPeriodStore, PeriodStoreContext} from "../store/periodStore.ts";
-import {useHistoricDataStore} from "../store/historicDataStore.ts";
 import {createLimitStore, LimitStoreContext} from "../store/limitStore.ts";
-import {useRef} from "react";
+import {useRef, useState} from "react";
 import {useStoreSelector} from "../util/util.ts";
 
 type DataCardProps = {
@@ -30,8 +29,18 @@ export function DataCard({
 
 
     const displayPeriod = useStoreSelector(periodStoreRef.current, s => s.getDisplayPeriod());
-    const error = useHistoricDataStore((state) => state.error);
+    const [error, setError] = useState<string | undefined>();
     const isEmpty = dataCount === 0;
+
+    const handleFetchData = async (period: string, limit?: number) => {
+        setError(undefined);
+        try {
+            await fetchData(period, limit);
+        } catch (err: any) {
+            setError(err?.message || 'Request failed');
+        }
+    };
+
 
     return (
         <>
@@ -55,7 +64,7 @@ export function DataCard({
 
                     <div className="mt-3">
                         <DashboardControls
-                            fetchData={fetchData}
+                            fetchData={handleFetchData}
                             limitEnabled={limitEnabled}
                         />
                     </div>

@@ -37,7 +37,7 @@ bin/
 /dist/
 /nbdist/
 /.nb-gradle/
-
+/SalesDashboard/src/main/resources/public
 ### VS Code ###
 .vscode/
 

@@ -1,8 +1,9 @@
-
 import {create} from "zustand/react";
 import api, {buildUrl} from './client.ts';
 import {
-    type CategoryRevenueResponse, DataKeys, type DataType,
+    type CategoryRevenueResponse,
+    DataKeys,
+    type DataType,
     type ProductsRevenueResponse,
     type ResponseMap,
     schemaMap,
@@ -11,31 +12,22 @@ import {
 import {z} from "zod";
 
 interface HistoricDataStore {
-
     categoryResponse: CategoryRevenueResponse | null;
     productsResponse: ProductsRevenueResponse | null;
     timeSeriesResponse: TimeSeriesResponse | null;
 
-    error?: string;
-
     fetchCategoryRevenue: (period: string, limit: number) => Promise<void>;
     fetchProductsRevenue: (period: string, limit: number) => Promise<void>;
     fetchTimeSeries: (period: string) => Promise<void>;
-
 }
 
 export const useHistoricDataStore = create<HistoricDataStore>((set) => {
 
-    const fetchData=  async <T extends DataType>(dataType: T, uri: string) => {
+    const fetchData = async <T extends DataType>(dataType: T, uri: string) => {
         set({[dataType]: null, error: undefined} as Partial<HistoricDataStore>);
-        try {
-            const res = await api.get(uri);
-            const parsed = (schemaMap[dataType] as z.ZodTypeAny).parse(res.data) as ResponseMap[T];
-            set({[dataType]: parsed} as Partial<HistoricDataStore>)
-        } catch (err: any) {
-            const message = err?.name === 'ZodError' ? 'Invalid server data' : (err?.message || 'Request failed')
-            set({ error: message })
-        }
+        const res = await api.get(uri);
+        const parsed = (schemaMap[dataType] as z.ZodTypeAny).parse(res.data) as ResponseMap[T];
+        set({[dataType]: parsed} as Partial<HistoricDataStore>)
     }
 
     return {
