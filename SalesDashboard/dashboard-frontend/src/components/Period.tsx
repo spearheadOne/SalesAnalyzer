@@ -10,21 +10,26 @@ export default function Period() {
     const value = parseInt(period, 10) || 1;
     const unit = (period.replace(/\d+/g, '') as PeriodUnit) || 'h';
 
+    const max = 2000
+    const min = 1;
     return (
         <div className="d-flex align-items-center gap-2">
             <input type="number"
                    className="form-control form-control-sm w-auto"
-                   min={1}
+                   min={min}
+                   max={max}
                    value={value}
                    onChange={(e) => {
                        const raw = e.target.value;
-                       if (raw === '') return; // don't commit while empty
+                       if (raw === '') return;
+
                        const n = parseInt(raw, 10);
-                       if (!Number.isFinite(n) || n < 1) {
+                       if (!Number.isFinite(n) ) {
                            setPeriod(1, unit);
-                       } else {
-                           setPeriod(n, unit);
+                           return;
                        }
+                       const clamped = Math.min(Math.max(n, min), max);
+                       setPeriod(clamped, unit);
                    }}
             />
 
