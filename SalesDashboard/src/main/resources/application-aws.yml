@@ -6,6 +6,8 @@ datasources:
     url: jdbc:postgresql://${RDS_ENDPOINT}:5432/metrics
 
 aws:
+  access-key-id: ${AWS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   rds:
     secret-id: ${RDS_CREDENTIALS_ARN}
   services:
