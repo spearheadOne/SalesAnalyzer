@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: data-upload
+    name: sales-ingester
   serde:
     enabled: true
   server:

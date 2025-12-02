@@ -6,9 +6,6 @@ datasources:
     url: jdbc:postgresql://${RDS_ENDPOINT}:5432/metrics
 
 aws:
-  account-id: ${AWS_ACCOUNT_ID}
-  access-key-id: ${AWS_KEY_ID}
-  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   services:
     sqs:
       queueUrl: ${SQS_QUEUE_URL}
