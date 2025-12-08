@@ -74,15 +74,14 @@ class IngestionHandlerIT : TestPropertyProvider {
 
         salesBucket += "${System.currentTimeMillis()}-${(1000..9999).random()}"
 
-        s3Client.use { s3 ->
-            s3.createBucket(
-                CreateBucketRequest.builder()
-                    .bucket(salesBucket)
-                    .build()
-            )
+        s3Client.createBucket(
+            CreateBucketRequest.builder()
+                .bucket(salesBucket)
+                .build()
+        )
 
 
-            val data = """
+        val data = """
             timestamp,product_id,product_name,category,price,currency,amount
             2025-08-13T09:15:00Z,PROD001,Wireless Mouse,Electronics,24.99,EUR,2
             2025-08-13T09:16:30Z,PROD002,USB-C Cable,Accessories,9.99,EUR,1
@@ -91,14 +90,13 @@ class IngestionHandlerIT : TestPropertyProvider {
             2025-08-13T09:21:45Z,PROD002,USB-C Cable,Accessories,9.99,EUR,3
         """.trimIndent()
 
-            s3.putObject(
-                PutObjectRequest.builder()
-                    .bucket(salesBucket)
-                    .key("test.csv")
-                    .build(),
-                RequestBody.fromString(data)
-            )
-        }
+        s3Client.putObject(
+            PutObjectRequest.builder()
+                .bucket(salesBucket)
+                .key("test.csv")
+                .build(),
+            RequestBody.fromString(data)
+        )
 
         val s3Event = """
 {
