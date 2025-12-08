@@ -1,0 +1,9 @@
+aws:
+  region: us-east-1
+  access-key-id: test
+  secret-access-key: test
+  services:
+    s3:
+      endpoint-override: http://localhost:4566
+  s3:
+    path-style-access-enabled: true

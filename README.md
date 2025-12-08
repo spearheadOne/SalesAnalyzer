@@ -8,6 +8,8 @@ Tiny sales data analyzer
  - [SalesAnalyzerJob](SalesAnalyzerJob/README.md)
  - [SalesDashboard](SalesDashboard/README.md)
  - [SalesFxService](SalesFxService/README.md)
+ - [SalesCleanup](SalesCleanup/README.md)
+ - [Data](Data/README.md)
 
 
 ## Build and run

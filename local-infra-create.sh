@@ -8,11 +8,11 @@ export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
 export AWS_REGION=us-east-1
 
-ENDPOINT=http://localhost:4566
+export ENDPOINT=http://localhost:4566
 
-if ! aws --endpoint-url="$ENDPOINT" s3 ls s3://sales-bucket 2>/dev/null; then
+if ! aws --endpoint-url="$ENDPOINT" s3 ls s3://sales-data 2>/dev/null; then
   echo "Creating S3 bucket..."
-  aws --endpoint-url="$ENDPOINT" s3 mb s3://sales-bucket
+  aws --endpoint-url="$ENDPOINT" s3 mb s3://sales-data
 else
   echo "S3 bucket already exists"
 fi

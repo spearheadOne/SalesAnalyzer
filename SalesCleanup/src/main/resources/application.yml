@@ -1,0 +1,19 @@
+micronaut:
+  application:
+    name: sales-cleanup
+  server:
+    enabled: false
+
+ingestion:
+  bucket-name: sales-data
+
+aws:
+  account-id: ${AWS_ACCOUNT_ID}
+  access-key-id: ${AWS_KEY_ID}
+  region: eu-west-1
+
+
+logging:
+  level:
+    root: INFO
+    software.amazon.awssdk: WARN

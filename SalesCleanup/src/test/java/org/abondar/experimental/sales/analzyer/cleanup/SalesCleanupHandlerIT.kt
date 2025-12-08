@@ -1,0 +1,105 @@
+package org.abondar.experimental.sales.analzyer.cleanup
+
+import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
+import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Value
+import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
+import io.micronaut.test.support.TestPropertyProvider
+import jakarta.inject.Inject
+import org.abondar.experimental.sales.analyzer.cleanup.SalesCleanupHandler
+import org.junit.jupiter.api.*
+import org.testcontainers.containers.localstack.LocalStackContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
+import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest
+import software.amazon.awssdk.services.s3.model.PutObjectRequest
+
+@Testcontainers(disabledWithoutDocker = true)
+@MicronautLambdaTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class SalesCleanupHandlerIT : TestPropertyProvider {
+
+    @Inject
+    lateinit var applicationContext: ApplicationContext
+
+    @Value("\${ingestion.bucket-name}")
+    lateinit var salesBucket: String
+
+    @Inject
+    lateinit var s3Client: S3Client
+
+    val cleanUpEvent = ScheduledEvent().apply {
+        region = "us-east-1"
+        source = "aws.events"
+        detailType = "Scheduled Event"
+    }
+
+    lateinit var cleanupHandler: SalesCleanupHandler
+
+    companion object {
+        @Container
+        @JvmStatic
+        val localstack: LocalStackContainer =
+            LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
+                .withServices(LocalStackContainer.Service.S3)
+    }
+
+    override fun getProperties() = mutableMapOf(
+        "aws.services.s3.endpoint-override" to localstack
+            .getEndpointOverride(LocalStackContainer.Service.S3).toString(),
+        "aws.access-key-id" to localstack.accessKey,
+        "aws.secret-access-key" to localstack.secretKey,
+        "aws.region" to localstack.region,
+        "ingestion.bucket-name" to "sales-bucket"
+    )
+
+
+    @BeforeAll
+    fun createBucket() {
+        s3Client.createBucket(
+            CreateBucketRequest.builder()
+                .bucket(salesBucket)
+                .build()
+        )
+    }
+
+    @BeforeEach
+    fun initHandler() {
+        cleanupHandler = SalesCleanupHandler(applicationContext)
+    }
+
+    @Test
+    fun `test empty bucket clean up`() {
+        assertDoesNotThrow {
+            cleanupHandler.execute(cleanUpEvent)
+        }
+    }
+
+    @Test
+    fun `test bucket clean up`() {
+        val data = """
+            timestamp,product_id,product_name,category,price,currency,amount
+            2025-08-13T09:15:00Z,PROD001,Wireless Mouse,Electronics,24.99,EUR,2
+            2025-08-13T09:16:30Z,PROD002,USB-C Cable,Accessories,9.99,EUR,1
+            2025-08-13T09:18:10Z,PROD003,Mechanical Keyboard,Electronics,89.50,EUR,2
+            2025-08-13T09:20:05Z,PROD004,Laptop Stand,Office,34.90,EUR,5
+            2025-08-13T09:21:45Z,PROD002,USB-C Cable,Accessories,9.99,EUR,3
+        """.trimIndent()
+
+        s3Client.putObject(
+            PutObjectRequest.builder()
+                .bucket(salesBucket)
+                .key("test.csv")
+                .build(),
+            RequestBody.fromString(data)
+        )
+
+        assertDoesNotThrow {
+            cleanupHandler.execute(cleanUpEvent)
+        }
+    }
+
+}
