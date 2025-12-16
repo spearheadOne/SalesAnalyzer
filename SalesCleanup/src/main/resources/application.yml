@@ -5,7 +5,7 @@ micronaut:
     enabled: false
 
 ingestion:
-  bucket-name: sales-data
+  bucket-name: ${SALES_BUCKET_NAME:sales-data}
 
 aws:
   account-id: ${AWS_ACCOUNT_ID}

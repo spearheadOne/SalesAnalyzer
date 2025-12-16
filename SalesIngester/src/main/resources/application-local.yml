@@ -6,6 +6,9 @@ micronaut:
     client:
       read-timeout: 30s
 
+ingestion:
+  bucket-name: sales-data
+
 aws:
   region: us-east-1
   access-key-id: test

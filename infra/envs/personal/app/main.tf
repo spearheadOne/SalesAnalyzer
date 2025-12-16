@@ -1,3 +1,0 @@
-module "core" {
-  source = "../../../app"
-}
