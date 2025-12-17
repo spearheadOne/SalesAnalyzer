@@ -25,6 +25,18 @@ resource "aws_api_gateway_method" "upload_put_method" {
   }
 }
 
+resource "aws_api_gateway_method_settings" "all" {
+  rest_api_id = aws_api_gateway_rest_api.upload_api.id
+  stage_name  = aws_api_gateway_stage.stage.stage_name
+  method_path = "*/*"
+
+  settings {
+    logging_level      = "INFO"
+    data_trace_enabled = true
+    metrics_enabled    = true
+  }
+}
+
 resource "aws_api_gateway_integration" "upload_to_s3" {
   rest_api_id = aws_api_gateway_rest_api.upload_api.id
   resource_id = aws_api_gateway_resource.filename_resource.id
