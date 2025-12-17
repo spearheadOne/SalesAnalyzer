@@ -41,7 +41,7 @@ resource "aws_api_gateway_integration" "upload_to_s3" {
   rest_api_id = aws_api_gateway_rest_api.upload_api.id
   resource_id = aws_api_gateway_resource.filename_resource.id
   http_method = aws_api_gateway_method.upload_put_method.http_method
-  credentials             = aws_iam_role.apigw_s3_role.arn
+  credentials             = aws_iam_role.upload_s3_role.arn
   integration_http_method = "PUT"
   type = "AWS"
   uri = "arn:aws:apigateway:${var.region}:s3:path/${aws_s3_bucket.sales_data.bucket}/{filename}"
@@ -82,7 +82,7 @@ resource "aws_api_gateway_method_response" "upload_200" {
   status_code = "200"
 }
 
-resource "aws_api_gateway_integration_response" "upload_200" {
+resource "aws_api_gateway_integration_response" "upload_int_200" {
   rest_api_id = aws_api_gateway_rest_api.upload_api.id
   resource_id = aws_api_gateway_resource.filename_resource.id
   http_method = aws_api_gateway_method.upload_put_method.http_method
@@ -90,7 +90,7 @@ resource "aws_api_gateway_integration_response" "upload_200" {
 }
 
 
-resource "aws_iam_role" "apigw_s3_role" {
+resource "aws_iam_role" "upload_s3_role" {
   name = "apigw-s3-upload-${var.environment}"
 
   assume_role_policy = jsonencode({
@@ -104,7 +104,7 @@ resource "aws_iam_role" "apigw_s3_role" {
 }
 
 resource "aws_iam_role_policy" "apigw_s3_policy" {
-  role = aws_iam_role.apigw_s3_role.id
+  role = aws_iam_role.upload_s3_role.id
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -116,7 +116,7 @@ resource "aws_iam_role_policy" "apigw_s3_policy" {
   })
 }
 
-resource "aws_iam_role" "apigw_cloudwatch_role" {
+resource "aws_iam_role" "upload_cloudwatch_role" {
   name = "apigw-cloudwatch-${var.environment}"
 
   assume_role_policy = jsonencode({
@@ -129,16 +129,16 @@ resource "aws_iam_role" "apigw_cloudwatch_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "apigw_cloudwatch_attach" {
-  role       = aws_iam_role.apigw_cloudwatch_role.name
+resource "aws_iam_role_policy_attachment" "upload_cloudwatch_attach" {
+  role       = aws_iam_role.upload_cloudwatch_role.name
   policy_arn  = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }
 
 resource "aws_api_gateway_account" "account" {
-  cloudwatch_role_arn = aws_iam_role.apigw_cloudwatch_role.arn
+  cloudwatch_role_arn = aws_iam_role.upload_cloudwatch_role.arn
 }
 
-resource "aws_cloudwatch_log_group" "apigw_access" {
+resource "aws_cloudwatch_log_group" "upload_access_log_group" {
   name = "/aws/apigateway/${aws_api_gateway_rest_api.upload_api.name}/${var.environment}"
   retention_in_days = 7
 }
@@ -151,7 +151,7 @@ resource "aws_api_gateway_stage" "stage" {
   depends_on = [aws_api_gateway_account.account]
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.apigw_access.arn
+    destination_arn = aws_cloudwatch_log_group.upload_access_log_group.arn
     format = jsonencode({
       requestId    = "$context.requestId"
       ip           = "$context.identity.sourceIp"

@@ -19,8 +19,13 @@ Tiny sales data analyzer
 
 ./local-infra.sh
 ```
-TODO: curl -X POST http://localhost:8080/data \
+TODO: curl -X POST http://localhost:8080/upload/sample.csv \
 -F "data=@./sample-data/sample.csv"
+
+TODO:  curl -X PUT \
+"https://<api-id>.execute-api.<region>.amazonaws.com/personal/upload/sample.csv" \
+-H "Content-Type: text/csv" \
+--data-binary @sample-data/sample.csv
 
 
 TODO:  ./build/install/SalesDashboard/bin/SalesDashboard 
