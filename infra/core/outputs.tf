@@ -1,6 +1,6 @@
 output "sales_bucket_name" {
   description = "Actual created S3 bucket name (globally unique)"
-  value       = aws_s3_bucket.sales_data.bucket_domain_name
+  value       = aws_s3_bucket.sales_data.bucket
 }
 
 output "upload_invoke_url" {
@@ -10,4 +10,8 @@ output "upload_invoke_url" {
 
 output "sqs_queue_url" {
   value = aws_sqs_queue.sales_queue.url
+}
+
+output "kinesis_stream_name" {
+  value = aws_kinesis_stream.sales_stream.name
 }

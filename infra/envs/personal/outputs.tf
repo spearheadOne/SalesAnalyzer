@@ -9,3 +9,7 @@ output "sales_bucket_name" {
 output "sqs_queue_url" {
   value = module.core.sqs_queue_url
 }
+
+output "kinesis_stream_name" {
+  value = module.core.kinesis_stream_name
+}

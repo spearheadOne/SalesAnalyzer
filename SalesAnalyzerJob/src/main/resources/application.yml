@@ -21,7 +21,7 @@ aws:
    region: eu-west-1
    services:
      kinesis:
-       stream: sales-stream
+       stream: ${KINESIS_STREAM_NAME:sales-stream}
        windows:
         size-minutes: 1
 

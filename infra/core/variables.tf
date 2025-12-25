@@ -10,6 +10,10 @@ variable "region" {
   default = "eu-west-1"
 }
 
-variable "queue-name" {
+variable "queue_name" {
   default = "sales-queue"
+}
+
+variable "kinesis_stream_name" {
+  default = "sales-stream"
 }
