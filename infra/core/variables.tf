@@ -9,3 +9,7 @@ variable "environment" {
 variable "region" {
   default = "eu-west-1"
 }
+
+variable "queue-name" {
+  default = "sales-queue"
+}

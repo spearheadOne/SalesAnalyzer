@@ -8,8 +8,6 @@ ingestion:
   bucket-name: ${SALES_BUCKET_NAME:sales-data}
 
 aws:
-  account-id: ${AWS_ACCOUNT_ID}
-  access-key-id: ${AWS_KEY_ID}
   region: eu-west-1
 
 
