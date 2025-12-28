@@ -3,11 +3,9 @@ mybatis:
 
 datasources:
   default:
-    url: jdbc:postgresql://${RDS_ENDPOINT}:5432/metrics
+    url: jdbc:postgresql://${RDS_ENDPOINT}:5432/sales_metrics
 
 aws:
-  rds:
-    secret-id: ${RDS_CREDENTIALS_ARN}
   services:
     sqs:
       queueUrl: ${SQS_QUEUE_URL}

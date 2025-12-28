@@ -10,6 +10,10 @@ output "sqs_queue_url" {
   value = module.core.sqs_queue_url
 }
 
+output "sqs_queue_name" {
+  value = module.core.sqs_queue_name
+}
+
 output "kinesis_stream_name" {
   value = module.core.kinesis_stream_name
 }

@@ -1,0 +1,66 @@
+#!/bin/bash
+set -euo pipefail
+
+# These come from Terraform templatefile()
+DB_NAME="${db_name}"
+DB_USER="${db_user}"
+DB_PASS="${db_pass}"
+VPC_CIDR="${vpc_cidr}"
+
+echo "===== Updating system ====="
+yum -y update
+
+echo "===== Install dependencies ====="
+yum -y install wget gnupg2 curl
+
+echo "===== Enable PostgreSQL 14 ====="
+amazon-linux-extras enable postgresql14
+yum clean metadata
+yum -y install postgresql-server postgresql-contrib
+
+echo "===== Initialize PostgreSQL DB ====="
+/usr/bin/postgresql-setup initdb
+
+echo "===== Add TimescaleDB repository ====="
+cat > /etc/yum.repos.d/timescale_timescaledb.repo <<EOF
+[timescale_timescaledb]
+name=timescale_timescaledb
+baseurl=https://packagecloud.io/timescale/timescaledb/el/7/\$basearch
+repo_gpgcheck=1
+gpgcheck=1
+enabled=1
+gpgkey=https://packagecloud.io/timescale/timescaledb/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300
+EOF
+
+yum clean all
+
+echo "===== Install TimescaleDB for PostgreSQL 14 ====="
+yum -y install timescaledb-2-postgresql-14
+
+echo "===== Configure PostgreSQL for Timescale ====="
+echo "shared_preload_libraries = 'timescaledb'" >> /var/lib/pgsql/data/postgresql.conf
+
+echo "===== Configure PostgreSQL Networking ====="
+echo "listen_addresses = '*'" >> /var/lib/pgsql/data/postgresql.conf
+
+cat <<EOF >> /var/lib/pgsql/data/pg_hba.conf
+host    all             all             ${vpc_cidr}           md5
+EOF
+
+echo "===== Start PostgreSQL ====="
+systemctl enable postgresql
+systemctl restart postgresql
+
+echo "===== Create DB, user, enable extension ====="
+sudo -u postgres psql <<EOF
+CREATE DATABASE "${db_name}";
+CREATE USER "${db_user}}" WITH ENCRYPTED PASSWORD '${db_pass}';
+GRANT ALL PRIVILEGES ON DATABASE "${db_name}}" TO "${db_user}}";
+\c "${db_name}"
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+EOF
+
+echo "===== TimescaleDB Installed Successfully ====="

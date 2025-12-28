@@ -37,8 +37,8 @@ endpoints:
 datasources:
   default:
     driverClassName: org.postgresql.Driver
-    username: admin
-    password: admin
+    username: ${TIMESCALE_USERNAME:admin}
+    password: ${TIMESCALE_PASSWORD:admin}
     maximumPoolSize: 5
     minimumIdle: 1
     autoCommit: false
@@ -46,7 +46,7 @@ datasources:
 aws:
   region: eu-west-1
   sqs:
-    queue-name: sales-queue
+    queue-name: ${SQS_QUEUE_NAME:sales-queue}
 
 default-currency: EUR
 

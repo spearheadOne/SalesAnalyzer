@@ -28,6 +28,8 @@ dependencies {
     implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut.openapi:micronaut-openapi-annotations")
     implementation("io.micronaut.jms:micronaut-jms-sqs")
+    implementation("software.amazon.awssdk:secretsmanager")
+
 
     implementation("org.mybatis:mybatis:$mybatisVersion")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:$mybatisJsr310Version")
