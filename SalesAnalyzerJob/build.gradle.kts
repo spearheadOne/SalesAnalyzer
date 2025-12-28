@@ -72,19 +72,12 @@ jib {
     from {
         image = baseImage
 
-
-        //TODO: -Djib.from.platforms=linux/amd64 in github actions
         platforms {
             platform {
                 architecture = imageArch
                 os = imageOS
             }
         }
-    }
-
-    to {
-        //TODO: use ecr based image from param on actions -Djib.to.image="${JOB_ECR_URL}:${TAG}"
-        image = "sales-analyzer-job:${project.version}"
     }
 
     extraDirectories {

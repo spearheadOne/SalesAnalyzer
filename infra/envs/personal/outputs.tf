@@ -17,3 +17,23 @@ output "sqs_queue_name" {
 output "kinesis_stream_name" {
   value = module.core.kinesis_stream_name
 }
+
+output "sales_ingester_ecr_url" {
+  value = module.core.sales_ingester_ecr_url
+}
+
+output "sales_cleanup_ecr_url" {
+  value = module.core.sales_cleanup_ecr_url
+}
+
+output "sales_analyzer_job_ecr_url" {
+  value = module.core.sales_analyzer_job_ecr_url
+}
+
+output "sales_fx_service_ecr_url" {
+  value = module.core.sales_fx_service_ecr_url
+}
+
+output "sales_dashboard_ecr_url" {
+  value = module.core.sales_dashboard_ecr_url
+}

@@ -83,10 +83,6 @@ jib {
         }
     }
 
-    to {
-        image = "sales-dashboard:${project.version}"
-    }
-
     extraDirectories {
         paths {
             path {

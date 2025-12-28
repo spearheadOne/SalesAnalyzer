@@ -94,10 +94,6 @@ jib {
         }
     }
 
-    to {
-        image = "sales-cleanup:${project.version}"
-    }
-
     extraDirectories {
         paths {
             path {

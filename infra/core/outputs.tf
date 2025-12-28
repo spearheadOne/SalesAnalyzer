@@ -19,3 +19,23 @@ output "sqs_queue_name" {
 output "kinesis_stream_name" {
   value = aws_kinesis_stream.sales_stream.name
 }
+
+output "sales_ingester_ecr_url" {
+  value = aws_ecr_repository.sales_ingester_repo.repository_url
+}
+
+output "sales_cleanup_ecr_url" {
+  value = aws_ecr_repository.sales_cleanup_repo.repository_url
+}
+
+output "sales_analyzer_job_ecr_url" {
+  value = aws_ecr_repository.sales_analyzer_job_repo.repository_url
+}
+
+output "sales_fx_service_ecr_url" {
+  value = aws_ecr_repository.sales_fx_service_repo.repository_url
+}
+
+output "sales_dashboard_ecr_url" {
+  value = aws_ecr_repository.sales_dashboard_repo.repository_url
+}

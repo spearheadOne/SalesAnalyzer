@@ -31,3 +31,6 @@ TODO:  curl -X PUT \
 TODO:  ./build/install/SalesDashboard/bin/SalesDashboard 
 
 TODO:  ./build/native/nativeCompile/SalesIngester
+TODO:  export SALESINGESTER_ECR_REPO=<ecr repo url>
+TODO: aws ecr get-login-password --region eu-west-1 \
+| docker login --username AWS --password-stdin <ecr-repo>

@@ -40,3 +40,27 @@ variable "db_username" {
   default = "metrics_admin"
 }
 
+variable "sales_ingester_app" {
+  type = string
+  default = "sales-ingester"
+}
+
+variable "sales_cleanup_app" {
+  type = string
+  default = "sales-cleanup"
+}
+
+variable "sales_analyzer_job_app" {
+  type = string
+  default = "sales-analyzer-job"
+}
+
+variable "sales_fx_service_app" {
+  type = string
+  default = "sales-fx-service"
+}
+
+variable "sales_dashboard_app" {
+  type = string
+  default = "sales-dashboard"
+}

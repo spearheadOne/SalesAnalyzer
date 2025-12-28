@@ -95,10 +95,6 @@ jib {
         }
     }
 
-    to {
-        image = "sales-ingester:${project.version}"
-    }
-
     extraDirectories {
         paths {
             path {

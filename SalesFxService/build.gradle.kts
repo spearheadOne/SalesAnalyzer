@@ -68,10 +68,6 @@ jib {
         }
     }
 
-    to {
-        image = "sales-fx-service:${project.version}"
-    }
-
     extraDirectories {
         paths {
             path {

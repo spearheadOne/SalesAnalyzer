@@ -55,6 +55,22 @@ subprojects {
         add("testImplementation", "org.testcontainers:junit-jupiter:${testcontainersVersion}")
         add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine")
     }
+
+    plugins.withId("com.google.cloud.tools.jib") {
+
+        val serviceEnvName = "${project.name.uppercase()}_ECR_REPO"
+        val ecrRepoUrl: String? = System.getenv(serviceEnvName)
+
+        extensions.configure<com.google.cloud.tools.jib.gradle.JibExtension> {
+            to {
+                image = if (ecrRepoUrl.isNullOrBlank()) {
+                    "${project.name}:${project.version}"
+                } else {
+                    "$ecrRepoUrl:${project.version}"
+                }
+            }
+        }
+    }
 }
 
 
