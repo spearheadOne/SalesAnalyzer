@@ -47,4 +47,4 @@ bin/
 **/.terraform/
 **/terraform.tfstate
 **/.terraform.lock.hcl
-**/terraform.tfstate.*
+**/terraform-*.tfstate.*

@@ -70,9 +70,6 @@ resource "aws_api_gateway_deployment" "upload_deployment" {
     create_before_destroy = true
   }
 
-  variables = {
-    deployed_at = timestamp()
-  }
 }
 
 resource "aws_api_gateway_method_response" "upload_200" {
