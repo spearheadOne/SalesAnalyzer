@@ -44,7 +44,7 @@ datasources:
     autoCommit: false
 
 aws:
-  region: eu-west-1
+  region: ${AWS_REGION:eu-west-1}
   sqs:
     queue-name: ${SQS_QUEUE_NAME:sales-queue}
 

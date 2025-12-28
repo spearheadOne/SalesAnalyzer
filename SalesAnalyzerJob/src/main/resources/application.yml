@@ -18,7 +18,7 @@ datasources:
     autoCommit: false
 
 aws:
-   region: eu-west-1
+   region: ${AWS_REGION:eu-west-1}
    services:
      kinesis:
        stream: ${KINESIS_STREAM_NAME:sales-stream}
