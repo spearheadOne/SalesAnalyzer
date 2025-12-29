@@ -3,6 +3,11 @@ output "sales_bucket_name" {
   value       = aws_s3_bucket.sales_data.bucket
 }
 
+output "sales_bucket_arn" {
+  description = "ARN of the sales data bucket"
+  value       = aws_s3_bucket.sales_data.arn
+}
+
 output "upload_invoke_url" {
   description = "API gateway URL for data upload"
   value = "https://${aws_api_gateway_rest_api.upload_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.stage.stage_name}/upload/{filename}"

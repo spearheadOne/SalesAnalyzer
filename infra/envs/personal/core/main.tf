@@ -5,8 +5,3 @@ module "core" {
   enable_private_subnets = var.enable_private_subnets
   number_of_azs = var.number_of_azs
 }
-
-module "app" {
-  source = "../../../app"
-  environment = var.environment
-}

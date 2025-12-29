@@ -5,3 +5,8 @@ variable "region" {
 variable "environment" {
   default = "personal"
 }
+
+variable "sales_ingester_version" {
+  type = string
+  default = "0.1.0"
+}
