@@ -6,4 +6,5 @@ module "app" {
   sales_bucket_arn         = data.terraform_remote_state.core.outputs.sales_bucket_arn
   kinesis_stream_name      = data.terraform_remote_state.core.outputs.kinesis_stream_name
   sales_ingester_image_uri = "${data.terraform_remote_state.core.outputs.sales_ingester_ecr_url}:${var.sales_ingester_version}"
+  sales_cleanup_image_uri = "${data.terraform_remote_state.core.outputs.sales_cleanup_ecr_url}:${var.sales_cleanup_version}"
 }

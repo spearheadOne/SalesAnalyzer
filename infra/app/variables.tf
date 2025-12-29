@@ -10,6 +10,11 @@ variable "sales_ingester_image_uri" {
   type = string
 }
 
+variable "sales_cleanup_image_uri" {
+  type = string
+}
+
+
 variable "sales_bucket_name" {
   type = string
 }

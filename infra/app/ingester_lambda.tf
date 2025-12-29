@@ -98,7 +98,7 @@ resource "aws_cloudwatch_log_group" "sales_ingester_log" {
   ]
 
   tags = {
-    Service     = "sales-ingester"
+    Service     = var.sales_cleanup_app
     Environment = var.environment
   }
 }
