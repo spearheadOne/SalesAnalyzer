@@ -1,6 +1,6 @@
-resource "aws_security_group" "sales_data_sg" {
-  name        = "sales-data-${var.environment}"
-  description = "Sales data db access"
+resource "aws_security_group" "timescale_sg" {
+  name        = "timescale-${var.environment}"
+  description = "Timescale DB access"
   vpc_id      = aws_vpc.sales_vpc.id
 
   # access db inside the subnet - inbound to db from apps
@@ -20,7 +20,7 @@ resource "aws_security_group" "sales_data_sg" {
   }
 
   tags = {
-    Name = "sales-data-sg-${var.environment}"
+    Name = "timescale-sg-${var.environment}"
     Environment = var.environment
   }
 }
