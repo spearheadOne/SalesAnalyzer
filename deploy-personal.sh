@@ -20,9 +20,7 @@ terraform apply -auto-approve
 
 echo "==> Step 2: Read core outputs (ECR + region)"
 
-AWS_REGION=$(terraform output -raw aws_region)
 ECR_REGISTRY=$(terraform output -raw ecr_registry)
-
 SALES_ANALYZER_JOB_ECR_URL=$(terraform output -raw sales_analyzer_job_ecr_url)
 SALES_CLEANUP_ECR_URL=$(terraform output -raw sales_cleanup_ecr_url)
 SALES_DASHBOARD_ECR_URL=$(terraform output -raw sales_dashboard_ecr_url)
@@ -32,7 +30,7 @@ API_GATEWAY_INVOKE_URL=$(terraform output -raw upload_invoke_url)
 
 echo "==> Step 3: Login to ECR"
 
-aws ecr get-login-password --region "$AWS_REGION" \
+aws ecr get-login-password --region eu-west-1 \
   | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
 echo "    - ECR login OK"
@@ -41,14 +39,12 @@ echo "==> Step 4: Export Jib env vars and build/push images"
 
 cd "$ROOT_DIR"
 
-# Export env vars consumed by Jib in each submodule
 export SALESANALYZERJOB_ECR_REPO="$SALES_ANALYZER_JOB_ECR_URL"
 export SALESCLEANUP_ECR_REPO="$SALES_CLEANUP_ECR_URL"
 export SALESDASHBOARD_ECR_REPO="$SALES_DASHBOARD_ECR_URL"
 export SALESFXSERVICE_ECR_REPO="$SALES_FX_SERVICE_ECR_URL"
 export SALESINGESTER_ECR_REPO="$SALES_INGESTER_ECR_URL"
 
-# Build & push images; adjust project paths if names differ
 ./gradlew \
   :SalesIngester:jib \
   :SalesAnalyzerJob:jib \
@@ -68,5 +64,9 @@ fi
 echo "    - terraform apply (app)"
 terraform apply -auto-approve
 
+SALES_DASHBOARD_URL=$(terraform output -raw sales_dashboard_url)
+
 echo "API GATEWAY INVOKE URL: $API_GATEWAY_INVOKE_URL"
+echo "SALES DASHBOARD URL: $SALES_DASHBOARD_URL"
+
 echo "==> All done."
