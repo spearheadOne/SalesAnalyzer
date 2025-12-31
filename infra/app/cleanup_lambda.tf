@@ -47,12 +47,13 @@ resource "aws_lambda_function" "sales_cleanup" {
   image_uri     = var.sales_cleanup_image_uri
   role          = aws_iam_role.sales_cleanup_role.arn
 
-  timeout     = var.lambda_timeout
-  memory_size = var.lambda_memory_size
+  timeout       = var.lambda_timeout
+  memory_size   = var.lambda_memory_size
+  architectures = ["arm64"]
 
   environment {
     variables = {
-      SALES_BUCKET_NAME      = var.sales_bucket_name
+      SALES_BUCKET_NAME = var.sales_bucket_name
     }
   }
 

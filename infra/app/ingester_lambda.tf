@@ -52,6 +52,7 @@ resource "aws_lambda_function" "sales_ingester" {
   package_type = "Image"
   image_uri = var.sales_ingester_image_uri
   role          = aws_iam_role.sales_ingester_role.arn
+  architectures = ["arm64"]
 
   timeout     = var.lambda_timeout
   memory_size = var.lambda_memory_size

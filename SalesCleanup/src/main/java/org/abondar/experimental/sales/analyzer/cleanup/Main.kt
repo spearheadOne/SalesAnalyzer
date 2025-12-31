@@ -6,10 +6,7 @@ import kotlin.system.exitProcess
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
-        val ctx = ApplicationContext.builder()
-            .environments("local")
-            .deduceEnvironment(false)
-            .start()
+        val ctx = ApplicationContext.builder().start()
 
         Runtime.getRuntime().addShutdownHook(Thread { ctx.close() })
 

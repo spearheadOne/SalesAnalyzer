@@ -15,6 +15,8 @@ val testcontainersVersion: String by project
 val graalBaseImage: String by project
 val imageArch: String by project
 val imageOS: String by project
+val buildNative: String by project
+val isNative = buildNative.toBoolean()
 
 dependencies {
     implementation(project(":Data"))
@@ -22,7 +24,8 @@ dependencies {
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut:micronaut-http-server-netty")
-
+    implementation("io.micronaut.aws:micronaut-function-aws-custom-runtime")
+    implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.aws:micronaut-function-aws")
     implementation("io.micronaut.aws:micronaut-aws-sdk-v2")
 
@@ -77,7 +80,6 @@ graalvmNative {
                         "org.slf4j," +
                         "kotlin.coroutines.intrinsics.CoroutineSingletons"
             )
-            runtimeArgs.add("-Dmicronaut.environments=local")
         }
     }
 }
@@ -85,7 +87,6 @@ graalvmNative {
 jib {
     from {
         image = graalBaseImage
-
 
         platforms {
             platform {
@@ -95,21 +96,28 @@ jib {
         }
     }
 
-    extraDirectories {
-        paths {
-            path {
-                setFrom("build/native/nativeCompile")
-                into = "/app"
+    if (isNative) {
+        extraDirectories {
+            paths {
+                path {
+                    setFrom("build/native/nativeCompile")
+                    into = "/app"
+                }
             }
+            permissions = mapOf(
+                "/app/SalesIngester" to "755"
+            )
         }
-        permissions = mapOf(
-            "/app/SalesIngester" to "755"
-        )
+
+        container {
+            entrypoint = listOf("/app/SalesIngester")
+        }
+    } else {
+        container {
+            mainClass = "org.abondar.experimental.sales.analyzer.ingester.IngestionRuntime"
+        }
     }
 
-    container {
-        entrypoint = listOf("/app/SalesIngester")
-    }
 }
 
 tasks.named<JavaExec>("run") {
@@ -117,9 +125,13 @@ tasks.named<JavaExec>("run") {
 }
 
 tasks.named("jib") {
-    dependsOn("nativeCompile")
+    if (isNative) {
+        dependsOn("nativeCompile")
+    }
 }
 
 tasks.named("jibDockerBuild") {
-    dependsOn("nativeCompile")
+    if (isNative) {
+        dependsOn("nativeCompile")
+    }
 }
