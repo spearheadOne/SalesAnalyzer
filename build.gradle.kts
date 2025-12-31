@@ -17,7 +17,7 @@ subprojects {
 
     group = "org.abondar.experimental.sales.analyzer"
 
-    version = "0.1.0"
+    version = "0.4.7"
 
     repositories {
         gradlePluginPortal()
@@ -64,7 +64,7 @@ subprojects {
         extensions.configure<com.google.cloud.tools.jib.gradle.JibExtension> {
             to {
                 image = if (ecrRepoUrl.isNullOrBlank()) {
-                    "${project.name}:${project.version}"
+                    "${project.name.lowercase()}:${project.version}"
                 } else {
                     "$ecrRepoUrl:${project.version}"
                 }

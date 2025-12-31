@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "org.abondar.experimental.sales.analyzer"
-version = "0.1.0"
+
 
 val mybatisVersion: String by project
 val mybatisJsr310Version: String by project
@@ -34,7 +34,7 @@ dependencies {
     implementation("org.mybatis:mybatis:$mybatisVersion")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:$mybatisJsr310Version")
     runtimeOnly("org.postgresql:postgresql:$postgresqlVersion")
-
+    runtimeOnly("io.micronaut.openapi:micronaut-openapi")
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
 
     kapt("io.micronaut:micronaut-http-validation")
@@ -50,7 +50,6 @@ dependencies {
 
 application {
     mainClass.set("org.abondar.experimental.sales.analyzer.dashboard.ApplicationKt")
-    applicationDefaultJvmArgs = listOf("-Dmicronaut.environments=local")
 }
 
 micronaut {
@@ -98,17 +97,12 @@ jib {
         }
 
         permissions = mapOf(
-            "/app/SalesDashboard" to "755"
+            "/app/bin/SalesDashboard" to "755"
         )
     }
 
     container {
         entrypoint = listOf("/app/bin/SalesDashboard")
-
-        environment = mapOf(
-            "MICRONAUT_ENVIRONMENTS" to "aws"
-        )
-
         ports = listOf("9024")
     }
 }

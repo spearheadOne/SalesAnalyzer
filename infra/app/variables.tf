@@ -6,6 +6,22 @@ variable "region" {
   type = string
 }
 
+variable "lambda_timeout" {
+  type = number
+}
+
+variable "lambda_memory_size" {
+  type = number
+}
+
+variable "fargate_cpu" {
+  type = number
+}
+
+variable "fargate_memory" {
+  type = number
+}
+
 variable "sales_ingester_image_uri" {
   type = string
 }
@@ -14,6 +30,9 @@ variable "sales_cleanup_image_uri" {
   type = string
 }
 
+variable "sales_dashboard_image_uri" {
+  type = string
+}
 
 variable "sales_bucket_name" {
   type = string
@@ -25,6 +44,43 @@ variable "sales_bucket_arn" {
 
 variable "kinesis_stream_name" {
   type = string
+}
+
+variable "sqs_queue_name" {
+  type = string
+}
+
+variable "sqs_queue_url" {
+  type = string
+}
+
+variable "sqs_queue_arn" {
+  type = string
+}
+
+variable "timescale_host" {
+  type = string
+}
+
+variable "timescale_username" {
+  type = string
+}
+
+variable "timescale_password" {
+  type = string
+}
+
+variable "vpc_id" {
+  type = string
+}
+
+variable "subnet_ids" {
+  type = set(string)
+}
+
+variable "micronaut_env" {
+  type = string
+  default = "aws"
 }
 
 variable "sales_ingester_app" {
@@ -50,4 +106,9 @@ variable "sales_fx_service_app" {
 variable "sales_dashboard_app" {
   type    = string
   default = "sales-dashboard"
+}
+
+variable "sales_ecs_cluster" {
+  type = string
+  default = "sales-ecs-cluster"
 }

@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: sales-analyzer-job
+  env:
+    deduce-environment: false
 
 liquibase:
   enabled: true

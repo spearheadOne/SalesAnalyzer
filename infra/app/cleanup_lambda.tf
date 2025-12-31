@@ -1,11 +1,11 @@
 resource "aws_iam_role" "sales_cleanup_role" {
   name = "${var.sales_cleanup_app}-${var.environment}"
-  assume_role_policy =  jsonencode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
+      Effect    = "Allow",
       Principal = { Service = "lambda.amazonaws.com" },
-      Action = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }
@@ -43,16 +43,16 @@ resource "aws_iam_role_policy" "sales_cleanup_policy" {
 
 resource "aws_lambda_function" "sales_cleanup" {
   function_name = "${var.sales_cleanup_app}-${var.environment}"
-  package_type = "Image"
-  image_uri = var.sales_cleanup_image_uri
+  package_type  = "Image"
+  image_uri     = var.sales_cleanup_image_uri
   role          = aws_iam_role.sales_cleanup_role.arn
 
-  timeout     = 60
-  memory_size = 256
+  timeout     = var.lambda_timeout
+  memory_size = var.lambda_memory_size
 
   environment {
     variables = {
-      SALES_BUCKET_NAME = var.sales_bucket_name
+      SALES_BUCKET_NAME      = var.sales_bucket_name
     }
   }
 
@@ -75,7 +75,7 @@ resource "aws_cloudwatch_event_target" "sales_cleanup_target" {
 }
 
 resource "aws_lambda_permission" "allow_sales_data_cleanup_scheduled" {
-  statement_id = "AllowS3InvokeSalesCleanup-${var.environment}"
+  statement_id  = "AllowS3InvokeSalesCleanup-${var.environment}"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.sales_cleanup.function_name
   principal     = "events.amazonaws.com"

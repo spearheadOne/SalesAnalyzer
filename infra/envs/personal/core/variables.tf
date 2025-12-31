@@ -15,5 +15,5 @@ variable "enable_private_subnets" {
 }
 
 variable "number_of_azs" {
-  default = 1
+  default = 2
 }

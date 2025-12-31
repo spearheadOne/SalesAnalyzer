@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "org.abondar.experimental.sales.analyzer"
-version = "0.1.0"
+
 
 val mybatisVersion: String by project
 val mybatisJsr310Version: String by project
@@ -53,7 +53,6 @@ dependencies {
 
 application {
     mainClass.set("org.abondar.experimental.sales.analyzer.job.Main")
-    applicationDefaultJvmArgs = listOf("-Dmicronaut.environments=local")
 }
 
 micronaut {
@@ -95,17 +94,12 @@ jib {
         }
 
         permissions = mapOf(
-            "/app/SalesAnalyzerJob" to "755"
+            "/app/bin/SalesAnalyzerJob" to "755"
         )
     }
 
     container {
         entrypoint = listOf("/app/bin/SalesAnalyzerJob")
-
-        environment = mapOf(
-            "MICRONAUT_ENVIRONMENTS" to "aws"
-        )
-
     }
 
 }

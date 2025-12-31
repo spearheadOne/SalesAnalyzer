@@ -6,12 +6,23 @@ variable "environment" {
   default = "personal"
 }
 
-variable "sales_ingester_version" {
-  type = string
-  default = "0.1.0"
+variable "lambda_memory_size" {
+  default = 512
 }
 
-variable "sales_cleanup_version" {
+variable "lambda_timeout" {
+  default = 60
+}
+
+variable "fargate_cpu" {
+  default = 256
+}
+
+variable "fargate_memory" {
+  default = 512
+}
+
+variable "sales_analyzer_version" {
   type = string
-  default = "0.1.0"
+  default = "0.4.7"
 }

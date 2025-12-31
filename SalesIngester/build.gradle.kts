@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "org.abondar.experimental.sales.analyzer"
-version = "0.1.0"
+
 
 val kotlinCoroutinesVersion: String by project
 val testcontainersVersion: String by project
@@ -109,11 +109,6 @@ jib {
 
     container {
         entrypoint = listOf("/app/SalesIngester")
-
-        environment = mapOf(
-            "MICRONAUT_ENVIRONMENTS" to "aws"
-        )
-
     }
 }
 

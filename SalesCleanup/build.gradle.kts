@@ -8,7 +8,6 @@ plugins {
 }
 
 group = "org.abondar.experimental.sales.analyzer"
-version = "0.1.0"
 
 val testcontainersVersion: String by project
 val awsLambdaEventsVersion: String by project
@@ -102,17 +101,12 @@ jib {
             }
         }
         permissions = mapOf(
-            "/app/Sales" to "755"
+            "/app/SalesAnalyzerCleanup" to "755"
         )
     }
 
     container {
         entrypoint = listOf("/app/SalesAnalyzerCleanup")
-
-        environment = mapOf(
-            "MICRONAUT_ENVIRONMENTS" to "aws"
-        )
-
     }
 }
 

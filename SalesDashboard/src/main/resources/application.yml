@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: sales-analyzer-dashboard
+  env:
+    deduce-environment: false
   server:
     port: 9024
   router:
@@ -44,7 +46,7 @@ datasources:
     autoCommit: false
 
 aws:
-  region: ${AWS_REGION:eu-west-1}
+  region: eu-west-1
   sqs:
     queue-name: ${SQS_QUEUE_NAME:sales-queue}
 

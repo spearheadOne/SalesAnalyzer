@@ -53,8 +53,8 @@ resource "aws_lambda_function" "sales_ingester" {
   image_uri = var.sales_ingester_image_uri
   role          = aws_iam_role.sales_ingester_role.arn
 
-  timeout     = 60
-  memory_size = 512
+  timeout     = var.lambda_timeout
+  memory_size = var.lambda_memory_size
 
   environment {
     variables = {
