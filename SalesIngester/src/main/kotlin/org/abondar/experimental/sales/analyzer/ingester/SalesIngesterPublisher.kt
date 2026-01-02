@@ -12,7 +12,7 @@ import software.amazon.awssdk.services.kinesis.model.PutRecordsRequest
 import software.amazon.awssdk.services.kinesis.model.PutRecordsRequestEntry
 
 @Singleton
-class IngestionPublisher(
+class SalesIngesterPublisher(
     private val mapper: ObjectMapper,
     private val kinesisClient: KinesisAsyncClient
 ) {

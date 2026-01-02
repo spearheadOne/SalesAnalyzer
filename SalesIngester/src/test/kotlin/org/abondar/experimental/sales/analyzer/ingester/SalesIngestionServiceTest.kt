@@ -10,17 +10,15 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
-import java.math.BigDecimal
-import java.util.Currency
 
 @ExtendWith(MockitoExtension::class)
-class IngestionServiceTest {
+class SalesIngestionServiceTest {
 
     @InjectMocks
-    lateinit var ingester: IngestionService
+    lateinit var ingester: SalesIngestionService
 
     @Mock
-    lateinit var publisher: IngestionPublisher
+    lateinit var publisher: SalesIngesterPublisher
 
     @Test
     fun `parses csv and publishes data`() = runTest {

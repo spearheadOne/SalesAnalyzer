@@ -5,7 +5,7 @@ import io.micronaut.context.annotation.Value
 import io.micronaut.function.aws.MicronautRequestHandler
 import jakarta.inject.Inject
 import kotlinx.coroutines.runBlocking
-import org.abondar.experimental.sales.analyzer.ingester.IngestionService
+import org.abondar.experimental.sales.analyzer.ingester.SalesIngestionService
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.eventnotifications.s3.model.S3EventNotification
 import software.amazon.awssdk.services.s3.S3Client
@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
-class IngestionHandler : MicronautRequestHandler<String, Void> {
+class SalesIngesterHandler : MicronautRequestHandler<String, Void> {
 
     //for prod
     constructor() : super()
@@ -27,12 +27,14 @@ class IngestionHandler : MicronautRequestHandler<String, Void> {
     lateinit var salesBucket: String
 
     @Inject
-    lateinit var ingester: IngestionService
+    lateinit var ingester: SalesIngestionService
 
     @Inject
     lateinit var s3Client: S3Client
 
     override fun execute(input: String): Void? {
+        log.info("Sales ingester lambda invoked, event: {}", input)
+
         val s3Event = S3EventNotification
             .fromJson(input)
 

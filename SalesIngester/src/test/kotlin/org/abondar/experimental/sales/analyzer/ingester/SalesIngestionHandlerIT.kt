@@ -5,7 +5,7 @@ import io.micronaut.context.annotation.Value
 import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
 import io.micronaut.test.support.TestPropertyProvider
 import jakarta.inject.Inject
-import org.abondar.experimental.sales.analyzer.ingester.input.IngestionHandler
+import org.abondar.experimental.sales.analyzer.ingester.input.SalesIngesterHandler
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.localstack.LocalStackContainer
@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest
 //normally we should use micronaut test resources but they do not support kinesis in localstack
 @Testcontainers(disabledWithoutDocker = true)
 @MicronautLambdaTest
-class IngestionHandlerIT : TestPropertyProvider {
+class SalesIngestionHandlerIT : TestPropertyProvider {
 
     @Inject
     lateinit var applicationContext: ApplicationContext
@@ -126,7 +126,7 @@ class IngestionHandlerIT : TestPropertyProvider {
 }
 """.trimIndent()
 
-        val ingestionHandler = IngestionHandler(applicationContext)
-        assertDoesNotThrow { ingestionHandler.execute(s3Event) }
+        val salesIngesterHandler = SalesIngesterHandler(applicationContext)
+        assertDoesNotThrow { salesIngesterHandler.execute(s3Event) }
     }
 }

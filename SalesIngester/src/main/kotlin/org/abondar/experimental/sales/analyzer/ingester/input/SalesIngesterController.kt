@@ -6,16 +6,14 @@ import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Part
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
-import io.micronaut.http.multipart.CompletedFileUpload
-import org.abondar.experimental.sales.analyzer.ingester.IngestionService
+import org.abondar.experimental.sales.analyzer.ingester.SalesIngestionService
 
 @Requires(env = ["local"])
 @Controller("/upload")
-class IngestionController(
-    private val ingestor: IngestionService
+class SalesIngesterController(
+    private val ingestor: SalesIngestionService
 ) {
 
     @Consumes(MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM, "text/csv")

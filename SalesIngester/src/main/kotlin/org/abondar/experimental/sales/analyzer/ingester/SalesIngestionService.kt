@@ -9,8 +9,8 @@ import java.io.InputStreamReader
 import java.time.Instant
 
 @Singleton
-class IngestionService(
-    private val publisher: IngestionPublisher
+class SalesIngestionService(
+    private val publisher: SalesIngesterPublisher
 ) {
 
     suspend fun ingestData(data: InputStream) {
