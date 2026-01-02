@@ -74,11 +74,25 @@ resource "aws_ecs_service" "sales_fx_service" {
   task_definition = aws_ecs_task_definition.sales_fx_service.arn
   launch_type     = "FARGATE"
   enable_execute_command = true
+
+
   network_configuration {
     subnets         = var.subnet_ids
     security_groups = [aws_security_group.sales_fx_service_sg.id]
     assign_public_ip = true
   }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sales_fx_service_tg.arn
+    container_name   = var.sales_fx_service_app
+    container_port   = 9028
+  }
+
+  depends_on = [
+    aws_lb_listener.sales_fx_service_nlb_listener
+  ]
+
+
   desired_count   = 1
 
   tags = {

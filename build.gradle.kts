@@ -17,7 +17,7 @@ subprojects {
 
     group = "org.abondar.experimental.sales.analyzer"
 
-    version = "0.5.6"
+    version = "0.5.8.1"
 
     repositories {
         gradlePluginPortal()
