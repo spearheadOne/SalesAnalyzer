@@ -4,3 +4,8 @@ micronaut:
 grpc:
   server:
     port: 9028
+
+logging:
+  level:
+    root: INFO
+

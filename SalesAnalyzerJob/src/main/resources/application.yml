@@ -31,7 +31,7 @@ aws:
 grpc:
   channels:
     fx:
-      address: "dns:///fx-service.internal:9028"
+      address: "dns:///${FX_SERVICE_HOST}:9028"
       plaintext: true
 
 default-currency: EUR

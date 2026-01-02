@@ -120,7 +120,7 @@ resource "aws_ecs_service" "sales_dashboard" {
 
   tags = {
     Environment = var.environment
-    Service     = "sales-dashboard"
+    Service     = var.sales_dashboard_app
   }
 }
 

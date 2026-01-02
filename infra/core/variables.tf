@@ -68,3 +68,7 @@ variable "sales_dashboard_app" {
   type    = string
   default = "sales-dashboard"
 }
+variable "vpc_cidr" {
+  type = string
+
+}

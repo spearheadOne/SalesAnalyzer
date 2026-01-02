@@ -22,18 +22,6 @@ variable "fargate_memory" {
   type = number
 }
 
-variable "sales_ingester_image_uri" {
-  type = string
-}
-
-variable "sales_cleanup_image_uri" {
-  type = string
-}
-
-variable "sales_dashboard_image_uri" {
-  type = string
-}
-
 variable "sales_bucket_name" {
   type = string
 }
@@ -74,6 +62,10 @@ variable "vpc_id" {
   type = string
 }
 
+variable "vpc_cidr" {
+  type = string
+}
+
 variable "subnet_ids" {
   type = set(string)
 }
@@ -106,6 +98,22 @@ variable "sales_fx_service_app" {
 variable "sales_dashboard_app" {
   type    = string
   default = "sales-dashboard"
+}
+
+variable "sales_ingester_image_uri" {
+  type = string
+}
+
+variable "sales_cleanup_image_uri" {
+  type = string
+}
+
+variable "sales_dashboard_image_uri" {
+  type = string
+}
+
+variable "sales_fx_service_image_uri" {
+  type = string
 }
 
 variable "sales_ecs_cluster" {

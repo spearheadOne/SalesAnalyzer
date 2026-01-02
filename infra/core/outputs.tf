@@ -45,6 +45,11 @@ output "vpc_id" {
   sensitive = true
 }
 
+output "vpc_cidr" {
+  value = aws_vpc.sales_vpc.cidr_block
+  sensitive = true
+}
+
 output "subnet_ids" {
   value = var.enable_private_subnets ? aws_subnet.sales_private[*].id : aws_subnet.sales_public[*].id
   sensitive = true

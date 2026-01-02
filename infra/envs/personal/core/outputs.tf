@@ -65,6 +65,11 @@ output "vpc_id" {
   sensitive = true
 }
 
+output "vpc_cidr" {
+  value = module.core.vpc_cidr
+  sensitive = true
+}
+
 output "subnet_ids" {
   value = module.core.subnet_ids
   sensitive = true
