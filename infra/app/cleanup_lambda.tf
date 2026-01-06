@@ -54,6 +54,7 @@ resource "aws_lambda_function" "sales_cleanup" {
   environment {
     variables = {
       SALES_BUCKET_NAME = var.sales_bucket_name
+      MICRONAUT_ENVIRONMENTS = "lambda"
     }
   }
 

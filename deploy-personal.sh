@@ -43,11 +43,11 @@ echo "==> Step 4: Build artifacts for non-lambda apps and generate dockerfiles"
 cd "$ROOT_DIR"
 
 ./gradlew \
-  :SalesDashboard:installDist \
+  :SalesDashboard:assemble \
   :SalesDashboard:dockerFile \
-  :SalesFxService:installDist \
+  :SalesFxService:assemble \
   :SalesFxService:dockerFile \
-  :SalesAnalyzerJob:installDist \
+  :SalesAnalyzerJob:assemble \
   :SalesAnalyzerJob:dockerFile \
   :SalesCleanup:dockerFileNative \
   :SalesIngester:dockerFileNative

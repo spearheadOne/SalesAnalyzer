@@ -49,6 +49,9 @@ resource "aws_ecs_task_definition" "sales_fx_service" {
         }
       ]
 
+      environment = [
+        { name = "MICRONAUT_SERVER_PORT", value = "9028" },
+      ]
 
       logConfiguration = {
         logDriver = "awslogs",

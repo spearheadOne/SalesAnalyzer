@@ -69,6 +69,7 @@ resource "aws_ecs_task_definition" "sales_dashboard" {
       ]
 
       environment = [
+        { name = "MICRONAUT_SERVER_PORT", value = "9024" },
         { name = "MICRONAUT_ENVIRONMENTS", value = var.micronaut_env },
         { name = "TIMESCALE_HOST", value = var.timescale_host },
         { name = "TIMESCALE_USERNAME", value = var.timescale_username },
