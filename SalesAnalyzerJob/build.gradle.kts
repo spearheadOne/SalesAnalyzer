@@ -5,7 +5,6 @@ plugins {
 
     application
     id("io.micronaut.application")
-    id("com.google.cloud.tools.jib")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -17,9 +16,6 @@ val postgresqlVersion: String by project
 val kinesisClientVersion: String by project
 val kotlinCoroutinesVersion: String by project
 val testcontainersVersion: String by project
-val baseImage: String by project
-val imageArch: String by project
-val imageOS: String by project
 
 dependencies {
     implementation(project(":Data"))
@@ -67,55 +63,10 @@ kotlin {
     jvmToolchain(21)
 }
 
-jib {
-    from {
-        image = baseImage
-
-        platforms {
-            platform {
-                architecture = imageArch
-                os = imageOS
-            }
-        }
-    }
-
-    extraDirectories {
-        paths {
-            path {
-                setFrom(
-                    layout.buildDirectory
-                        .dir("install/SalesAnalyzerJob")
-                        .get()
-                        .asFile
-                        .toPath()
-                )
-                into = "/app"
-            }
-        }
-
-        permissions = mapOf(
-            "/app/bin/SalesAnalyzerJob" to "755"
-        )
-    }
-
-    container {
-        entrypoint = listOf("/app/bin/SalesAnalyzerJob")
-    }
-
-}
-
 tasks.named<JavaExec>("run") {
     systemProperty("micronaut.environments", "local")
 }
 
 tasks.named("build") {
-    dependsOn("installDist")
-}
-
-tasks.named("jib") {
-    dependsOn("installDist")
-}
-
-tasks.named("jibDockerBuild") {
     dependsOn("installDist")
 }

@@ -32,9 +32,8 @@ TODO:  ./build/install/SalesDashboard/bin/SalesDashboard
 
 TODO:  ./build/native/nativeCompile/SalesIngester
 
-TODO: ./deploy-personal.sh
+TODO: bash ./deploy-personal.sh
 
-TODO: gradle jibDockerBuild
 
 TODO:  aws secretsmanager delete-secret \
 --secret-id sales-data-credentials-personal \

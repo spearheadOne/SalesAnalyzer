@@ -4,32 +4,25 @@ plugins {
     kotlin("plugin.allopen")
     id("io.micronaut.application")
     id("io.micronaut.aot")
-    id("com.google.cloud.tools.jib")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
 
 val testcontainersVersion: String by project
 val awsLambdaEventsVersion: String by project
-val graalBaseImage: String by project
-val imageArch: String by project
-val imageOS: String by project
-val buildNative: String by project
-val isNative = buildNative.toBoolean()
+
 
 dependencies {
     implementation(project(":Data"))
 
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
-    implementation("io.micronaut:micronaut-http-server-netty")
     implementation("io.micronaut.aws:micronaut-function-aws-custom-runtime")
-    implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.aws:micronaut-function-aws")
     implementation("io.micronaut.aws:micronaut-aws-sdk-v2")
 
 
-    implementation("com.amazonaws:aws-lambda-java-events:Ω")
+    implementation("com.amazonaws:aws-lambda-java-events:3.11.5")
     implementation("software.amazon.awssdk:s3")
 
     kapt("io.micronaut:micronaut-inject-java")
@@ -48,7 +41,7 @@ application {
 }
 
 micronaut {
-    runtime("netty")
+    runtime("lambda_provided")
     testRuntime("junit5")
     processing {
         incremental(true)
@@ -62,58 +55,27 @@ micronaut {
         cacheEnvironment.set(true)
         optimizeClassLoading.set(true)
         deduceEnvironment.set(true)
-        optimizeNetty.set(true)
         replaceLogbackXml.set(false)
     }
 }
 
 graalvmNative {
+    toolchainDetection.set(false)
+
     binaries {
         named("main") {
+            mainClass.set("io.micronaut.function.aws.runtime.MicronautLambdaRuntime")
+
             imageName.set("SalesCleanup")
-            buildArgs.add("--verbose")
-            buildArgs.add(
-                "--initialize-at-build-time=" +
-                        "ch.qos.logback," +
-                        "org.slf4j,"
 
+            buildArgs.addAll(
+                "--verbose",
+                "--no-fallback",
+                "-march=compatibility",
+                "--initialize-at-build-time=org.slf4j",
+                "--initialize-at-build-time=ch.qos.logback",
+                "-H:+ReportExceptionStackTraces",
             )
-        }
-    }
-}
-
-jib {
-    from {
-        image = graalBaseImage
-
-
-        platforms {
-            platform {
-                architecture = imageArch
-                os = imageOS
-            }
-        }
-    }
-
-    if (isNative) {
-        extraDirectories {
-            paths {
-                path {
-                    setFrom("build/native/nativeCompile")
-                    into = "/app"
-                }
-            }
-            permissions = mapOf(
-                "/app/SalesCleanup" to "755"
-            )
-        }
-
-        container {
-            entrypoint = listOf("/app/SalesCleanup")
-        }
-    } else {
-        container {
-            mainClass = "org.abondar.experimental.sales.analyzer.cleanup.SalesCleanupRuntime"
         }
     }
 }
@@ -122,14 +84,8 @@ tasks.named<JavaExec>("run") {
     systemProperty("micronaut.environments", "local")
 }
 
-tasks.named("jib") {
-    if (isNative) {
-        dependsOn("nativeCompile")
-    }
-}
-
-tasks.named("jibDockerBuild") {
-    if (isNative) {
-        dependsOn("nativeCompile")
-    }
+tasks.register<Exec>("dockerBuildNativeCli") {
+    dependsOn("dockerBuildNative")
+    workingDir = file("$buildDir/docker/native-main")
+    commandLine("docker", "build", "-f", "DockerfileNative", "-t", "data:native", ".")
 }

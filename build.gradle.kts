@@ -5,8 +5,9 @@ plugins {
 
     id("io.micronaut.application") version "4.5.4" apply false
     id("io.micronaut.aot") version "4.5.4" apply false
-    id("com.google.cloud.tools.jib") version "3.5.1" apply false
 }
+
+version = "0.7.0"
 
 subprojects {
 
@@ -16,8 +17,6 @@ subprojects {
 
 
     group = "org.abondar.experimental.sales.analyzer"
-
-    version = "0.5.8.1"
 
     repositories {
         gradlePluginPortal()
@@ -56,23 +55,13 @@ subprojects {
         add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine")
     }
 
-    plugins.withId("com.google.cloud.tools.jib") {
-
-        val serviceEnvName = "${project.name.uppercase()}_ECR_REPO"
-        val ecrRepoUrl: String? = System.getenv(serviceEnvName)
-
-        extensions.configure<com.google.cloud.tools.jib.gradle.JibExtension> {
-            to {
-                image = if (ecrRepoUrl.isNullOrBlank()) {
-                    "${project.name.lowercase()}:${project.version}"
-                } else {
-                    "$ecrRepoUrl:${project.version}"
-                }
-            }
-        }
-    }
 }
 
+tasks.register("printVersion") {
+    doLast {
+        println(project.version)
+    }
+}
 
 tasks.withType<Test> {
     useJUnitPlatform()

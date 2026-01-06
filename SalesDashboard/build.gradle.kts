@@ -5,7 +5,6 @@ plugins {
 
     application
     id("io.micronaut.application")
-    id("com.google.cloud.tools.jib")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
@@ -65,48 +64,6 @@ kotlin {
     jvmToolchain(21)
 }
 
-val baseImage: String by project
-val imageArch: String by project
-val imageOS: String by project
-
-jib {
-    from {
-        image = baseImage
-
-
-        platforms {
-            platform {
-                architecture = imageArch
-                os = imageOS
-            }
-        }
-    }
-
-    extraDirectories {
-        paths {
-            path {
-                setFrom(
-                    layout.buildDirectory
-                        .dir("install/SalesDashboard")
-                        .get()
-                        .asFile
-                        .toPath()
-                )
-                into = "/app"
-            }
-        }
-
-        permissions = mapOf(
-            "/app/bin/SalesDashboard" to "755"
-        )
-    }
-
-    container {
-        entrypoint = listOf("/app/bin/SalesDashboard")
-        ports = listOf("9024")
-    }
-}
-
 val frontendDir = file("$projectDir/dashboard-frontend")
 val frontendBuildDir = file("$projectDir/src/main/resources/public")
 val runningInIdea = System.getProperty("idea.active") == "true"
@@ -151,16 +108,4 @@ if (!skipFrontend) {
         systemProperty("micronaut.environments", "local")
     }
 
-}
-
-tasks.named("build") {
-    dependsOn("installDist")
-}
-
-tasks.named("jib") {
-    dependsOn("installDist")
-}
-
-tasks.named("jibDockerBuild") {
-    dependsOn("installDist")
 }

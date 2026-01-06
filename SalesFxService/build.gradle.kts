@@ -5,16 +5,12 @@ plugins {
 
     application
     id("io.micronaut.application")
-    id("com.google.cloud.tools.jib")
 }
 
 group = "org.abondar.experimental.sales.analyzer"
 
 val grpcVersion: String by project
 val kotlinCoroutinesVersion: String by project
-val baseImage: String by project
-val imageArch: String by project
-val imageOS: String by project
 
 
 dependencies {
@@ -53,51 +49,7 @@ micronaut {
     }
 }
 
-jib {
-    from {
-        image = baseImage
-
-
-        platforms {
-            platform {
-                architecture = imageArch
-                os = imageOS
-            }
-        }
-    }
-
-    extraDirectories {
-        paths {
-            path {
-                setFrom(
-                    layout.buildDirectory
-                        .dir("install/SalesFxService")
-                        .get()
-                        .asFile
-                        .toPath()
-                )
-                into = "/app"
-            }
-        }
-        permissions = mapOf(
-            "/app/bin/SalesFxService" to "755"
-        )
-    }
-
-    container {
-        entrypoint = listOf("/app/bin/SalesFxService")
-        ports = listOf("9028")
-    }
-}
 
 tasks.named("build") {
-    dependsOn("installDist")
-}
-
-tasks.named("jib") {
-    dependsOn("installDist")
-}
-
-tasks.named("jibDockerBuild") {
     dependsOn("installDist")
 }
