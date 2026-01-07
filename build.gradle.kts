@@ -1,18 +1,18 @@
 plugins {
     kotlin("jvm") version "2.0.21" apply false
-    kotlin("kapt") version "2.0.21" apply false
+    id("com.google.devtools.ksp") version "2.0.21-1.0.25" apply false
     kotlin("plugin.allopen") version "2.0.21" apply false
 
     id("io.micronaut.application") version "4.5.4" apply false
     id("io.micronaut.aot") version "4.5.4" apply false
 }
 
-version = "0.7.0"
+version = "0.7.5"
 
 subprojects {
 
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "org.jetbrains.kotlin.kapt")
+    apply(plugin = "com.google.devtools.ksp")
     apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
 
 
@@ -43,7 +43,7 @@ subprojects {
         add("implementation", "software.amazon.awssdk:regions")
         add("implementation", "software.amazon.awssdk:auth")
         add("implementation", "io.micronaut.serde:micronaut-serde-jackson")
-        add("kapt", "io.micronaut.serde:micronaut-serde-processor")
+        add("ksp", "io.micronaut.serde:micronaut-serde-processor")
         add("runtimeOnly", "org.yaml:snakeyaml")
 
         add("testImplementation", "io.micronaut.test:micronaut-test-junit5")

@@ -1,9 +1,9 @@
 plugins {
     kotlin("jvm")
-    kotlin("kapt")
     kotlin("plugin.allopen")
 
     application
+    id("com.google.devtools.ksp")
     id("io.micronaut.application")
 }
 
@@ -40,8 +40,8 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
-    kapt("io.micronaut:micronaut-inject-java")
-    kaptTest("io.micronaut:micronaut-inject-java")
+    ksp("io.micronaut:micronaut-inject-java")
+    kspTest("io.micronaut:micronaut-inject-java")
 
     testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
     testImplementation("org.testcontainers:localstack:$testcontainersVersion")

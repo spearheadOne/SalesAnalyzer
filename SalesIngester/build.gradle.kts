@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
-    kotlin("kapt")
     kotlin("plugin.allopen")
+    id("com.google.devtools.ksp")
     id("io.micronaut.application")
     id("io.micronaut.aot")
 }
@@ -28,7 +28,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
-    kapt("io.micronaut:micronaut-inject-java")
+    ksp("io.micronaut:micronaut-inject-java")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
     testImplementation("org.testcontainers:localstack:$testcontainersVersion")
@@ -45,38 +45,7 @@ application {
 micronaut {
     runtime("netty")
     testRuntime("junit5")
-    processing {
-        incremental(true)
-        annotations("org.abondar.experimental.sales.analyzer.ingester")
-    }
-
-    aot {
-        optimizeServiceLoading.set(true)
-        convertYamlToJava.set(false)
-        precomputeOperations.set(true)
-        cacheEnvironment.set(true)
-        optimizeClassLoading.set(true)
-        deduceEnvironment.set(true)
-        optimizeNetty.set(true)
-        replaceLogbackXml.set(false)
-    }
 }
-
-graalvmNative {
-    binaries {
-        named("main") {
-            imageName.set("SalesIngester")
-            buildArgs.add("--verbose")
-            buildArgs.add(
-                "--initialize-at-build-time=" +
-                        "ch.qos.logback," +
-                        "org.slf4j," +
-                        "kotlin.coroutines.intrinsics.CoroutineSingletons"
-            )
-        }
-    }
-}
-
 
 tasks.named<JavaExec>("run") {
     systemProperty("micronaut.environments", "local")

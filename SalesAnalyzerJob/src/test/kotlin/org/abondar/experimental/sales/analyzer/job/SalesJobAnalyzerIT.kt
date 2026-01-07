@@ -41,6 +41,7 @@ class SalesJobAnalyzerIT: BaseIT(){
 
     override fun extraProperties(): Map<String, Any?> = Properties.localstackAws(LOCALSTACK) + mapOf(
         "aws.services.kinesis.stream" to streamName,
+        "grpc.channels.fx.address" to "dns:///fx-service:9028"
     )
 
     @BeforeEach

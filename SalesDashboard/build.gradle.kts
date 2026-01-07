@@ -1,9 +1,9 @@
 plugins {
     kotlin("jvm")
-    kotlin("kapt")
     kotlin("plugin.allopen")
 
     application
+    id("com.google.devtools.ksp")
     id("io.micronaut.application")
 }
 
@@ -36,11 +36,11 @@ dependencies {
     runtimeOnly("io.micronaut.openapi:micronaut-openapi")
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
 
-    kapt("io.micronaut:micronaut-http-validation")
-    kapt("io.micronaut.openapi:micronaut-openapi")
-    kapt("io.micronaut.data:micronaut-data-processor")
-    kapt("io.micronaut:micronaut-management")
-    kapt("io.micronaut:micronaut-inject-java")
+    ksp("io.micronaut:micronaut-http-validation")
+    ksp("io.micronaut.openapi:micronaut-openapi")
+    ksp("io.micronaut.data:micronaut-data-processor")
+    ksp("io.micronaut:micronaut-management")
+    ksp("io.micronaut:micronaut-inject-java")
 
     testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
