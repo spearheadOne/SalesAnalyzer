@@ -42,15 +42,21 @@ echo "    - ECR login OK"
 echo "==> Step 4: Build artifacts for non-lambda apps and generate dockerfiles"
 cd "$ROOT_DIR"
 
+./gradlew clean
+
 ./gradlew \
   :SalesDashboard:assemble \
-  :SalesDashboard:dockerFile \
+  :SalesDashboard:dockerfile \
   :SalesFxService:assemble \
-  :SalesFxService:dockerFile \
+  :SalesFxService:dockerfile \
   :SalesAnalyzerJob:assemble \
-  :SalesAnalyzerJob:dockerFile \
-  :SalesCleanup:dockerFileNative \
-  :SalesIngester:dockerFileNative
+  :SalesAnalyzerJob:dockerfile \
+  :SalesCleanup:buildNativeLayersTask \
+  :SalesCleanup:dockerPrepareContext \
+  :SalesCleanup:dockerfileNative \
+  :SalesIngester:buildNativeLayersTask \
+  :SalesIngester:dockerPrepareContext \
+  :SalesIngester:dockerfileNative \
 
 DOCKERFILE_SALES_DASHBOARD="$ROOT_DIR/SalesDashboard/build/docker/main/Dockerfile"
 DOCKERFILE_SALES_FX_SERVICE="$ROOT_DIR/SalesFxService/build/docker/main/Dockerfile"
