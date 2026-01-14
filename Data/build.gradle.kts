@@ -1,4 +1,4 @@
-import com.google.protobuf.gradle.*
+import com.google.protobuf.gradle.proto
 
 plugins {
     kotlin("jvm")
@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.abondar.experimental.sales.analyzer"
-version = "0.1.0"
+
 
 val grpcVersion: String by project
 val protobufVersion: String by project
@@ -17,12 +17,14 @@ val grpcNettyVersion: String by project
 
 dependencies {
     implementation("io.micronaut.serde:micronaut-serde-api")
-    api("io.grpc:grpc-netty-shaded:$grpcNettyVersion")
+    implementation("io.grpc:grpc-netty-shaded")
+
+    api(enforcedPlatform("io.grpc:grpc-bom:$grpcVersion"))
     api("com.google.protobuf:protobuf-kotlin:$protobufVersion")
-    api("io.grpc:grpc-stub:$grpcVersion")
-    api("io.grpc:grpc-protobuf:$grpcVersion")
-    api("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
     api("javax.annotation:javax.annotation-api:$javaxAnnotationVersion")
+    api("io.grpc:grpc-stub")
+    api("io.grpc:grpc-protobuf")
+    api("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
 }
 
 protobuf {

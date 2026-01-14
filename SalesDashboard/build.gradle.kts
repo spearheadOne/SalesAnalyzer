@@ -14,7 +14,7 @@ val mybatisVersion: String by project
 val mybatisJsr310Version: String by project
 val postgresqlVersion: String by project
 val testcontainersVersion: String by project
-
+val awsSdkVersion: String by project
 
 dependencies {
     implementation(project(":Data"))
@@ -27,8 +27,10 @@ dependencies {
     implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut.openapi:micronaut-openapi-annotations")
     implementation("io.micronaut.jms:micronaut-jms-sqs")
-    implementation("software.amazon.awssdk:secretsmanager")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
 
+    implementation(platform("software.amazon.awssdk:bom:$awsSdkVersion"))
+    implementation("software.amazon.awssdk:secretsmanager")
 
     implementation("org.mybatis:mybatis:$mybatisVersion")
     implementation("org.mybatis:mybatis-typehandlers-jsr310:$mybatisJsr310Version")
@@ -39,6 +41,7 @@ dependencies {
     ksp("io.micronaut:micronaut-http-validation")
     ksp("io.micronaut.openapi:micronaut-openapi")
     ksp("io.micronaut.data:micronaut-data-processor")
+    ksp("io.micronaut.serde:micronaut-serde-processor")
     ksp("io.micronaut:micronaut-management")
     ksp("io.micronaut:micronaut-inject-java")
 

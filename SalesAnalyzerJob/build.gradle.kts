@@ -16,6 +16,7 @@ val postgresqlVersion: String by project
 val kinesisClientVersion: String by project
 val kotlinCoroutinesVersion: String by project
 val testcontainersVersion: String by project
+val awsSdkVersion: String by project
 
 dependencies {
     implementation(project(":Data"))
@@ -26,7 +27,9 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.liquibase:micronaut-liquibase")
     implementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
 
+    implementation(platform("software.amazon.awssdk:bom:$awsSdkVersion"))
     implementation("software.amazon.awssdk:secretsmanager")
     implementation("software.amazon.awssdk:kinesis")
     implementation("software.amazon.kinesis:amazon-kinesis-client:$kinesisClientVersion")
@@ -41,6 +44,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
     ksp("io.micronaut:micronaut-inject-java")
+    ksp("io.micronaut.serde:micronaut-serde-processor")
     kspTest("io.micronaut:micronaut-inject-java")
 
     testImplementation("org.testcontainers:postgresql:$testcontainersVersion")

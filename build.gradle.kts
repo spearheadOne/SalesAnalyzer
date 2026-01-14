@@ -3,11 +3,11 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.21-1.0.25" apply false
     kotlin("plugin.allopen") version "2.0.21" apply false
 
-    id("io.micronaut.application") version "4.5.4" apply false
-    id("io.micronaut.aot") version "4.5.4" apply false
+    id("io.micronaut.application") version "4.6.1" apply false
+    id("io.micronaut.aot") version "4.6.1" apply false
 }
 
-version = "0.7.5"
+version = "0.7.7"
 
 subprojects {
 
@@ -29,7 +29,6 @@ subprojects {
     }
 
     dependencies {
-        val awsSdkVersion: String by project
         val logbackVersion: String by project
         val mockitoVersion: String by project
         val mockitoKotlinVersion: String by project
@@ -37,14 +36,8 @@ subprojects {
         val testcontainersVersion: String by project
 
 
-        add("implementation", "ch.qos.logback:logback-classic:$logbackVersion")
-
-        add("implementation", platform("software.amazon.awssdk:bom:${awsSdkVersion}"))
-        add("implementation", "software.amazon.awssdk:regions")
-        add("implementation", "software.amazon.awssdk:auth")
-        add("implementation", "io.micronaut.serde:micronaut-serde-jackson")
-        add("ksp", "io.micronaut.serde:micronaut-serde-processor")
         add("runtimeOnly", "org.yaml:snakeyaml")
+        add("runtimeOnly", "ch.qos.logback:logback-classic:$logbackVersion")
 
         add("testImplementation", "io.micronaut.test:micronaut-test-junit5")
         add("testImplementation", "org.mockito:mockito-core:${mockitoVersion}")
