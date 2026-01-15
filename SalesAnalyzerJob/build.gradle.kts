@@ -20,6 +20,7 @@ val awsSdkVersion: String by project
 
 dependencies {
     implementation(project(":Data"))
+    implementation(project(":GrpcData"))
 
     implementation("io.micronaut:micronaut-context")
     implementation("io.micronaut:micronaut-inject")
