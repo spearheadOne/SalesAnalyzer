@@ -10,7 +10,7 @@ group = "org.abondar.experimental.sales.analyzer"
 
 
 val kotlinCoroutinesVersion: String by project
-val testcontainersVersion: String by project
+val testcontainersExtVersion: String by project
 
 val kotlinVersion: String by project
 val graalVmImage: String by project
@@ -25,7 +25,7 @@ dependencies {
     implementation("io.micronaut.aws:micronaut-function-aws-custom-runtime")
     implementation("io.micronaut.aws:micronaut-aws-lambda-events-serde")
     implementation("io.micronaut.aws:micronaut-aws-sdk-v2")
-
+    implementation("io.micronaut:micronaut-http-client-jdk")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("software.amazon.awssdk:s3") {
         exclude(group = "software.amazon.awssdk", module = "netty-nio-client")
@@ -37,15 +37,15 @@ dependencies {
 
     implementation("software.amazon.awssdk:url-connection-client")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
     ksp("io.micronaut:micronaut-inject-java")
     ksp("io.micronaut:micronaut-http-validation")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
-    testImplementation("org.testcontainers:localstack:$testcontainersVersion")
+    testImplementation("org.testcontainers:localstack:$testcontainersExtVersion")
 }
 
 kotlin {
@@ -53,7 +53,7 @@ kotlin {
 }
 
 application {
-    mainClass = "io.micronaut.function.aws.runtime.MicronautLambdaRuntime"
+    mainClass = "org.abondar.experimental.sales.analyzer.ingester.SalesIngesterRuntime"
 }
 
 micronaut {
@@ -82,6 +82,4 @@ tasks.named<JavaExec>("run") {
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "21"
-    graalImage =  graalVmImage
-    baseImage = lambdaImage
 }

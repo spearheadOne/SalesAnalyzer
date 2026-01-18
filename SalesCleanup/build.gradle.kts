@@ -8,7 +8,7 @@ plugins {
 
 group = "org.abondar.experimental.sales.analyzer"
 
-val testcontainersVersion: String by project
+val testcontainersExtVersion: String by project
 val awsLambdaEventsVersion: String by project
 val kotlinVersion: String by project
 val graalVmImage: String by project
@@ -20,11 +20,11 @@ dependencies {
     implementation("io.micronaut.aws:micronaut-aws-lambda-events-serde")
     implementation("io.micronaut.aws:micronaut-function-aws-custom-runtime")
     implementation("io.micronaut.aws:micronaut-aws-sdk-v2")
-
+    implementation("io.micronaut:micronaut-http-client-jdk")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation(platform("software.amazon.awssdk:bom:$awsSdkVersion"))
 
     implementation("software.amazon.awssdk:s3") {
@@ -37,7 +37,7 @@ dependencies {
     ksp("io.micronaut.serde:micronaut-serde-processor")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
-    testImplementation("org.testcontainers:localstack:$testcontainersVersion")
+    testImplementation("org.testcontainers:localstack:$testcontainersExtVersion")
 
 }
 
@@ -46,11 +46,12 @@ kotlin {
 }
 
 application {
-    mainClass = "io.micronaut.function.aws.runtime.MicronautLambdaRuntime"
+    mainClass = "org.abondar.experimental.sales.analyzer.cleanup.SalesCleanupRuntime"
 }
 
+
 micronaut {
-    runtime("lambda_java")
+    runtime("lambda_provided")
     testRuntime("junit5")
 
     aot {
@@ -75,7 +76,4 @@ tasks.named<JavaExec>("run") {
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "21"
-    graalImage = graalVmImage
-    baseImage = lambdaImage
-
 }

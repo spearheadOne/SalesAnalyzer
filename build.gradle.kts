@@ -7,7 +7,7 @@ plugins {
     id("io.micronaut.aot") version "4.6.1" apply false
 }
 
-version = "0.7.7"
+version = "0.8.2.13"
 
 subprojects {
 
@@ -33,7 +33,7 @@ subprojects {
         val mockitoVersion: String by project
         val mockitoKotlinVersion: String by project
         val kotlinCoroutinesTestVersion: String by project
-        val testcontainersVersion: String by project
+        val testcontainersExtVersion: String by project
 
 
         add("runtimeOnly", "org.yaml:snakeyaml")
@@ -44,7 +44,7 @@ subprojects {
         add("testImplementation", "org.mockito:mockito-junit-jupiter:${mockitoVersion}")
         add("testImplementation", "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}")
         add("testImplementation", "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesTestVersion}")
-        add("testImplementation", "org.testcontainers:junit-jupiter:${testcontainersVersion}")
+        add("testImplementation", "org.testcontainers:junit-jupiter:${testcontainersExtVersion}")
         add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine")
     }
 

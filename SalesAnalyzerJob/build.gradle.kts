@@ -15,7 +15,7 @@ val mybatisJsr310Version: String by project
 val postgresqlVersion: String by project
 val kinesisClientVersion: String by project
 val kotlinCoroutinesVersion: String by project
-val testcontainersVersion: String by project
+val testcontainersExtVersion: String by project
 val awsSdkVersion: String by project
 
 dependencies {
@@ -48,8 +48,8 @@ dependencies {
     ksp("io.micronaut.serde:micronaut-serde-processor")
     kspTest("io.micronaut:micronaut-inject-java")
 
-    testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
-    testImplementation("org.testcontainers:localstack:$testcontainersVersion")
+    testImplementation("org.testcontainers:postgresql:$testcontainersExtVersion")
+    testImplementation("org.testcontainers:localstack:$testcontainersExtVersion")
 }
 
 application {

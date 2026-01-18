@@ -13,7 +13,7 @@ group = "org.abondar.experimental.sales.analyzer"
 val mybatisVersion: String by project
 val mybatisJsr310Version: String by project
 val postgresqlVersion: String by project
-val testcontainersVersion: String by project
+val testcontainersExtVersion: String by project
 val awsSdkVersion: String by project
 
 dependencies {
@@ -45,7 +45,7 @@ dependencies {
     ksp("io.micronaut:micronaut-management")
     ksp("io.micronaut:micronaut-inject-java")
 
-    testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
+    testImplementation("org.testcontainers:postgresql:$testcontainersExtVersion")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
     testImplementation("io.micronaut:micronaut-http-client")
 }
