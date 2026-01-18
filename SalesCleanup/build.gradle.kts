@@ -37,7 +37,7 @@ dependencies {
     ksp("io.micronaut.serde:micronaut-serde-processor")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
-    testImplementation("org.testcontainers:localstack:$testcontainersExtVersion")
+    testImplementation("org.testcontainers:testcontainers-localstack")
 
 }
 

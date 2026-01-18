@@ -48,8 +48,8 @@ dependencies {
     ksp("io.micronaut.serde:micronaut-serde-processor")
     kspTest("io.micronaut:micronaut-inject-java")
 
-    testImplementation("org.testcontainers:postgresql:$testcontainersExtVersion")
-    testImplementation("org.testcontainers:localstack:$testcontainersExtVersion")
+    testImplementation("org.testcontainers:testcontainers-postgresql")
+    testImplementation("org.testcontainers:testcontainers-localstack")
 }
 
 application {

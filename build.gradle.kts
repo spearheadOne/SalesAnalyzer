@@ -33,18 +33,20 @@ subprojects {
         val mockitoVersion: String by project
         val mockitoKotlinVersion: String by project
         val kotlinCoroutinesTestVersion: String by project
-        val testcontainersExtVersion: String by project
+        val testcontainersVersion: String by project
 
 
         add("runtimeOnly", "org.yaml:snakeyaml")
         add("runtimeOnly", "ch.qos.logback:logback-classic:$logbackVersion")
 
+
+        add("testImplementation", platform("org.testcontainers:testcontainers-bom:${testcontainersVersion}"))
         add("testImplementation", "io.micronaut.test:micronaut-test-junit5")
         add("testImplementation", "org.mockito:mockito-core:${mockitoVersion}")
         add("testImplementation", "org.mockito:mockito-junit-jupiter:${mockitoVersion}")
         add("testImplementation", "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}")
         add("testImplementation", "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesTestVersion}")
-        add("testImplementation", "org.testcontainers:junit-jupiter:${testcontainersExtVersion}")
+        add("testImplementation", "org.testcontainers:testcontainers-junit-jupiter")
         add("testRuntimeOnly", "org.junit.jupiter:junit-jupiter-engine")
     }
 

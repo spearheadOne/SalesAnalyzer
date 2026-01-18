@@ -45,7 +45,7 @@ dependencies {
     ksp("io.micronaut:micronaut-management")
     ksp("io.micronaut:micronaut-inject-java")
 
-    testImplementation("org.testcontainers:postgresql:$testcontainersExtVersion")
+    testImplementation("org.testcontainers:testcontainers-postgresql")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
     testImplementation("io.micronaut:micronaut-http-client")
 }

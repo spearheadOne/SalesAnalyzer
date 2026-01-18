@@ -45,7 +45,7 @@ dependencies {
     ksp("io.micronaut:micronaut-http-validation")
 
     testImplementation("io.micronaut.aws:micronaut-function-aws-test")
-    testImplementation("org.testcontainers:localstack:$testcontainersExtVersion")
+    testImplementation("org.testcontainers:testcontainers-localstack")
 }
 
 kotlin {
