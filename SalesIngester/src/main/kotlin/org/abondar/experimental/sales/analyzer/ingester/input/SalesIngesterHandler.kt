@@ -1,19 +1,21 @@
 package org.abondar.experimental.sales.analyzer.ingester.input
 
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Value
 import io.micronaut.function.aws.MicronautRequestHandler
+import io.micronaut.serde.annotation.Serdeable
 import jakarta.inject.Inject
 import kotlinx.coroutines.runBlocking
 import org.abondar.experimental.sales.analyzer.ingester.SalesIngestionService
 import org.slf4j.LoggerFactory
-import software.amazon.awssdk.eventnotifications.s3.model.S3EventNotification
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
-class SalesIngesterHandler : MicronautRequestHandler<String, Void> {
+@Serdeable
+class SalesIngesterHandler : MicronautRequestHandler<S3EventNotification, Void> {
 
     //for prod
     constructor() : super()
@@ -32,11 +34,8 @@ class SalesIngesterHandler : MicronautRequestHandler<String, Void> {
     @Inject
     lateinit var s3Client: S3Client
 
-    override fun execute(input: String): Void? {
-        log.info("Sales ingester lambda invoked, event: {}", input)
-
-        val s3Event = S3EventNotification
-            .fromJson(input)
+    override fun execute(s3Event: S3EventNotification): Void? {
+        log.info("Sales ingester lambda invoked, event: {}", s3Event)
 
         s3Event.records
             .filter { it.s3.bucket.name == salesBucket }

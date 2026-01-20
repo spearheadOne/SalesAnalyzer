@@ -5,9 +5,10 @@ plugins {
 
     id("io.micronaut.application") version "4.6.1" apply false
     id("io.micronaut.aot") version "4.6.1" apply false
+    id("com.gradleup.shadow") version "8.3.9" apply false
 }
 
-version = "0.8.2.13"
+version = "0.8.2.30"
 
 subprojects {
 

@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/Data" />
+            <option value="$PROJECT_DIR$/GrpcData" />
             <option value="$PROJECT_DIR$/SalesAnalyzerJob" />
             <option value="$PROJECT_DIR$/SalesCleanup" />
             <option value="$PROJECT_DIR$/SalesDashboard" />

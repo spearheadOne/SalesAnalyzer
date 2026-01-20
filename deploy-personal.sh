@@ -55,20 +55,19 @@ cd "$ROOT_DIR"
   :SalesCleanup:dockerPrepareContext \
   :SalesCleanup:dockerfileNative \
   :SalesIngester:buildNativeLayersTask \
-  :SalesIngester:dockerPrepareContext \
-  :SalesIngester:dockerfileNative \
+  :SalesIngester:shadowJar
 
 DOCKERFILE_SALES_DASHBOARD="$ROOT_DIR/SalesDashboard/build/docker/main/Dockerfile"
 DOCKERFILE_SALES_FX_SERVICE="$ROOT_DIR/SalesFxService/build/docker/main/Dockerfile"
 DOCKERFILE_SALES_ANALYZER_JOB="$ROOT_DIR/SalesAnalyzerJob/build/docker/main/Dockerfile"
 DOCKERFILE_SALES_CLEANUP="$ROOT_DIR/SalesCleanup/build/docker/native-main/DockerfileNative"
-DOCKERFILE_SALES_INGESTER="$ROOT_DIR/SalesIngester/build/docker/native-main/DockerfileNative"
+DOCKERFILE_SALES_INGESTER="$ROOT_DIR/SalesIngester/Dockerfile"
 
 CTX_SALES_DASHBOARD="$ROOT_DIR/SalesDashboard/build/docker/main"
 CTX_SALES_FX_SERVICE="$ROOT_DIR/SalesFxService/build/docker/main"
 CTX_SALES_ANALYZER_JOB="$ROOT_DIR/SalesAnalyzerJob/build/docker/main"
 CTX_SALES_CLEANUP="$ROOT_DIR/SalesCleanup/build/docker/native-main"
-CTX_SALES_INGESTER="$ROOT_DIR/SalesIngester/build/docker/native-main"
+CTX_SALES_INGESTER="$ROOT_DIR/SalesIngester"
 
 echo "==> Step 5: Build & push images with Docker buildx"
 
@@ -80,7 +79,7 @@ docker buildx build --progress=plain --platform "$PLATFORM" \
   -t "${SALES_CLEANUP_ECR_URL}:${TAG}" \
   "$CTX_SALES_CLEANUP"
 
-echo "    - SalesIngester (native)"
+echo "    - SalesIngester (JVM Lambda)"
 docker buildx build --progress=plain --platform "$PLATFORM" \
   "${ATTEST_FLAGS[@]}" \
   --output="$BUILDX_OUT" \
@@ -88,7 +87,7 @@ docker buildx build --progress=plain --platform "$PLATFORM" \
   -t "${SALES_INGESTER_ECR_URL}:${TAG}" \
   "$CTX_SALES_INGESTER"
 
-echo "    - SalesDashboard (JVM)"
+echo "    - SalesDashboard (JVM Fargate)"
 docker buildx build --progress=plain --platform "$PLATFORM" \
   "${ATTEST_FLAGS[@]}" \
   --output="$BUILDX_OUT" \
@@ -96,7 +95,7 @@ docker buildx build --progress=plain --platform "$PLATFORM" \
   -t "${SALES_DASHBOARD_ECR_URL}:${TAG}" \
   "$CTX_SALES_DASHBOARD"
 
-echo "    - SalesFxService (JVM)"
+echo "    - SalesFxService (JVM Fargate)"
 docker buildx build --progress=plain --platform "$PLATFORM" \
   "${ATTEST_FLAGS[@]}" \
   --output="$BUILDX_OUT" \
@@ -104,7 +103,7 @@ docker buildx build --progress=plain --platform "$PLATFORM" \
   -t "${SALES_FX_SERVICE_ECR_URL}:${TAG}" \
   "$CTX_SALES_FX_SERVICE"
 
-echo "    - SalesAnalyzerJob (JVM)"
+echo "    - SalesAnalyzerJob (JVM Fargate)"
 docker buildx build --progress=plain --platform "$PLATFORM" \
   "${ATTEST_FLAGS[@]}" \
   --output="$BUILDX_OUT" \
