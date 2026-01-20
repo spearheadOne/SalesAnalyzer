@@ -24,5 +24,5 @@ variable "fargate_memory" {
 
 variable "sales_analyzer_version" {
   type = string
-  default = "0.8.2.30"
+  default = "0.8.3.3"
 }

@@ -59,9 +59,8 @@ resource "aws_lambda_function" "sales_ingester" {
 
   environment {
     variables = {
-      MICRONAUT_ENVIRONMENTS = "lambda"
-      SALES_BUCKET_NAME = var.sales_bucket_name
-      KINESIS_STREAM_NAME = var.kinesis_stream_name
+      SALES_BUCKET_NAME     = var.sales_bucket_name
+      KINESIS_STREAM_NAME   = var.kinesis_stream_name
     }
   }
 

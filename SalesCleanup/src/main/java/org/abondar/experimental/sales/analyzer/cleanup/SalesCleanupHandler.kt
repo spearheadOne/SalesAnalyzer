@@ -3,10 +3,12 @@ package org.abondar.experimental.sales.analyzer.cleanup
 import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
 import io.micronaut.context.ApplicationContext
 import io.micronaut.function.aws.MicronautRequestHandler
+import io.micronaut.serde.annotation.Serdeable
 import jakarta.inject.Inject
 import org.slf4j.LoggerFactory
 
-class SalesCleanupHandler : MicronautRequestHandler<ScheduledEvent, Void> {
+@Serdeable
+class SalesCleanupHandler : MicronautRequestHandler<ScheduledEvent, Void?> {
 
     private val log = LoggerFactory.getLogger(this::class.java)
 
