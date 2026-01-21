@@ -7,6 +7,7 @@ curl -s http://localhost:4566/_localstack/health | jq
 export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
 export AWS_REGION=us-east-1
+export AWS_PAGER=""
 
 export ENDPOINT=http://localhost:4566
 
