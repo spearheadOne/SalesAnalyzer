@@ -13,14 +13,14 @@ resource "aws_lb" "sales_fx_service_nlb" {
 
 resource "aws_lb_target_group" "sales_fx_service_tg" {
   name        = "${var.sales_fx_service_app}-tg-${var.environment}"
-  port        = 9028
+  port        = var.fx_service_port
   protocol    = "TCP"
   target_type = "ip"
   vpc_id      = var.vpc_id
 
   health_check {
     protocol            = "TCP"
-    port                = "9028"
+    port                = var.fx_service_port
     healthy_threshold   = 3
     unhealthy_threshold = 3
     interval            = 30
@@ -34,7 +34,7 @@ resource "aws_lb_target_group" "sales_fx_service_tg" {
 
 resource "aws_lb_listener" "sales_fx_service_nlb_listener" {
   load_balancer_arn = aws_lb.sales_fx_service_nlb.arn
-  port              = 9028
+  port              = var.fx_service_port
   protocol          = "TCP"
 
   default_action {

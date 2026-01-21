@@ -24,7 +24,7 @@ aws:
 grpc:
   channels:
     fx:
-      address: "localhost:9028"
+      address: http://localhost:9028
       plaintext: true
 
 logging:

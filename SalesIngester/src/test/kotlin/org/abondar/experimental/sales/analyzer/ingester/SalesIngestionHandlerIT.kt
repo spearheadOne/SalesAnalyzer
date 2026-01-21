@@ -1,16 +1,18 @@
 package org.abondar.experimental.sales.analyzer.ingester
 
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Value
 import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
+import io.micronaut.serde.ObjectMapper
 import io.micronaut.test.support.TestPropertyProvider
 import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.ingester.input.SalesIngesterHandler
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Test
-import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.localstack.LocalStackContainer
 import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
@@ -43,20 +45,21 @@ class SalesIngestionHandlerIT : TestPropertyProvider {
     @Inject
     lateinit var s3Client: S3Client
 
+    @Inject
+    lateinit var objectMapper: ObjectMapper
+
     companion object {
         @Container
         @JvmStatic
         val localstack: LocalStackContainer =
             LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
-                .withServices(LocalStackContainer.Service.S3, LocalStackContainer.Service.KINESIS)
+                .withServices("s3", "kinesis")
 
     }
 
     override fun getProperties() = mutableMapOf(
-        "aws.services.s3.endpoint-override" to localstack
-            .getEndpointOverride(LocalStackContainer.Service.S3).toString(),
-        "aws.services.kinesis.endpoint-override" to localstack
-            .getEndpointOverride(LocalStackContainer.Service.KINESIS).toString(),
+        "aws.services.s3.endpoint-override" to localstack.endpoint.toString(),
+        "aws.services.kinesis.endpoint-override" to localstack.endpoint.toString(),
         "aws.access-key-id" to localstack.accessKey,
         "aws.secret-access-key" to localstack.secretKey,
         "aws.region" to localstack.region,
@@ -126,7 +129,10 @@ class SalesIngestionHandlerIT : TestPropertyProvider {
 }
 """.trimIndent()
 
+        val s3EventNotification: S3EventNotification =  objectMapper
+            .readValue(s3Event, S3EventNotification::class.java)
+
         val salesIngesterHandler = SalesIngesterHandler(applicationContext)
-        assertDoesNotThrow { salesIngesterHandler.execute(s3Event) }
+        assertDoesNotThrow { salesIngesterHandler.execute(s3EventNotification) }
     }
 }

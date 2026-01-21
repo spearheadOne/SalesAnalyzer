@@ -31,10 +31,10 @@ aws:
 grpc:
   channels:
     fx:
-      address: "dns:///${FX_SERVICE_HOST}:9028"
+      address: "dns:///${FX_SERVICE_HOST}:${FX_SERVICE_PORT}"
       plaintext: true
 
-default-currency: EUR
+default-currency: ${DEFAULT_CURRENCY:EUR}
 
 logging:
   level:

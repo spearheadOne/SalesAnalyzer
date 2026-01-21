@@ -9,6 +9,7 @@ module "app" {
   sales_bucket_name          = data.terraform_remote_state.core.outputs.sales_bucket_name
   sales_bucket_arn           = data.terraform_remote_state.core.outputs.sales_bucket_arn
   kinesis_stream_name        = data.terraform_remote_state.core.outputs.kinesis_stream_name
+  kinesis_stream_arn         = data.terraform_remote_state.core.outputs.kinesis_stream_arn
   sqs_queue_name             = data.terraform_remote_state.core.outputs.sqs_queue_name
   sqs_queue_url              = data.terraform_remote_state.core.outputs.sqs_queue_url
   sqs_queue_arn              = data.terraform_remote_state.core.outputs.sqs_queue_arn
@@ -22,4 +23,5 @@ module "app" {
   sales_cleanup_image_uri    = "${data.terraform_remote_state.core.outputs.sales_cleanup_ecr_url}:${var.sales_analyzer_version}"
   sales_dashboard_image_uri  = "${data.terraform_remote_state.core.outputs.sales_dashboard_ecr_url}:${var.sales_analyzer_version}"
   sales_fx_service_image_uri = "${data.terraform_remote_state.core.outputs.sales_fx_service_ecr_url}:${var.sales_analyzer_version}"
+  sales_analyzer_job_image_uri = "${data.terraform_remote_state.core.outputs.sales_analyzer_job_ecr_url}:${var.sales_analyzer_version}"
 }

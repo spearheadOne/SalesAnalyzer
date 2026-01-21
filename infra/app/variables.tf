@@ -34,6 +34,11 @@ variable "kinesis_stream_name" {
   type = string
 }
 
+variable "kinesis_stream_arn" {
+  type = string
+}
+
+
 variable "sqs_queue_name" {
   type = string
 }
@@ -116,7 +121,21 @@ variable "sales_fx_service_image_uri" {
   type = string
 }
 
+variable "sales_analyzer_job_image_uri" {
+  type = string
+}
+
 variable "sales_ecs_cluster" {
   type = string
   default = "sales-ecs-cluster"
+}
+
+variable "default_currency" {
+  type = string
+  default = "EUR"
+}
+
+variable "fx_service_port" {
+  type = number
+  default = 9028
 }

@@ -4,8 +4,8 @@ resource "aws_security_group" "sales_fx_service_sg" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 9028
-    to_port     = 9028
+    from_port   = var.fx_service_port
+    to_port     = var.fx_service_port
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr]
   }

@@ -29,6 +29,10 @@ output "kinesis_stream_name" {
   value = aws_kinesis_stream.sales_stream.name
 }
 
+output "kinesis_stream_arn" {
+  value = aws_kinesis_stream.sales_stream.arn
+}
+
 output "timescale_secret_arn" {
   description = "ARN of the Timescale credentials secret"
   value       = aws_secretsmanager_secret.sales_data_credentials.arn

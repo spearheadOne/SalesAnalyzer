@@ -43,14 +43,14 @@ resource "aws_ecs_task_definition" "sales_fx_service" {
 
       portMappings = [
         {
-          containerPort = 9028
-          hostPort      = 9028
+          containerPort = var.fx_service_port
+          hostPort      = var.fx_service_port
           protocol      = "tcp"
         }
       ]
 
       environment = [
-        { name = "MICRONAUT_SERVER_PORT", value = "9028" },
+        { name = "MICRONAUT_SERVER_PORT", value = tostring( var.fx_service_port) },
       ]
 
       logConfiguration = {

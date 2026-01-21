@@ -27,6 +27,11 @@ output "kinesis_stream_name" {
   value = module.core.kinesis_stream_name
 }
 
+output "kinesis_stream_arn" {
+  value = module.core.kinesis_stream_arn
+}
+
+
 output "sales_ingester_ecr_url" {
   value = module.core.sales_ingester_ecr_url
 }
