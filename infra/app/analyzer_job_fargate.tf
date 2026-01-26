@@ -31,13 +31,16 @@ resource "aws_iam_role_policy" "sales_analyzer_job_policy" {
         Action = [
           "kinesis:DescribeStream",
           "kinesis:DescribeStreamSummary",
+          "kinesis:DescribeStreamConsumer",
+          "kinesis:RegisterStreamConsumer",
+          "kinesis:DeregisterStreamConsumer",
           "kinesis:GetRecords",
           "kinesis:GetShardIterator",
           "kinesis:ListShards",
           "kinesis:ListStreams",
           "kinesis:SubscribeToShard"
         ]
-        Resource = var.kinesis_stream_arn
+        Resource = "*"
       },
 
       {

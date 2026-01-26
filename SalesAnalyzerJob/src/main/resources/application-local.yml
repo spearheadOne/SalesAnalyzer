@@ -22,10 +22,12 @@ aws:
       queueUrl: http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/sales-queue
 
 grpc:
+  client:
+    plaintext: true
   channels:
     fx:
-      address: http://localhost:9028
-      plaintext: true
+      address: "localhost:9028"
+
 
 logging:
   level:

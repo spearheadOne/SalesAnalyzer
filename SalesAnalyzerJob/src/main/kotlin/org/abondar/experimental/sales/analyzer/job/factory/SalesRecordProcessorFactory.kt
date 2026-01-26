@@ -16,10 +16,11 @@ class SalesRecordProcessorFactory(
     private val objectMapper: ObjectMapper,
     private val sqsProducer: SqsProducer,
     private val fxClient: FxClient,
-    @param:Value("\${default-currency:}") private val defaultCurrency: String
+    @param:Value("\${default-currency:}") private val defaultCurrency: String,
+    @param:Value("\${grpc.process-timeout-ms:}") private val processTimeout: Long
 ) : ShardRecordProcessorFactory {
 
-    override fun shardRecordProcessor(): ShardRecordProcessor? {
-        return SalesRecordProcessor(objectMapper, aggMapper, sqsProducer, fxClient, defaultCurrency)
+    override fun shardRecordProcessor(): ShardRecordProcessor {
+        return SalesRecordProcessor(objectMapper, aggMapper, sqsProducer, fxClient, defaultCurrency, processTimeout)
     }
 }

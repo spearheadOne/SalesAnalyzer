@@ -29,9 +29,13 @@ aws:
 
 
 grpc:
+  timeout-ms: 10000
+  process-timeout-ms: 15000
+  client:
+    plaintext: true
   channels:
     fx:
-      address: "dns:///${FX_SERVICE_HOST}:${FX_SERVICE_PORT}"
+      address: "${FX_SERVICE_HOST}:${FX_SERVICE_PORT}"
       plaintext: true
 
 default-currency: ${DEFAULT_CURRENCY:EUR}

@@ -34,7 +34,8 @@ class SalesRecordProcessor(
     private val aggMapper: AggMapper,
     private val sqsProducer: SqsProducer,
     private val fxClient: FxClient,
-    private val defaultCurrency: String
+    private val defaultCurrency: String,
+    private val processTimeout: Long
 ) : ShardRecordProcessor {
 
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -93,7 +94,7 @@ class SalesRecordProcessor(
 
         if (convertRequestBatch.isNotEmpty()) {
             val convertBatchResponse = runBlocking {
-                withTimeout(800.milliseconds) {
+                withTimeout(processTimeout.milliseconds) {
                     fxClient.convertBatch(
                         ConvertBatchRequest.newBuilder()
                             .addAllItems(convertRequestBatch)
@@ -118,6 +119,7 @@ class SalesRecordProcessor(
             }
         }
 
+        //todo add depuplication here for both rows and messages
         if (aggRows.isNotEmpty()) {
             aggMapper.insertUpdateAgg(aggRows)
         }

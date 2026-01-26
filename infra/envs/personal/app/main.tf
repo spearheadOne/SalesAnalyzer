@@ -9,7 +9,6 @@ module "app" {
   sales_bucket_name          = data.terraform_remote_state.core.outputs.sales_bucket_name
   sales_bucket_arn           = data.terraform_remote_state.core.outputs.sales_bucket_arn
   kinesis_stream_name        = data.terraform_remote_state.core.outputs.kinesis_stream_name
-  kinesis_stream_arn         = data.terraform_remote_state.core.outputs.kinesis_stream_arn
   sqs_queue_name             = data.terraform_remote_state.core.outputs.sqs_queue_name
   sqs_queue_url              = data.terraform_remote_state.core.outputs.sqs_queue_url
   sqs_queue_arn              = data.terraform_remote_state.core.outputs.sqs_queue_arn
