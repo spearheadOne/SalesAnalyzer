@@ -4,7 +4,6 @@ import com.google.protobuf.Timestamp
 import io.micronaut.serde.ObjectMapper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import org.abondar.experimental.sales.analyzer.data.AggDto
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.abondar.experimental.sales.analyzer.data.AggRow.Companion.toDto
 import org.abondar.experimental.sales.analyzer.data.OrigPrice
@@ -49,7 +48,7 @@ class SalesRecordProcessor(
         val aggRows = mutableListOf<AggRow>()
         val fxRows = mutableMapOf<String, PendingRow>()
         val convertRequestBatch = mutableListOf<ConvertRequestItem>()
-        val messages = mutableListOf<AggDto>()
+        val originalPrices = mutableMapOf<Pair<Instant, String>, OrigPrice>()
 
         processRecordsInput?.records()?.forEach { rec ->
             try {
@@ -69,11 +68,9 @@ class SalesRecordProcessor(
                     this.currency = defCur.currencyCode
                 }
 
-                if ( recordCurrency == defCur) {
+                if (recordCurrency == defCur) {
                     row.revenue = salesRecord.price.multiply(BigDecimal.valueOf(salesRecord.amount))
-                    val aggRow = row.build()
-                    aggRows.add(aggRow)
-                    messages.add(aggRow.toDto())
+                    aggRows.add(row.build())
                 } else {
                     val correlationId = UUID.randomUUID().toString()
                     convertRequestBatch.add(
@@ -83,8 +80,12 @@ class SalesRecordProcessor(
                             correlationId
                         )
                     )
-                    fxRows[correlationId] = PendingRow(row, OrigPrice(salesRecord.price.toPlainString(),
-                        recordCurrency.currencyCode))
+                    fxRows[correlationId] = PendingRow(
+                        row, OrigPrice(
+                            salesRecord.price.toPlainString(),
+                            recordCurrency.currencyCode
+                        )
+                    )
                 }
 
             } catch (ex: Exception) {
@@ -112,19 +113,20 @@ class SalesRecordProcessor(
                 r.revenue = convertedPrice.multiply(BigDecimal(r.units))
                     .setScale(defCur.defaultFractionDigits.coerceAtLeast(0), RoundingMode.HALF_UP)
 
-
                 val row = r.build()
                 aggRows.add(row)
-                messages.add(row.toDto(pending.originalPrice))
+
+                originalPrices[row.eventTime to row.productId] = pending.originalPrice
             }
         }
 
-        //todo add depuplication here for both rows and messages
-        if (aggRows.isNotEmpty()) {
-            aggMapper.insertUpdateAgg(aggRows)
-        }
+        val distinctRows = dedupAggRows(aggRows)
+        if (distinctRows.isNotEmpty()) {
+            log.info("Processing ${distinctRows.size} rows")
 
-        if (messages.isNotEmpty()) {
+            aggMapper.insertUpdateAgg(distinctRows)
+
+            val messages = buildMessages(distinctRows, originalPrices)
             sqsProducer.sendMessage(messages)
         }
     }
@@ -165,4 +167,35 @@ class SalesRecordProcessor(
         .setTargetCurrencyCode(targetCurrency.currencyCode)
         .setCorrelationId(correlationId)
         .build()
+
+
+    private fun dedupAggRows(rows: List<AggRow>) = rows.groupBy { it.eventTime to it.productId }
+        .map { (_, group) ->
+            group.reduce { accum, row ->
+                AggRow.builder().apply {
+                    eventTime = accum.eventTime
+                    eventTime = accum.eventTime
+                    productId = accum.productId
+                    productName = accum.productName
+                    category = accum.category
+                    currency = accum.currency
+
+                    orders = accum.orders + row.orders
+                    units = accum.units + row.units
+                    revenue = accum.revenue + row.revenue
+                }.build()
+            }
+        }
+
+    private fun buildMessages(aggRows: List<AggRow>, originalPrices: Map<Pair<Instant, String>, OrigPrice>) =
+        aggRows.map { row ->
+            val key = row.eventTime to row.productId
+            val origPrice = originalPrices[key]
+            if (origPrice != null) {
+                row.toDto(origPrice)
+            } else {
+                row.toDto()
+            }
+        }
+
 }

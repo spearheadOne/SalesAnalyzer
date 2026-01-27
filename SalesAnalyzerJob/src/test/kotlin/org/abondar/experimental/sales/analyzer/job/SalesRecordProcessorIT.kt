@@ -30,7 +30,7 @@ class SalesRecordProcessorIT : BaseIT() {
         val sqsProducer = applicationContext.getBean(SqsProducer::class.java)
         testMapper.deleteAll()
 
-        val processor = SalesRecordProcessor(objectMapper, aggMapper, sqsProducer, fxClient, "EUR",1000)
+        val processor = SalesRecordProcessor(objectMapper, aggMapper, sqsProducer, fxClient, "EUR", 1000)
 
         val now = Instant.now()
         val records = listOf(
@@ -51,7 +51,19 @@ class SalesRecordProcessorIT : BaseIT() {
             {"timestamp":"${now.plusSeconds(70)}","orderId":"O3","customerId":"C1","productId":"P1",
              "productName":"Mouse","category":"Electronics","price":"7.50","amount":3,"currency":"EUR","region":"DE"}
         """.trimIndent(), 3
-            )
+            ),
+            jsonRecord(
+                """
+            {"timestamp":"$now","orderId":"O4","customerId":"C1","productId":"P1",
+             "productName":"Mouse","category":"Electronics","price":"10.00","amount":2,"currency":"EUR","region":"DE"}
+        """.trimIndent(), 1
+            ),
+            jsonRecord(
+                """
+            {"timestamp":"$now","orderId":"O4","customerId":"C1","productId":"P1",
+             "productName":"Mouse","category":"Electronics","price":"10.00","amount":2,"currency":"EUR","region":"DE"}
+        """.trimIndent(), 1
+            ),
         )
 
         val processInput = ProcessRecordsInput.builder()
@@ -62,7 +74,7 @@ class SalesRecordProcessorIT : BaseIT() {
         processor.processRecords(processInput)
 
         val res = testMapper.getAggregates()
-        assertEquals(3, res.size)
+        assertEquals(4, res.size)
     }
 
     private fun jsonRecord(json: String, seq: Long): KinesisClientRecord =
