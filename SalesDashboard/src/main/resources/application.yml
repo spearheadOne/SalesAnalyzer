@@ -5,6 +5,12 @@ micronaut:
     deduce-environment: false
   server:
     port: 9024
+  serde:
+    serialization:
+      inclusion: always
+      json:
+        pretty-print: true
+
   router:
     static-resources:
       default:

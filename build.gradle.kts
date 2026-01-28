@@ -8,7 +8,7 @@ plugins {
     id("com.gradleup.shadow") version "8.3.9" apply false
 }
 
-version = "0.8.5"
+version = "0.8.6"
 
 subprojects {
 
