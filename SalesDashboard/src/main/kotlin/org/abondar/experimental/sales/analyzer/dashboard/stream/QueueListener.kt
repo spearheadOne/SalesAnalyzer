@@ -18,7 +18,7 @@ class QueueListener(
     @Queue("\${aws.sqs.queue-name}")
     fun receiveMessage(@MessageBody msg: String) {
         val aggDto = objectMapper.readValue(msg, AggDto::class.java)
-        log.debug("Received message $aggDto")
+        log.debug("Received message {}", aggDto)
         feed.emit(aggDto)
     }
 

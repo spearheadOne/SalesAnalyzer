@@ -20,6 +20,7 @@ resource "aws_iam_role_policy" "sales_dashboard_policy" {
       {
         Effect = "Allow",
         Action = [
+          "sqs:GetQueueUrl",
           "sqs:SendMessage",
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",

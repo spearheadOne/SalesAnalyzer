@@ -55,6 +55,8 @@ resource "aws_lb" "sales_dashboard" {
   subnets            = var.subnet_ids
   security_groups    = [aws_security_group.sales_dashboard_alb_sg.id]
 
+  idle_timeout = 300
+
   tags = {
     Environment = var.environment
     Service     = var.sales_dashboard_app
@@ -67,6 +69,14 @@ resource "aws_lb_target_group" "sales_dashboard" {
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = var.vpc_id
+
+  deregistration_delay = 60
+  slow_start = 30
+
+  stickiness {
+    enabled = false
+    type     = "lb_cookie"
+  }
 
   health_check {
     path                = "/health"
