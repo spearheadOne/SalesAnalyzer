@@ -7,6 +7,8 @@ resource "aws_kinesis_stream" "sales_stream" {
 
   retention_period = 48
 
+  enforce_consumer_deletion = true
+
   shard_level_metrics = [
     "IncomingBytes",
     "IncomingRecords",
