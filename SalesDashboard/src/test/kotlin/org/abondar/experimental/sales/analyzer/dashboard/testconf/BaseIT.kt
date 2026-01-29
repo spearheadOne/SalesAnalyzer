@@ -6,9 +6,9 @@ import org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardTest
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 import java.math.BigDecimal
 import java.time.Instant
@@ -20,8 +20,6 @@ open class BaseIT {
 
     protected lateinit var testMapper: SalesDashboardTestMapper
 
-    protected open fun extraProperties(): Map<String, Any?> = emptyMap()
-
     companion object {
 
         val agg = AggRow(
@@ -31,7 +29,7 @@ open class BaseIT {
 
         @Container
         @JvmField
-        val POSTGRES: PostgreSQLContainer<*> = PostgreSQLContainer(
+        val POSTGRES: PostgreSQLContainer = PostgreSQLContainer(
             DockerImageName.parse("timescale/timescaledb:latest-pg14")
                 .asCompatibleSubstituteFor("postgres")
         )

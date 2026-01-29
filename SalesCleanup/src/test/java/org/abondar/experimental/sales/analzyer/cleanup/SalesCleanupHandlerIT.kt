@@ -2,15 +2,12 @@ package org.abondar.experimental.sales.analzyer.cleanup
 
 import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.annotation.Value
-import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
-import io.micronaut.test.support.TestPropertyProvider
-import jakarta.inject.Inject
+import io.micronaut.context.env.PropertySource
 import org.abondar.experimental.sales.analyzer.cleanup.SalesCleanupHandler
 import org.junit.jupiter.api.*
-import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.localstack.LocalStackContainer
 import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
@@ -18,18 +15,14 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 
 @Testcontainers(disabledWithoutDocker = true)
-@MicronautLambdaTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SalesCleanupHandlerIT : TestPropertyProvider {
+class SalesCleanupHandlerIT {
 
-    @Inject
-    lateinit var applicationContext: ApplicationContext
+    private lateinit var applicationContext: ApplicationContext
+    private lateinit var s3Client: S3Client
+    private lateinit var salesBucket: String
+    private lateinit var cleanupHandler: SalesCleanupHandler
 
-    @Value("\${ingestion.bucket-name}")
-    lateinit var salesBucket: String
-
-    @Inject
-    lateinit var s3Client: S3Client
 
     val cleanUpEvent = ScheduledEvent().apply {
         region = "us-east-1"
@@ -37,38 +30,44 @@ class SalesCleanupHandlerIT : TestPropertyProvider {
         detailType = "Scheduled Event"
     }
 
-    lateinit var cleanupHandler: SalesCleanupHandler
 
     companion object {
         @Container
         @JvmStatic
         val localstack: LocalStackContainer =
             LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
-                .withServices(LocalStackContainer.Service.S3)
+                .withServices("s3")
     }
 
-    override fun getProperties() = mutableMapOf(
-        "aws.services.s3.endpoint-override" to localstack
-            .getEndpointOverride(LocalStackContainer.Service.S3).toString(),
-        "aws.access-key-id" to localstack.accessKey,
-        "aws.secret-access-key" to localstack.secretKey,
-        "aws.region" to localstack.region,
-        "ingestion.bucket-name" to "sales-bucket"
-    )
 
+    @BeforeEach
+    fun setup() {
+        val bucketName = "sales-bucket-${System.currentTimeMillis()}-${(1000..9999).random()}"
 
-    @BeforeAll
-    fun createBucket() {
+        val props = mutableMapOf<String, Any?>(
+            "aws.services.s3.endpoint-override" to localstack.endpoint.toString(),
+            "aws.access-key-id" to localstack.accessKey,
+            "aws.secret-access-key" to localstack.secretKey,
+            "aws.region" to localstack.region,
+            "ingestion.bucket-name" to bucketName
+        )
+
+        applicationContext = ApplicationContext.run(PropertySource.of("test", props))
+
+        salesBucket = applicationContext.getProperty("ingestion.bucket-name", String::class.java).get()
+        s3Client = applicationContext.getBean(S3Client::class.java)
         s3Client.createBucket(
             CreateBucketRequest.builder()
                 .bucket(salesBucket)
                 .build()
         )
+
+        cleanupHandler = SalesCleanupHandler(applicationContext)
     }
 
-    @BeforeEach
-    fun initHandler() {
-        cleanupHandler = SalesCleanupHandler(applicationContext)
+    @AfterEach
+    fun tearDown() {
+        applicationContext.close()
     }
 
     @Test

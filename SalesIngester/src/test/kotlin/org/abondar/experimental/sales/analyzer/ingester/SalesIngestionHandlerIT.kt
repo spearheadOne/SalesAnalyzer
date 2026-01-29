@@ -2,14 +2,14 @@ package org.abondar.experimental.sales.analyzer.ingester
 
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.annotation.Value
-import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
+import io.micronaut.context.env.PropertySource
 import io.micronaut.serde.ObjectMapper
-import io.micronaut.test.support.TestPropertyProvider
-import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.ingester.input.SalesIngesterHandler
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.localstack.LocalStackContainer
@@ -17,36 +17,25 @@ import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest
+import software.amazon.awssdk.services.kinesis.model.DescribeStreamRequest
+import software.amazon.awssdk.services.kinesis.model.StreamStatus
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 
 
 //normally we should use micronaut test resources but they do not support kinesis in localstack
+//micronuat app context inits faster than test containers 2 so app context reqiures manual init
 @Testcontainers(disabledWithoutDocker = true)
-@MicronautLambdaTest
-class SalesIngestionHandlerIT : TestPropertyProvider {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class SalesIngestionHandlerIT {
 
-    @Inject
-    lateinit var applicationContext: ApplicationContext
-
-    @Value("\${ingestion.bucket-name}")
-    lateinit var salesBucket: String
-
-    @Value("\${aws.region}")
-    lateinit var region: String
-
-    @Value("\${aws.services.kinesis.stream}")
-    lateinit var streamName: String
-
-    @Inject
-    lateinit var kinesisClient: KinesisAsyncClient
-
-    @Inject
-    lateinit var s3Client: S3Client
-
-    @Inject
-    lateinit var objectMapper: ObjectMapper
+    private lateinit var applicationContext: ApplicationContext
+    private lateinit var s3Client: S3Client
+    private lateinit var objectMapper: ObjectMapper
+    private lateinit var salesBucket: String
+    private lateinit var region: String
+    private lateinit var streamName: String
 
     companion object {
         @Container
@@ -57,32 +46,81 @@ class SalesIngestionHandlerIT : TestPropertyProvider {
 
     }
 
-    override fun getProperties() = mutableMapOf(
-        "aws.services.s3.endpoint-override" to localstack.endpoint.toString(),
-        "aws.services.kinesis.endpoint-override" to localstack.endpoint.toString(),
-        "aws.access-key-id" to localstack.accessKey,
-        "aws.secret-access-key" to localstack.secretKey,
-        "aws.region" to localstack.region,
-        "ingestion.bucket-name" to "sales-bucket"
-    )
 
-    @Test
-    fun `test lambda handler processing s3 event`() {
+    @BeforeEach
+    fun setup() {
+        localstack.start()
+
+        val bucketName = "sales-bucket-${System.currentTimeMillis()}-${(1000..9999).random()}"
+
+
+        val props = mutableMapOf<String, Any?>(
+            "aws.services.s3.endpoint-override" to localstack.endpoint.toString(),
+            "aws.services.kinesis.endpoint-override" to localstack.endpoint.toString(),
+            "aws.access-key-id" to localstack.accessKey,
+            "aws.secret-access-key" to localstack.secretKey,
+            "aws.kinesis.stream" to "sales-stream",
+            "aws.region" to localstack.region,
+            "ingestion.bucket-name" to bucketName
+        )
+
+        applicationContext = ApplicationContext.run(PropertySource.of("test", props))
+
+        streamName = applicationContext.getProperty("aws.kinesis.stream", String::class.java).get()
+        val kinesisClient = applicationContext.getBean(KinesisAsyncClient::class.java)
         kinesisClient.createStream(
             CreateStreamRequest.builder()
                 .streamName(streamName)
                 .shardCount(1)
                 .build()
-        )
+        ).get()
 
-        salesBucket += "${System.currentTimeMillis()}-${(1000..9999).random()}"
+        waitForStreamToBeActive(kinesisClient, streamName)
 
+        salesBucket = applicationContext.getProperty("ingestion.bucket-name", String::class.java).get()
+        s3Client = applicationContext.getBean(S3Client::class.java)
         s3Client.createBucket(
             CreateBucketRequest.builder()
                 .bucket(salesBucket)
                 .build()
         )
 
+        region = applicationContext.getProperty("aws.region", String::class.java).get()
+        objectMapper = applicationContext.getBean(ObjectMapper::class.java)
+    }
+
+    private fun waitForStreamToBeActive(kinesisClient: KinesisAsyncClient, streamName: String) {
+        val maxAttempts = 30
+        val delayMillis = 1000L
+
+        repeat(maxAttempts) { attempt ->
+            val response = kinesisClient.describeStream(
+                DescribeStreamRequest.builder()
+                    .streamName(streamName)
+                    .build()
+            ).get()
+
+            val status = response.streamDescription().streamStatus()
+
+            if (status == StreamStatus.ACTIVE) {
+                return
+            }
+
+            if (attempt < maxAttempts - 1) {
+                Thread.sleep(delayMillis)
+            }
+        }
+
+        throw IllegalStateException("Stream $streamName did not become active within ${maxAttempts * delayMillis / 1000} seconds")
+    }
+
+    @AfterEach
+    fun tearDown() {
+        applicationContext.close()
+    }
+
+    @Test
+    fun `test lambda handler processing s3 event`() {
 
         val data = """
             timestamp,product_id,product_name,category,price,currency,amount
@@ -129,7 +167,7 @@ class SalesIngestionHandlerIT : TestPropertyProvider {
 }
 """.trimIndent()
 
-        val s3EventNotification: S3EventNotification =  objectMapper
+        val s3EventNotification: S3EventNotification = objectMapper
             .readValue(s3Event, S3EventNotification::class.java)
 
         val salesIngesterHandler = SalesIngesterHandler(applicationContext)

@@ -16,10 +16,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.containers.localstack.LocalStackContainer
+
+
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.localstack.LocalStackContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -38,7 +40,7 @@ open class BaseIT {
     companion object {
         @Container
         @JvmField
-        val POSTGRES: PostgreSQLContainer<*> = PostgreSQLContainer(
+        val POSTGRES: PostgreSQLContainer = PostgreSQLContainer(
             DockerImageName.parse("timescale/timescaledb:latest-pg14")
                 .asCompatibleSubstituteFor("postgres")
         )
@@ -51,8 +53,7 @@ open class BaseIT {
         @JvmField
         val LOCALSTACK: LocalStackContainer =
             LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
-                .withServices( LocalStackContainer.Service.KINESIS, LocalStackContainer.Service.DYNAMODB,
-                    LocalStackContainer.Service.CLOUDWATCH, LocalStackContainer.Service.SQS)
+                .withServices( "kinesis", "dynamodb", "cloudwatch", "sqs")
     }
 
     @BeforeEach
