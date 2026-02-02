@@ -39,3 +39,6 @@ TODO:  aws secretsmanager delete-secret \
 --secret-id sales-data-credentials-personal \
 --force-delete-without-recovery \
 --region eu-west-1
+
+TODO: on dev+ envs first cd backend and create bucket
+
