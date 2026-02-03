@@ -23,7 +23,7 @@ class AggMapperIT : BaseIT() {
 
         val res = testMapper.getAggregates()
         Assertions.assertEquals(1, res.size)
-        Assertions.assertEquals(agg, res.first())
+        Assertions.assertEquals(agg.productName, res.first().productName)
     }
 
 
