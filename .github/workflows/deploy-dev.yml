@@ -37,6 +37,10 @@ jobs:
       - name: Build and test
         run: ./gradlew --no-daemon clean test
 
+      - name: Summarize tests results
+        uses: jeantessier/test-summary-action@v1
+        if: ${{ always() }}
+
 #TODO add ecr login
 #TODO add read ecr url's from terraform
 #TODO build and push docker images
