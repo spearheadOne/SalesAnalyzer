@@ -12,10 +12,15 @@ concurrency:
 
 permissions:
   contents: read
-  id-token: write
+  id-token: write # TODO: switch to OIDC role-to-assume later
 
 #TODO add env variables for aws
-# env:
+env:
+  AWS_REGION: eu-west-1
+  BACKEND_REGION: us-east-2
+  ENVIRONMENT: development
+  TF_IN_AUTOMATION: "1"
+  TF_PLUGIN_CACHE_DIR: ~/.terraform.d/plugin-cache
 
 jobs:
   build_test:
@@ -40,6 +45,17 @@ jobs:
       - name: Summarize tests results
         uses: jeantessier/test-summary-action@v1
         if: ${{ always() }}
+
+      - name: Compute image tag
+        id: tag
+        run: |
+            set -euo pipefail
+            if ./gradlew -q printVersion >/dev/null 2>&1; then
+              TAG="$(./gradlew -q printVersion | tr -d '\r\n')"
+            else
+              TAG="$(echo "${GITHUB_SHA}" | cut -c1-12)"
+            fi
+            echo "tag=$TAG" >> "$GITHUB_OUT  
 
 #TODO add ecr login
 #TODO add read ecr url's from terraform
