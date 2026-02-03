@@ -20,6 +20,8 @@ permissions:
 jobs:
   build_test:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
 
     steps:
       - name: Checkout
@@ -33,27 +35,7 @@ jobs:
           cache: gradle
 
       - name: Build and test
-        run: ./gradlew clean build
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: |
-            **/build/test-results/**/*.xml
-            **/build/reports/tests/**
-          if-no-files-found: warn
-          retention-days: 1
-
-      - name: Publish test report
-        if: always()
-        uses: dorny/test-reporter@v1
-        with:
-          name: Test Report
-          path: '**/build/test-results/**/*.xml'
-          reporter: java-junit
-          fail-on-error: false
+        run: ./gradlew --no-daemon clean test
 
 #TODO add ecr login
 #TODO add read ecr url's from terraform
