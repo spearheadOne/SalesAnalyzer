@@ -15,7 +15,7 @@ variable "lambda_timeout" {
 }
 
 variable "fargate_cpu" {
-  default = 256
+  default = 512
 }
 
 variable "fargate_memory" {

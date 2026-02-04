@@ -1,0 +1,26 @@
+module "app" {
+  source                     = "../../../app"
+  environment                = var.environment
+  region                     = var.region
+  lambda_memory_size         = var.lambda_memory_size
+  lambda_timeout             = var.lambda_timeout
+  fargate_cpu                = var.fargate_cpu
+  fargate_memory             = var.fargate_memory
+  sales_bucket_name          = data.terraform_remote_state.core.outputs.sales_bucket_name
+  sales_bucket_arn           = data.terraform_remote_state.core.outputs.sales_bucket_arn
+  kinesis_stream_name        = data.terraform_remote_state.core.outputs.kinesis_stream_name
+  sqs_queue_name             = data.terraform_remote_state.core.outputs.sqs_queue_name
+  sqs_queue_url              = data.terraform_remote_state.core.outputs.sqs_queue_url
+  sqs_queue_arn              = data.terraform_remote_state.core.outputs.sqs_queue_arn
+  timescale_host             = data.terraform_remote_state.core.outputs.timescale_host
+  timescale_username         = local.timescale_creds["username"]
+  timescale_password         = local.timescale_creds["password"]
+  vpc_id                     = data.terraform_remote_state.core.outputs.vpc_id
+  vpc_cidr                   = data.terraform_remote_state.core.outputs.vpc_cidr
+  subnet_ids                 = data.terraform_remote_state.core.outputs.subnet_ids
+  sales_ingester_image_uri   = "${data.terraform_remote_state.core.outputs.sales_ingester_ecr_url}:${var.sales_analyzer_version}"
+  sales_cleanup_image_uri    = "${data.terraform_remote_state.core.outputs.sales_cleanup_ecr_url}:${var.sales_analyzer_version}"
+  sales_dashboard_image_uri  = "${data.terraform_remote_state.core.outputs.sales_dashboard_ecr_url}:${var.sales_analyzer_version}"
+  sales_fx_service_image_uri = "${data.terraform_remote_state.core.outputs.sales_fx_service_ecr_url}:${var.sales_analyzer_version}"
+  sales_analyzer_job_image_uri = "${data.terraform_remote_state.core.outputs.sales_analyzer_job_ecr_url}:${var.sales_analyzer_version}"
+}
