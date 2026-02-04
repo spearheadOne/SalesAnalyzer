@@ -14,7 +14,6 @@ permissions:
   contents: read
   id-token: write # TODO: switch to OIDC role-to-assume later
 
-#TODO add env variables for aws
 env:
   AWS_REGION: eu-west-1
   BACKEND_REGION: us-east-2
@@ -49,13 +48,9 @@ jobs:
       - name: Compute image tag
         id: tag
         run: |
-            set -euo pipefail
-            if ./gradlew -q printVersion >/dev/null 2>&1; then
-              TAG="$(./gradlew -q printVersion | tr -d '\r\n')"
-            else
-              TAG="$(echo "${GITHUB_SHA}" | cut -c1-12)"
-            fi
-            echo "tag=$TAG" >> "$GITHUB_OUT  
+          set -euo pipefail
+          TAG="$(./gradlew -q printVersion | tr -d '\r\n')"
+          echo "tag=$TAG"
 
 #TODO add ecr login
 #TODO add read ecr url's from terraform
