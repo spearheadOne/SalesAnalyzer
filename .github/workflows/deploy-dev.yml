@@ -158,7 +158,7 @@ jobs:
            
            echo "    - SalesCleanup (native)"
            docker buildx build --progress=plain --platform "$PLATFORM" \
-            "${ATTEST_FLAGS[@]}" \
+            --provenance=false --sbom=false \
             --output "$BUILDX_OUT" \
             -f "$DOCKERFILE_SALES_CLEANUP" \
             -t "${SALES_CLEANUP_ECR_URL}:${TAG}" \
@@ -166,7 +166,7 @@ jobs:
            
            echo "    - SalesIngester (JVM Lambda)"
            docker buildx build --progress=plain --platform "$PLATFORM" \
-            "${ATTEST_FLAGS[@]}" \
+            --provenance=false --sbom=false \
             --output "$BUILDX_OUT" \
             -f "$DOCKERFILE_SALES_INGESTER" \
             -t "${SALES_INGESTER_ECR_URL}:${TAG}" \
@@ -174,7 +174,7 @@ jobs:
            
            echo "    - SalesDashboard (JVM Fargate)"
            docker buildx build --progress=plain --platform "$PLATFORM" \
-            "${ATTEST_FLAGS[@]}" \
+            --provenance=false --sbom=false \
             --output "$BUILDX_OUT" \
             -f "$DOCKERFILE_SALES_DASHBOARD" \
             -t "${SALES_DASHBOARD_ECR_URL}:${TAG}" \
@@ -182,7 +182,7 @@ jobs:
            
            echo "    - SalesFxService (JVM Fargate)"
            docker buildx build --progress=plain --platform "$PLATFORM" \
-            "${ATTEST_FLAGS[@]}" \
+            --provenance=false --sbom=false \
             --output "$BUILDX_OUT" \
             -f "$DOCKERFILE_SALES_FX_SERVICE" \
             -t "${SALES_FX_SERVICE_ECR_URL}:${TAG}" \
@@ -190,7 +190,7 @@ jobs:
            
            echo "    - SalesAnalyzerJob (JVM Fargate)"
            docker buildx build --progress=plain --platform "$PLATFORM" \
-            "${ATTEST_FLAGS[@]}" \
+            --provenance=false --sbom=false \
             --output "$BUILDX_OUT" \
             -f "$DOCKERFILE_SALES_ANALYZER_JOB" \
             -t "${SALES_ANALYZER_JOB_ECR_URL}:${TAG}" \
