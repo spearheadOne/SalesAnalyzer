@@ -11,7 +11,7 @@ terraform {
 data "terraform_remote_state" "core" {
   backend = "s3"
   config = {
-    bucket = "ssales-terraform-states-development"
+    bucket = "sales-terraform-states-development"
     key    = "terraform.tfstate"
     region = "us-east-2"
   }
