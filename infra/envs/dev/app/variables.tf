@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "environment" {
-  default = "personal"
+  default = "development"
 }
 
 variable "lambda_memory_size" {
@@ -25,5 +25,5 @@ variable "fargate_memory" {
 
 variable "sales_analyzer_version" {
   type = string
-  default = "0.9.3"
+  default = "0.9.4"
 }
