@@ -15,14 +15,15 @@ variable "lambda_timeout" {
 }
 
 variable "fargate_cpu" {
-  default = 512
+  default = 256
 }
 
 variable "fargate_memory" {
   default = 512
 }
 
+
 variable "sales_analyzer_version" {
   type = string
-  default = "0.9.1"
+  default = "0.9.2"
 }
