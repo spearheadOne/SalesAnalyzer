@@ -1,0 +1,77 @@
+name: destroy-dev.yml
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm destroying dev environment'
+        required: true
+        default: ""
+      environment:
+        description: 'Environment development'
+        required: true
+        default: "development"
+
+concurrency:
+  group: destroy-dev
+  cancel-in-progress: false
+
+
+permissions:
+  contents: read
+  id-token: write
+  checks: write
+
+env:
+  AWS_REGION: eu-west-1
+  TF_IN_AUTOMATION: "1"
+  TF_PLUGIN_CACHE_DIR: ~/.terraform.d/plugin-cache
+
+
+jobs:
+  destroy_apps:
+    runs-on: ubuntu-latest
+
+    steps:
+       - name: Guardrail confirmation
+         run: |
+            set -euo pipefail
+            if [ "${{ inputs.confirm }}" != "destroy" ]; then
+                      echo "Confirmation missing. You must type destroy."
+                      exit 1
+            fi
+
+       - name: Checkout
+         uses: actions/checkout@v4
+
+       - name: Setup Terraform
+         uses: hashicorp/setup-terraform@v3
+         with:
+           terraform_wrapper: false
+
+       - name: Create Terraform plugin cache directory
+         run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+
+       - name: Cache Terraform plugins
+         uses: actions/cache@v4
+         with:
+           path: "${TF_PLUGIN_CACHE_DIR}"
+           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+           restore-keys: |
+             ${{ runner.os }}-terraform-
+             
+
+      # TODO: Replace with OIDC role-to-assume
+       - name: Configure AWS credentials
+         uses: aws-actions/configure-aws-credentials@v4
+         with:
+           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+           aws-region: ${{ env.AWS_REGION }}
+
+
+       - name: Destroy applications
+         working-directory: infra/envs/dev/app
+         run: |
+           set -euo pipefail
+           terraform init -input=false
+           terraform destroy -auto-approve

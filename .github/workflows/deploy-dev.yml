@@ -3,6 +3,12 @@ name: build-and-deploy-dev
 on:
   push:
     branches: [ "master" ]
+    paths-ignore:
+      - "README.md"
+      - "deploy-personal.sh"
+      - "docker-compose.yml"
+      - "local-infra*.sh"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 
