@@ -57,6 +57,7 @@ jobs:
      needs: build_test
      env:
       TAG: ${{ needs.build_test.outputs.tag }}
+      PLATFORM: linux/arm64
 
      steps:
        - name: Checkout
