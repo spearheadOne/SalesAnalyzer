@@ -1,4 +1,4 @@
-name: destroy-dev.yml
+name: destroy-env
 on:
   workflow_dispatch:
     inputs:
@@ -7,12 +7,12 @@ on:
         required: true
         default: ""
       environment:
-        description: 'Environment development'
+        description: 'Environment to destroy'
         required: true
-        default: "development"
+        default: "dev"
 
 concurrency:
-  group: destroy-dev
+  group: destroy-${{ inputs.environment }}
   cancel-in-progress: false
 
 
@@ -70,7 +70,7 @@ jobs:
 
 
        - name: Destroy applications
-         working-directory: infra/envs/dev/app
+         working-directory: infra/envs/${{ inputs.environment }}/app
          run: |
            set -euo pipefail
            terraform init -input=false
