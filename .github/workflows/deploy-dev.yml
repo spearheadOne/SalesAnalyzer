@@ -99,6 +99,11 @@ jobs:
        - name: Login to Amazon ECR
          uses: aws-actions/amazon-ecr-login@v2
 
+       - name: Set up QEMU
+         uses: docker/setup-qemu-action@v3
+
+       - name: Set up Docker Buildx
+         uses: docker/setup-buildx-action@v3
 
        - name: Terraform init (development/core) and read outputs
          working-directory: infra/envs/dev/core
@@ -113,28 +118,82 @@ jobs:
             echo "SALES_INGESTER_ECR_URL=$(terraform output -raw sales_ingester_ecr_url)" >> "$GITHUB_ENV"
            
 
-       - name: Docker build (JVM images)
+       - name: Build artifacts and generate dockerfiles
          run: |
            ./gradlew --no-daemon \
-           :SalesIngester:dockerBuild -Pdocker.images="${SALES_INGESTER_ECR_URL}:${TAG}" \
-           :SalesDashboard:dockerBuild -Pdocker.images="${SALES_DASHBOARD_ECR_URL}:${TAG}" \
-           :SalesFxService:dockerBuild -Pdocker.images="${SALES_FX_SERVICE_ECR_URL}:${TAG}" \
-           :SalesAnalyzerJob:dockerBuild -Pdocker.images="${SALES_ANALYZER_JOB_ECR_URL}:${TAG}"
+            :SalesDashboard:assemble \
+            :SalesDashboard:dockerfile \
+            :SalesFxService:assemble \
+            :SalesFxService:dockerfile \
+            :SalesAnalyzerJob:assemble \
+            :SalesAnalyzerJob:dockerfile \
+            :SalesCleanup:buildNativeLayersTask \
+            :SalesCleanup:dockerPrepareContext \
+            :SalesCleanup:dockerfileNative \
+            :SalesIngester:buildNativeLayersTask \
+            :SalesIngester:shadowJar
 
-       - name: Docker build (native)
-         run: |
-              ./gradlew --no-daemon :SalesCleanup:dockerBuildNative \
-                -Pdocker.images="${SALES_CLEANUP_ECR_URL}:${TAG}"
 
-       - name: Push docker images
+       - name: Build and push docker images
          run: |
-            ./gradlew --no-daemon \
-               :SalesIngester:dockerPush \
-               :SalesDashboard:dockerPush \
-               :SalesFxService:dockerPush \
-               :SalesAnalyzerJob:dockerPush \
-               :SalesCleanup:dockerPushNative
-            
+           set -euo pipefail
+           
+           ROOT_DIR="$GITHUB_WORKSPACE"
+           
+           DOCKERFILE_SALES_DASHBOARD="$ROOT_DIR/SalesDashboard/build/docker/main/Dockerfile"
+           DOCKERFILE_SALES_FX_SERVICE="$ROOT_DIR/SalesFxService/build/docker/main/Dockerfile"
+           DOCKERFILE_SALES_ANALYZER_JOB="$ROOT_DIR/SalesAnalyzerJob/build/docker/main/Dockerfile"
+           DOCKERFILE_SALES_CLEANUP="$ROOT_DIR/SalesCleanup/build/docker/native-main/DockerfileNative"
+           DOCKERFILE_SALES_INGESTER="$ROOT_DIR/SalesIngester/Dockerfile"
+           
+           CTX_SALES_DASHBOARD="$ROOT_DIR/SalesDashboard/build/docker/main"
+           CTX_SALES_FX_SERVICE="$ROOT_DIR/SalesFxService/build/docker/main"
+           CTX_SALES_ANALYZER_JOB="$ROOT_DIR/SalesAnalyzerJob/build/docker/main"
+           CTX_SALES_CLEANUP="$ROOT_DIR/SalesCleanup/build/docker/native-main"
+           CTX_SALES_INGESTER="$ROOT_DIR/SalesIngester"
+           
+           echo "==> Build & push images with Docker buildx (platform=$PLATFORM, tag=$TAG)"
+           
+           echo "    - SalesCleanup (native)"
+           docker buildx build --progress=plain --platform "$PLATFORM" \
+            "${ATTEST_FLAGS[@]}" \
+            --push \
+            -f "$DOCKERFILE_SALES_CLEANUP" \
+            -t "${SALES_CLEANUP_ECR_URL}:${TAG}" \
+            "$CTX_SALES_CLEANUP"
+           
+           echo "    - SalesIngester (JVM Lambda)"
+           docker buildx build --progress=plain --platform "$PLATFORM" \
+            "${ATTEST_FLAGS[@]}" \
+            --push \
+            -f "$DOCKERFILE_SALES_INGESTER" \
+            -t "${SALES_INGESTER_ECR_URL}:${TAG}" \
+            "$CTX_SALES_INGESTER"
+           
+           echo "    - SalesDashboard (JVM Fargate)"
+           docker buildx build --progress=plain --platform "$PLATFORM" \
+            "${ATTEST_FLAGS[@]}" \
+            --push \
+            -f "$DOCKERFILE_SALES_DASHBOARD" \
+            -t "${SALES_DASHBOARD_ECR_URL}:${TAG}" \
+            "$CTX_SALES_DASHBOARD"
+           
+           echo "    - SalesFxService (JVM Fargate)"
+           docker buildx build --progress=plain --platform "$PLATFORM" \
+            "${ATTEST_FLAGS[@]}" \
+            --push \
+            -f "$DOCKERFILE_SALES_FX_SERVICE" \
+            -t "${SALES_FX_SERVICE_ECR_URL}:${TAG}" \
+            "$CTX_SALES_FX_SERVICE"
+           
+           echo "    - SalesAnalyzerJob (JVM Fargate)"
+           docker buildx build --progress=plain --platform "$PLATFORM" \
+            "${ATTEST_FLAGS[@]}" \
+            --push \
+            -f "$DOCKERFILE_SALES_ANALYZER_JOB" \
+            -t "${SALES_ANALYZER_JOB_ECR_URL}:${TAG}" \
+            "$CTX_SALES_ANALYZER_JOB"
+
 
        - name: Deploy applications
          working-directory: infra/envs/dev/app
