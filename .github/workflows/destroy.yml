@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: 'Type "destroy" to confirm destroying dev environment'
+        description: 'Type "destroy" to confirm destroying environment'
         required: true
         default: ""
       environment:

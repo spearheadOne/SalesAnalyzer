@@ -138,6 +138,7 @@ resource "aws_iam_role_policy_attachment" "upload_cloudwatch_attach" {
 
 resource "aws_api_gateway_account" "account" {
   cloudwatch_role_arn = aws_iam_role.upload_cloudwatch_role.arn
+  reset_on_delete = true
 }
 
 resource "aws_cloudwatch_log_group" "upload_access_log_group" {
