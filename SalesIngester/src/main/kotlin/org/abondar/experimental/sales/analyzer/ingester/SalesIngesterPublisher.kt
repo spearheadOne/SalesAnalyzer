@@ -36,7 +36,7 @@ class SalesIngesterPublisher(
             .records(entries)
             .build()
 
-        var resp = kinesisClient.putRecords(req).await()
+        val resp = kinesisClient.putRecords(req).await()
         val failed = resp.failedRecordCount() ?: 0
         if (failed > 0) {
             log.warn("Failed to publish $failed records")

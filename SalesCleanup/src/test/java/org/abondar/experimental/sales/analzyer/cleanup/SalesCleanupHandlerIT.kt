@@ -2,7 +2,12 @@ package org.abondar.experimental.sales.analzyer.cleanup
 
 import com.amazonaws.services.lambda.runtime.events.ScheduledEvent
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Value
 import io.micronaut.context.env.PropertySource
+import io.micronaut.core.annotation.NonNull
+import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
+import io.micronaut.test.support.TestPropertyProvider
+import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.cleanup.SalesCleanupHandler
 import org.junit.jupiter.api.*
 import org.testcontainers.junit.jupiter.Container
@@ -15,12 +20,19 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 
 @Testcontainers(disabledWithoutDocker = true)
+@MicronautLambdaTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SalesCleanupHandlerIT {
+class SalesCleanupHandlerIT: TestPropertyProvider {
 
+    @Inject
     private lateinit var applicationContext: ApplicationContext
+
+    @Inject
     private lateinit var s3Client: S3Client
+
+    @Value("\${ingestion.bucket-name}")
     private lateinit var salesBucket: String
+
     private lateinit var cleanupHandler: SalesCleanupHandler
 
 
@@ -39,23 +51,21 @@ class SalesCleanupHandlerIT {
                 .withServices("s3")
     }
 
-
-    @BeforeEach
-    fun setup() {
+    override fun getProperties(): @NonNull Map<String?, String?> {
         val bucketName = "sales-bucket-${System.currentTimeMillis()}-${(1000..9999).random()}"
 
-        val props = mutableMapOf<String, Any?>(
+        return  mutableMapOf<String?, String?>(
             "aws.services.s3.endpoint-override" to localstack.endpoint.toString(),
             "aws.access-key-id" to localstack.accessKey,
             "aws.secret-access-key" to localstack.secretKey,
             "aws.region" to localstack.region,
             "ingestion.bucket-name" to bucketName
         )
+    }
 
-        applicationContext = ApplicationContext.run(PropertySource.of("test", props))
 
-        salesBucket = applicationContext.getProperty("ingestion.bucket-name", String::class.java).get()
-        s3Client = applicationContext.getBean(S3Client::class.java)
+    @BeforeEach
+    fun setup() {
         s3Client.createBucket(
             CreateBucketRequest.builder()
                 .bucket(salesBucket)
@@ -63,11 +73,6 @@ class SalesCleanupHandlerIT {
         )
 
         cleanupHandler = SalesCleanupHandler(applicationContext)
-    }
-
-    @AfterEach
-    fun tearDown() {
-        applicationContext.close()
     }
 
     @Test

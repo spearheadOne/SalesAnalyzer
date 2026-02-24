@@ -2,51 +2,33 @@ package org.abondar.experimental.sales.analyzer.dashboard
 
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.MediaType
-import io.micronaut.http.client.StreamingHttpClient
+import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.sse.SseClient
 import io.micronaut.http.sse.Event
-import io.micronaut.runtime.server.EmbeddedServer
+import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.dashboard.stream.Feed
 import org.abondar.experimental.sales.analyzer.dashboard.testconf.BaseIT
 import org.abondar.experimental.sales.analyzer.data.AggDto
-import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Flux
-import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
 
 class SalesDashBoardControllerStreamIT : BaseIT() {
 
-    private lateinit var server: EmbeddedServer
+    private var apiBase: String = "/dashboard"
 
-    private lateinit var apiUrl: String
-
+    @Inject
+    @field:Client("/")
     private lateinit var sseClient: SseClient
 
-    @BeforeEach
-    fun init() {
-        server = applicationContext.getBean(EmbeddedServer::class.java)
-        if (!server.isRunning) {
-            server.start()
-        }
-        apiUrl = server.url.toString() + "/dashboard"
-
-        sseClient = SseClient.create(server.url)
-    }
-
-    @AfterEach
-    fun stop() {
-        if (this::server.isInitialized && server.isRunning) {
-            server.stop()
-        }
-    }
+    @Inject
+    private lateinit var feed: Feed
 
     @Test
     fun `test streaming`() {
@@ -61,10 +43,9 @@ class SalesDashBoardControllerStreamIT : BaseIT() {
             "EUR"
         )
 
-        val feed = applicationContext.getBean(Feed::class.java)
         feed.emit(newAgg)
 
-        val req = HttpRequest.GET<Any>("$apiUrl/stream")
+        val req = HttpRequest.GET<Any>("$apiBase/stream")
             .accept(MediaType.TEXT_EVENT_STREAM)
 
         val publisher: Publisher<Event<AggDto>> =

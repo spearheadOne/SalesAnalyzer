@@ -1,6 +1,7 @@
 package org.abondar.experimental.sales.analyzer.dashboard.data
 
 
+import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.dashboard.testconf.BaseIT
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -8,12 +9,8 @@ import org.junit.jupiter.api.Test
 
 class SalesDashboardMapperIT : BaseIT() {
 
-    lateinit var dashboardMapper: SalesDashboardMapper
-
-    @BeforeEach
-    fun initMapper() {
-        dashboardMapper = applicationContext.getBean(SalesDashboardMapper::class.java)
-    }
+    @Inject
+    private lateinit var dashboardMapper: SalesDashboardMapper
 
     @Test
     fun `test time series period`() {

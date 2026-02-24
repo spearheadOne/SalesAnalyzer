@@ -2,14 +2,19 @@ package org.abondar.experimental.sales.analyzer.ingester
 
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.PropertySource
+import io.micronaut.context.annotation.Value
+import io.micronaut.core.annotation.NonNull
+import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
 import io.micronaut.serde.ObjectMapper
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+import io.micronaut.test.support.TestPropertyProvider
+import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.ingester.input.SalesIngesterHandler
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.localstack.LocalStackContainer
@@ -22,106 +27,103 @@ import software.amazon.awssdk.services.kinesis.model.StreamStatus
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import java.util.concurrent.TimeUnit
 
 
-//normally we should use micronaut test resources but they do not support kinesis in localstack
-//micronuat app context inits faster than test containers 2 so app context reqiures manual init
 @Testcontainers(disabledWithoutDocker = true)
+@MicronautLambdaTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SalesIngestionHandlerIT {
+class SalesIngestionHandlerIT : TestPropertyProvider {
 
-    private lateinit var applicationContext: ApplicationContext
+    @Inject
     private lateinit var s3Client: S3Client
+
+    @Inject
     private lateinit var objectMapper: ObjectMapper
-    private lateinit var salesBucket: String
-    private lateinit var region: String
-    private lateinit var streamName: String
+
+    @Inject
+    private lateinit var applicationContext: ApplicationContext
+
+    @Value("\${ingestion.bucket-name}")
+    lateinit var salesBucket: String
+
+    @Value("\${aws.region}")
+    lateinit var region: String
+
+    @Inject
+    lateinit var kinesisClient: KinesisAsyncClient
+
+    private val streamName = "sales-stream-${System.currentTimeMillis()}-${(1000..9999).random()}"
 
     companion object {
+        init {
+            // 1. THE FIX: Kill the EC2 Metadata lookup that hangs when offline
+            System.setProperty("aws.disableEc2Metadata", "true")
+        }
+
         @Container
         @JvmStatic
         val localstack: LocalStackContainer =
             LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
                 .withServices("s3", "kinesis")
+                .waitingFor(Wait.forLogMessage(".*Ready.*", 1))
 
+    }
+
+
+    override fun getProperties(): @NonNull Map<String?, String?> {
+        val bucketName = "sales-bucket-${System.currentTimeMillis()}-${(1000..9999).random()}"
+
+       return  mutableMapOf<String?, String?>(
+           "aws.services.s3.endpoint-override" to localstack.endpoint.toString(),
+           "aws.services.kinesis.endpoint-override" to localstack.endpoint.toString(),
+           "aws.access-key-id" to localstack.accessKey,
+           "aws.secret-access-key" to localstack.secretKey,
+           "aws.services.kinesis.stream" to streamName,
+           "aws.region" to localstack.region,
+           "ingestion.bucket-name" to bucketName
+       )
     }
 
 
     @BeforeEach
     fun setup() {
-        localstack.start()
-
-        val bucketName = "sales-bucket-${System.currentTimeMillis()}-${(1000..9999).random()}"
-
-
-        val props = mutableMapOf<String, Any?>(
-            "aws.services.s3.endpoint-override" to localstack.endpoint.toString(),
-            "aws.services.kinesis.endpoint-override" to localstack.endpoint.toString(),
-            "aws.access-key-id" to localstack.accessKey,
-            "aws.secret-access-key" to localstack.secretKey,
-            "aws.kinesis.stream" to "sales-stream",
-            "aws.region" to localstack.region,
-            "ingestion.bucket-name" to bucketName
-        )
-
-        applicationContext = ApplicationContext.run(PropertySource.of("test", props))
-
-        streamName = applicationContext.getProperty("aws.kinesis.stream", String::class.java).get()
-        val kinesisClient = applicationContext.getBean(KinesisAsyncClient::class.java)
         kinesisClient.createStream(
             CreateStreamRequest.builder()
                 .streamName(streamName)
                 .shardCount(1)
                 .build()
-        ).get()
+        )
 
-        waitForStreamToBeActive(kinesisClient, streamName)
+        var streamActive = false
+        var attempts = 0
+        while (!streamActive && attempts < 30) {
+            val describeResponse = kinesisClient.describeStream(
+                DescribeStreamRequest.builder()
+                    .streamName(streamName)
+                    .build()
+            ).get(5, TimeUnit.SECONDS)
 
-        salesBucket = applicationContext.getProperty("ingestion.bucket-name", String::class.java).get()
-        s3Client = applicationContext.getBean(S3Client::class.java)
+            streamActive = describeResponse.streamDescription().streamStatus() == StreamStatus.ACTIVE
+            if (!streamActive) {
+                Thread.sleep(1000)
+                attempts++
+            }
+        }
+
         s3Client.createBucket(
             CreateBucketRequest.builder()
                 .bucket(salesBucket)
                 .build()
         )
 
-        region = applicationContext.getProperty("aws.region", String::class.java).get()
-        objectMapper = applicationContext.getBean(ObjectMapper::class.java)
+
     }
 
-    private fun waitForStreamToBeActive(kinesisClient: KinesisAsyncClient, streamName: String) {
-        val maxAttempts = 30
-        val delayMillis = 1000L
 
-        repeat(maxAttempts) { attempt ->
-            val response = kinesisClient.describeStream(
-                DescribeStreamRequest.builder()
-                    .streamName(streamName)
-                    .build()
-            ).get()
-
-            val status = response.streamDescription().streamStatus()
-
-            if (status == StreamStatus.ACTIVE) {
-                return
-            }
-
-            if (attempt < maxAttempts - 1) {
-                Thread.sleep(delayMillis)
-            }
-        }
-
-        throw IllegalStateException("Stream $streamName did not become active within ${maxAttempts * delayMillis / 1000} seconds")
-    }
-
-    @AfterEach
-    fun tearDown() {
-        applicationContext.close()
-    }
 
     @Test
     fun `test lambda handler processing s3 event`() {
-
         val data = """
             timestamp,product_id,product_name,category,price,currency,amount
             2025-08-13T09:15:00Z,PROD001,Wireless Mouse,Electronics,24.99,EUR,2

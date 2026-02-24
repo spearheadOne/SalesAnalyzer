@@ -1,5 +1,6 @@
 package org.abondar.experimental.sales.analyzer.job.mapper
 
+import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
 import org.junit.jupiter.api.Assertions
@@ -9,12 +10,11 @@ import java.time.Instant
 
 class AggMapperIT : BaseIT() {
 
+    @Inject
+    private lateinit var aggMapper: AggMapper
+
     @Test
     fun `test agg mapper save row`() {
-        val aggMapper = applicationContext.getBean(AggMapper::class.java)
-
-        testMapper.deleteAll()
-
         val agg = AggRow(
             Instant.now(), "test", "test", "test",
             1, 1, BigDecimal(10), "EUR")

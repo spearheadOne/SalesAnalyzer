@@ -1,6 +1,8 @@
 package org.abondar.experimental.sales.analyzer.job
 
+import io.micronaut.context.annotation.Value
 import io.micronaut.serde.ObjectMapper
+import jakarta.inject.Inject
 import kotlinx.coroutines.runBlocking
 import org.abondar.experimental.sales.analyzer.data.AggRow
 import org.abondar.experimental.sales.analyzer.data.AggRow.Companion.toDto
@@ -20,16 +22,23 @@ import java.util.concurrent.TimeUnit
 
 class SqsProducerIT : BaseIT() {
 
+    @Inject
+    private lateinit var sqsClient: SqsAsyncClient
+
+    @Inject
+    private lateinit var objectMapper: ObjectMapper
+
+    @Value("\${aws.services.sqs.queueName}")
+    private  lateinit var queueName: String
+
     override fun extraProperties(): Map<String, Any?> = Properties.localstackAws(LOCALSTACK)
 
     @Test
     fun `test sending agg row to sqs`() {
-        val sqsClient = applicationContext.getBean(SqsAsyncClient::class.java)
-        val objectMapper = applicationContext.getBean(ObjectMapper::class.java)
 
         val queueUrl = sqsClient.createQueue(
             CreateQueueRequest.builder()
-                .queueName("sales-queue").build()
+                .queueName(queueName).build()
         ).get(5, TimeUnit.SECONDS).queueUrl()
 
 

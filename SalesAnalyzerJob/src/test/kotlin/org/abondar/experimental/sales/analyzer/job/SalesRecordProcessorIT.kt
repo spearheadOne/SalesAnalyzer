@@ -1,6 +1,7 @@
 package org.abondar.experimental.sales.analyzer.job
 
 import io.micronaut.serde.ObjectMapper
+import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.job.mapper.AggMapper
 import org.abondar.experimental.sales.analyzer.job.queue.SqsProducer
 import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
@@ -20,16 +21,21 @@ import java.time.Instant
 
 class SalesRecordProcessorIT : BaseIT() {
 
+    @Inject
+    private lateinit var sqsProducer: SqsProducer
+
+    @Inject
+    private lateinit var aggMapper: AggMapper
+
+    @Inject
+    private lateinit var objectMapper: ObjectMapper
+
+
     override fun extraProperties(): Map<String, Any?> =
         Properties.localstackAws(LOCALSTACK)
 
     @Test
     fun `test processor logic directly`() {
-        val aggMapper = applicationContext.getBean(AggMapper::class.java)
-        val objectMapper = applicationContext.getBean(ObjectMapper::class.java)
-        val sqsProducer = applicationContext.getBean(SqsProducer::class.java)
-        testMapper.deleteAll()
-
         val processor = SalesRecordProcessor(objectMapper, aggMapper, sqsProducer, fxClient, "EUR", 1000)
 
         val now = Instant.now()

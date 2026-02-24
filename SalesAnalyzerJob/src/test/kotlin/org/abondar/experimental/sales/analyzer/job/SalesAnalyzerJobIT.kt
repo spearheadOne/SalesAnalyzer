@@ -1,41 +1,39 @@
 package org.abondar.experimental.sales.analyzer.job
 
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
-import org.abondar.experimental.sales.analyzer.fx.ConvertBatchResponse
-import org.abondar.experimental.sales.analyzer.fx.ConvertResponseItem
-import org.abondar.experimental.sales.analyzer.fx.Money
-import org.abondar.experimental.sales.analyzer.job.fx.FxClient
+import io.micronaut.context.annotation.Value
+import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.job.testconf.BaseIT
-import org.abondar.experimental.sales.analyzer.job.testconf.Containers
 import org.abondar.experimental.sales.analyzer.job.testconf.Properties
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
-import org.mockito.kotlin.any
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest
 import software.amazon.awssdk.services.kinesis.model.PutRecordRequest
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
-import software.amazon.awssdk.services.sqs.SqsClient
 import software.amazon.awssdk.services.sqs.model.CreateQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import java.time.Instant
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration.Companion.milliseconds
 
 
-class SalesJobAnalyzerIT: BaseIT(){
+class SalesAnalyzerJobIT: BaseIT(){
 
-    private val streamName = "sales-stream"
+    private val streamName = "sales-stream-${System.currentTimeMillis()}-${(1000..9999).random()}"
 
-    lateinit var kinesisClient: KinesisAsyncClient
+    @Inject
+    private lateinit var kinesisClient: KinesisAsyncClient
 
-    lateinit var sqsClient: SqsAsyncClient
+    @Inject
+    private lateinit var sqsClient: SqsAsyncClient
+
+    @Inject
+    private lateinit var job: SalesAnalyzerJob
+
+    @Value("\${aws.services.sqs.queueName}")
+    private  lateinit var queueName: String
 
     lateinit var queueUrl: String
 
@@ -47,9 +45,6 @@ class SalesJobAnalyzerIT: BaseIT(){
 
     @BeforeEach
     fun setup() {
-        kinesisClient = applicationContext.getBean(KinesisAsyncClient::class.java)
-        testMapper.deleteAll()
-
         kinesisClient.createStream(
             CreateStreamRequest.builder()
                 .streamName(streamName)
@@ -57,40 +52,17 @@ class SalesJobAnalyzerIT: BaseIT(){
                 .build()
         )
 
-        sqsClient = applicationContext.getBean(SqsAsyncClient::class.java)
         queueUrl = sqsClient.createQueue(
             CreateQueueRequest.builder()
-                .queueName("sales-queue").build()
+                .queueName(queueName).build()
         ).get(5, TimeUnit.SECONDS).queueUrl()
 
-
-        fxClient = mock(FxClient::class.java)
-        runBlocking {
-            withTimeout(800.milliseconds) {
-                `when`(fxClient.convertBatch(any())).thenReturn(
-                    ConvertBatchResponse.newBuilder()
-                        .addItems(
-                            ConvertResponseItem.newBuilder()
-                                .setCorrelationId("test")
-                                .setConverted(
-                                    Money.newBuilder()
-                                        .setAmount("10.00")
-                                        .setCurrencyCode("EUR")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-            }
-        }
     }
 
     @Test
     fun `test analyzer job`() {
-        val job = applicationContext.getBean(SalesAnalyzerJob::class.java)
-
         job.run()
+
         Thread.sleep(5000)
 
         val now = Instant.now()

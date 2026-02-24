@@ -23,7 +23,8 @@ object Properties {
         "aws.services.dynamodb.endpoint-override" to container.endpoint.toString(),
         "aws.services.cloudwatch.endpoint-override" to container.endpoint.toString(),
         "aws.services.sqs.endpoint-override" to container.endpoint.toString(),
-        "aws.services.sqs.queueUrl" to "http://localhost:4566/000000000000/sales-queue"
+        "aws.services.sqs.queueUrl" to "http://localhost:4566/000000000000/sales-queue",
+        "aws.services.sqs.queueName" to "sales-queue"
     )
 
 }

@@ -4,53 +4,30 @@ import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.MediaType
 import io.micronaut.http.client.HttpClient
+import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
-import io.micronaut.runtime.server.EmbeddedServer
+import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenueDto
-import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenueItemDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductRevenueDto
-import org.abondar.experimental.sales.analyzer.dashboard.model.ProductsRevenueItemDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesPointDto
 import org.abondar.experimental.sales.analyzer.dashboard.testconf.BaseIT
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SalesDashboardControllerIT : BaseIT() {
 
-    private lateinit var server: EmbeddedServer
 
+    @Inject
+    @field:Client("/")
     private lateinit var client: HttpClient
 
-    private lateinit var apiUrl: String
+    private var apiBase: String = "/dashboard"
 
-
-    @BeforeEach
-    fun startServerAndSetupData() {
-        server = applicationContext.getBean(EmbeddedServer::class.java)
-        if (!server.isRunning) {
-            server.start()
-            apiUrl = server.url.toString() + "/dashboard"
-        }
-
-        client = applicationContext.getBean(HttpClient::class.java)
-        if (!client.isRunning) {
-            client = HttpClient.create(server.url)
-            client.start()
-        }
-    }
-
-    @AfterEach
-    fun stopServer() {
-        if (this::client.isInitialized) client.close()
-        if (this::server.isInitialized && server.isRunning) server.stop()
-    }
 
     @Test
     fun `test get time series`() {
-        val request = HttpRequest.GET<Any>("$apiUrl/time-series/1m")
+        val request = HttpRequest.GET<Any>("$apiBase/time-series/1m")
             .accept(MediaType.APPLICATION_JSON)
         val res = client.toBlocking().exchange(request, TimeSeriesDto::class.java)
 
@@ -67,7 +44,7 @@ class SalesDashboardControllerIT : BaseIT() {
 
     @Test
     fun `test get time series handle exception`() {
-        val request = HttpRequest.GET<Any>("$apiUrl/time-series/1ff")
+        val request = HttpRequest.GET<Any>("$apiBase/time-series/1ff")
             .accept(MediaType.APPLICATION_JSON)
 
         val ex = assertThrows(HttpClientResponseException::class.java) {
@@ -78,7 +55,7 @@ class SalesDashboardControllerIT : BaseIT() {
 
     @Test
     fun `test get categories`() {
-        val request = HttpRequest.GET<Any>("$apiUrl/categories/1m")
+        val request = HttpRequest.GET<Any>("$apiBase/categories/1m")
             .accept(MediaType.APPLICATION_JSON)
         val res = client.toBlocking().exchange(request, CategoryRevenueDto::class.java)
 
@@ -97,7 +74,7 @@ class SalesDashboardControllerIT : BaseIT() {
 
     @Test
     fun `test get products`() {
-        val request = HttpRequest.GET<Any>("$apiUrl/products/1m")
+        val request = HttpRequest.GET<Any>("$apiBase/products/1m")
             .accept(MediaType.APPLICATION_JSON)
         val res = client.toBlocking().exchange(request, ProductRevenueDto::class.java)
 

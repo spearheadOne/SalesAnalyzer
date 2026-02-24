@@ -2,6 +2,9 @@ package org.abondar.experimental.sales.analyzer.job.testconf
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.PropertySource
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+import io.micronaut.test.support.TestPropertyProvider
+import jakarta.inject.Inject
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.abondar.experimental.sales.analyzer.fx.ConvertBatchRequest
@@ -13,6 +16,7 @@ import org.abondar.experimental.sales.analyzer.job.mapper.AggTestMapper
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -28,14 +32,17 @@ import java.math.RoundingMode
 import kotlin.time.Duration.Companion.milliseconds
 
 @Testcontainers(disabledWithoutDocker = true)
-open class BaseIT {
-    protected lateinit var applicationContext: ApplicationContext
+@MicronautTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+open class BaseIT: TestPropertyProvider {
 
+    @Inject
     protected lateinit var testMapper: AggTestMapper
 
-    protected open fun extraProperties(): Map<String, Any?> = emptyMap()
-
+    @Inject
     protected lateinit var fxClient: FxClient
+
+    protected open fun extraProperties(): Map<String, Any?> = emptyMap()
 
     companion object {
         @Container
@@ -56,17 +63,18 @@ open class BaseIT {
                 .withServices( "kinesis", "dynamodb", "cloudwatch", "sqs")
     }
 
+    override fun getProperties(): Map<String, String> {
+        val base = mutableMapOf<String, Any?>()
+        base += Properties.postgres(POSTGRES)
+        base += Properties.localstackAws(LOCALSTACK)
+        base += extraProperties()
+
+        return base.mapValues { (_, v) -> v?.toString() ?: "" }
+    }
+
     @BeforeEach
     fun start() {
-        val props = mutableMapOf<String, Any?>()
-        props += Properties.postgres(POSTGRES)
-        props += extraProperties()
-
-        applicationContext = ApplicationContext.run(PropertySource.of("test", props))
-
-        testMapper = applicationContext.getBean(AggTestMapper::class.java)
-
-        fxClient = mock(FxClient::class.java)
+        testMapper.deleteAll()
 
         runBlocking {
             withTimeout(100.milliseconds) {
@@ -95,10 +103,4 @@ open class BaseIT {
         }
     }
 
-    @AfterEach
-    fun shutdown() {
-        if (this::applicationContext.isInitialized) {
-            applicationContext.close()
-        }
-    }
 }
