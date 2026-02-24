@@ -64,7 +64,7 @@ micronaut {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 val frontendDir = file("$projectDir/dashboard-frontend")

@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "2.0.21" apply false
-    id("com.google.devtools.ksp") version "2.0.21-1.0.25" apply false
-    kotlin("plugin.allopen") version "2.0.21" apply false
+    id("com.google.devtools.ksp") version "2.3.6" apply false
+    kotlin("plugin.allopen") version "2.3.10" apply false
 
     id("io.micronaut.application") version "4.6.1" apply false
     id("io.micronaut.aot") version "4.6.1" apply false
@@ -25,8 +25,8 @@ subprojects {
     }
 
     configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
 
     dependencies {
