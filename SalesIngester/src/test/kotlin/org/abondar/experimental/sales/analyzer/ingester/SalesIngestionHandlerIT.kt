@@ -6,7 +6,6 @@ import io.micronaut.context.annotation.Value
 import io.micronaut.core.annotation.NonNull
 import io.micronaut.function.aws.test.annotation.MicronautLambdaTest
 import io.micronaut.serde.ObjectMapper
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.micronaut.test.support.TestPropertyProvider
 import jakarta.inject.Inject
 import org.abondar.experimental.sales.analyzer.ingester.input.SalesIngesterHandler
@@ -27,6 +26,7 @@ import software.amazon.awssdk.services.kinesis.model.StreamStatus
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.services.kinesis.model.ResourceNotFoundException
 import java.util.concurrent.TimeUnit
 
 
@@ -56,11 +56,6 @@ class SalesIngestionHandlerIT : TestPropertyProvider {
     private val streamName = "sales-stream-${System.currentTimeMillis()}-${(1000..9999).random()}"
 
     companion object {
-        init {
-            // 1. THE FIX: Kill the EC2 Metadata lookup that hangs when offline
-            System.setProperty("aws.disableEc2Metadata", "true")
-        }
-
         @Container
         @JvmStatic
         val localstack: LocalStackContainer =
@@ -80,6 +75,7 @@ class SalesIngestionHandlerIT : TestPropertyProvider {
            "aws.access-key-id" to localstack.accessKey,
            "aws.secret-access-key" to localstack.secretKey,
            "aws.services.kinesis.stream" to streamName,
+           "aws.s3.path-style-access-enabled" to "true",
            "aws.region" to localstack.region,
            "ingestion.bucket-name" to bucketName
        )
@@ -93,18 +89,25 @@ class SalesIngestionHandlerIT : TestPropertyProvider {
                 .streamName(streamName)
                 .shardCount(1)
                 .build()
-        )
+        ).get(10, TimeUnit.SECONDS)
 
         var streamActive = false
         var attempts = 0
         while (!streamActive && attempts < 30) {
-            val describeResponse = kinesisClient.describeStream(
-                DescribeStreamRequest.builder()
-                    .streamName(streamName)
-                    .build()
-            ).get(5, TimeUnit.SECONDS)
+            try {
+                val describeResponse = kinesisClient.describeStream(
+                    DescribeStreamRequest.builder()
+                        .streamName(streamName)
+                        .build()
+                ).get(5, TimeUnit.SECONDS)
 
-            streamActive = describeResponse.streamDescription().streamStatus() == StreamStatus.ACTIVE
+                streamActive = describeResponse.streamDescription().streamStatus() == StreamStatus.ACTIVE
+            } catch (e: Exception) {
+                if (e.cause !is ResourceNotFoundException) {
+                    throw e
+                }
+            }
+
             if (!streamActive) {
                 Thread.sleep(1000)
                 attempts++

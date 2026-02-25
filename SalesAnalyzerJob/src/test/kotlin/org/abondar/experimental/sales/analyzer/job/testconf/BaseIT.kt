@@ -1,7 +1,6 @@
 package org.abondar.experimental.sales.analyzer.job.testconf
 
-import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.PropertySource
+
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.micronaut.test.support.TestPropertyProvider
 import jakarta.inject.Inject
@@ -13,15 +12,10 @@ import org.abondar.experimental.sales.analyzer.fx.ConvertResponseItem
 import org.abondar.experimental.sales.analyzer.fx.Money
 import org.abondar.experimental.sales.analyzer.job.fx.FxClient
 import org.abondar.experimental.sales.analyzer.job.mapper.AggTestMapper
-
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
-import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
-
-
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.localstack.LocalStackContainer
@@ -34,7 +28,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @Testcontainers(disabledWithoutDocker = true)
 @MicronautTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-open class BaseIT: TestPropertyProvider {
+open class BaseIT : TestPropertyProvider {
 
     @Inject
     protected lateinit var testMapper: AggTestMapper
@@ -60,7 +54,7 @@ open class BaseIT: TestPropertyProvider {
         @JvmField
         val LOCALSTACK: LocalStackContainer =
             LocalStackContainer(DockerImageName.parse("localstack/localstack:3"))
-                .withServices( "kinesis", "dynamodb", "cloudwatch", "sqs")
+                .withServices("kinesis", "dynamodb", "cloudwatch", "sqs")
     }
 
     override fun getProperties(): Map<String, String> {
