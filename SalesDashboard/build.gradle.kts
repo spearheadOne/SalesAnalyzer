@@ -25,6 +25,7 @@ dependencies {
     implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("io.micronaut:micronaut-http-server-netty")
     implementation("io.micronaut:micronaut-management")
+    implementation("io.micronaut.cache:micronaut-cache-caffeine")
     implementation("io.micronaut.openapi:micronaut-openapi-annotations")
     implementation("io.micronaut.jms:micronaut-jms-sqs")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
@@ -36,13 +37,11 @@ dependencies {
     implementation("org.mybatis:mybatis-typehandlers-jsr310:$mybatisJsr310Version")
     runtimeOnly("org.postgresql:postgresql:$postgresqlVersion")
     runtimeOnly("io.micronaut.openapi:micronaut-openapi")
-    annotationProcessor("io.micronaut.openapi:micronaut-openapi")
 
     ksp("io.micronaut:micronaut-http-validation")
     ksp("io.micronaut.openapi:micronaut-openapi")
     ksp("io.micronaut.data:micronaut-data-processor")
     ksp("io.micronaut.serde:micronaut-serde-processor")
-    ksp("io.micronaut:micronaut-management")
     ksp("io.micronaut:micronaut-inject-java")
 
     testImplementation("org.testcontainers:testcontainers-postgresql")
@@ -65,6 +64,10 @@ micronaut {
 
 kotlin {
     jvmToolchain(25)
+}
+
+allOpen {
+    annotation("jakarta.inject.Singleton")
 }
 
 val frontendDir = file("$projectDir/dashboard-frontend")

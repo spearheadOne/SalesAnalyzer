@@ -17,6 +17,7 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardMapper
+import org.abondar.experimental.sales.analyzer.dashboard.data.SalesDashboardService
 import org.abondar.experimental.sales.analyzer.dashboard.model.CategoryRevenueDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.ProductRevenueDto
 import org.abondar.experimental.sales.analyzer.dashboard.model.TimeSeriesDto
@@ -29,7 +30,7 @@ import reactor.core.publisher.Flux
 @Validated
 @Controller("/dashboard")
 class SalesDashboardController(
-    private val mapper: SalesDashboardMapper,
+    private val service: SalesDashboardService,
     private val feed: Feed,
     @param:Value("\${default-currency:}") private val defaultCurrency: String
 ) {
@@ -59,7 +60,7 @@ class SalesDashboardController(
         @PathVariable @NotBlank period: String
     ): TimeSeriesDto {
         val dbPeriod = PeriodConverter.toPeriod(period)
-        val res = mapper.timeSeriesPeriod(dbPeriod)
+        val res = service.timeSeriesPeriod(dbPeriod)
         val points = res.map { it.toDto(defaultCurrency) }
 
         return TimeSeriesDto(defaultCurrency, points)
@@ -94,7 +95,7 @@ class SalesDashboardController(
         @QueryValue(defaultValue = "10") limit: Int
     ): CategoryRevenueDto {
         val dbPeriod = PeriodConverter.toPeriod(period)
-        val res = mapper.topCategoriesPerPeriod(dbPeriod, limit)
+        val res = service.topCategoriesPerPeriod(dbPeriod, limit)
 
         val items = res.map { it.toDto(defaultCurrency) }
 
@@ -128,7 +129,7 @@ class SalesDashboardController(
         @QueryValue(defaultValue = "10") limit: Int
     ): ProductRevenueDto {
         val dbPeriod = PeriodConverter.toPeriod(period)
-        val res = mapper.topProductsByRevenue(dbPeriod, limit)
+        val res = service.topProductsByRevenue(dbPeriod, limit)
         val items = res.map { it.toDto(defaultCurrency) }
 
         return ProductRevenueDto(defaultCurrency, items)

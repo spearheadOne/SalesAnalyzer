@@ -27,6 +27,20 @@ micronaut:
     sqs:
       enabled: true
 
+  caches:
+    sales-time-series:
+      maximum-size: 1000
+      expire-after-write: 5m
+      expire-after-success: 2m
+    sales-categories:
+      maximum-size: 1000
+      expire-after-write: 5m
+      expire-after-success: 2m
+    sales-products:
+      maximum-size: 1000
+      expire-after-write: 5m
+      expire-after-success: 2m
+
 
 endpoints:
   health:
