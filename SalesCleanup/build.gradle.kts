@@ -46,6 +46,12 @@ kotlin {
     jvmToolchain(25)
 }
 
+//comment out for lambda deployment if something is wrong
+application {
+    mainClass.set("org.abondar.experimental.sales.analyzer.cleanup.Main")
+}
+
+
 micronaut {
     runtime("lambda_provided")
     testRuntime("junit5")
@@ -67,10 +73,6 @@ micronaut {
 }
 
 tasks.named<JavaExec>("run") {
-    application {
-        mainClass.set("org.abondar.experimental.sales.analyzer.cleanup.Main")
-    }
-
     systemProperty("micronaut.environments", "local")
 }
 
